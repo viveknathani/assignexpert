@@ -16,7 +16,16 @@
         "resolveJsonModule": true,
         "experimentalDecorators": true,
         "strictPropertyInitialization": false,
-        "emitDecoratorMetadata": true
+        "emitDecoratorMetadata": true,
+        "rootDir": "src"
     },
-    "exclude": ["node_modules", "build", "web", "coverage", "docs", "cypress"]
+    "exclude": [
+        "node_modules",
+        "build",
+        "web",
+        "coverage",
+        "docs",
+        "cypress",
+        "jest.config.js"
+    ]
 }
