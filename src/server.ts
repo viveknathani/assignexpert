@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import { QueryResult } from 'pg';
 import { queryWithTransaction, setupDatabase } from './database';
+import { getClient, setupCache } from './cache';
 dotenv.config();
 
 async function main() {
@@ -10,6 +11,10 @@ async function main() {
         console.log(result.rows[0]);
         return undefined;             
     });
+
+    setupCache(process.env.REDIS_URL || '', '', '')
+    const client = getClient();
+    await client.connect();
 }
 
 main()
