@@ -40,7 +40,7 @@ create table if not exists faculties (
 
 create table if not exists classes (
     id uuid primary key,
-    "facultyId" uuid references faculties(id) on delete cascade,
+    "facultyId" uuid references faculties(id),
     name varchar not null,
     code varchar not null
 );
