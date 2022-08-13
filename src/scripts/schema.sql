@@ -35,7 +35,7 @@ create table if not exists students (
 create table if not exists faculties (
     id uuid primary key,
     "userId" uuid references users(id) on delete cascade,
-    "employeesNumber" bigint not null
+    "employeeNumber" bigint not null
 );
 
 create table if not exists classes (
