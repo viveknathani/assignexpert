@@ -68,3 +68,5 @@ export async function queryWithTransaction(prepared: string,
         client.release();
     }
 }
+
+export * from './user';
