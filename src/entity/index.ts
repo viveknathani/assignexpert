@@ -8,7 +8,7 @@ export interface User {
     uiTheme: string,
     editorTheme: string,
     wantsEmailNotifications: boolean
-};
+}
 
 export interface Student {
     id: string,
@@ -20,4 +20,10 @@ export interface Faculty {
     id: string,
     userId: string,
     employeeNumber: number
+}
+
+export interface SessionInfo {
+    
+    userId: string,
+    isStudent: boolean
 }
