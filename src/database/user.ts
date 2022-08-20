@@ -10,6 +10,8 @@ const statementUpdateFirstName = `update users set "firstName" = $1 where id = $
 const statementUpdateLastName = `update users set "lastName" = $1 where id = $2;`;
 const statementUpdatePassword = `update users set password = $1 where id = $2;`;
 const statementUpdatePreferences = `update users set "uiTheme" = $1, "editorTheme" = $2, "wantsEmailNotifications" = $3 where id = $4;`;
+const statementInsertStudent = `insert into students (id, "userId", "rollNumber") values ($1, $2, $3);`;
+const statementInsertFaculty = `insert into faculties (id, "userId", "employeeNumber") values ($1, $2, $3);`;
 
 // take a user and insert it into the database.
 // uuid will be created and assigned before inserting.
@@ -18,6 +20,23 @@ export async function insertUser(user: entity.User) {
     user.id = uuidv4();
     await execWithTransaction(statementInsertUser, user.id, user.firstName, user.lastName, user.email, user.password, user.uiTheme, user.editorTheme, user.wantsEmailNotifications);
 }
+
+// take a student and insert it into the database.
+// uuid will be created and assigned before inserting.
+export async function insertStudent(student: entity.Student) {
+
+    student.id = uuidv4();
+    await execWithTransaction(statementInsertStudent, student.id, student.userId, student.rollNumber);
+}
+
+// take a faculty and insert it into the database.
+// uuid will be created and assigned before inserting.
+export async function insertFaculty(faculty: entity.Faculty) {
+
+    faculty.id = uuidv4();
+    await execWithTransaction(statementInsertFaculty, faculty.id, faculty.userId,faculty.employeeNumber);
+}
+
 
 // get the first matching user from database based on email.
 // if none exists, all fields are empty strings.

@@ -3,7 +3,7 @@ dotenv.config();
 
 import { setupDatabase, terminatePool } from '.';
 import * as entity from '../entity/';
-import { deleteUser, getUser, insertUser, updateFirstName, updateLastName, updatePassword, updatePreferences } from './user';
+import { deleteUser, getUser, insertFaculty, insertStudent, insertUser, updateFirstName, updateLastName, updatePassword, updatePreferences } from './user';
 
 
 setupDatabase(process.env.DATABASE_URL || '');
@@ -23,6 +23,16 @@ test('insert/get/delete user', async () => {
     }
 
     await insertUser(user);
+    await insertStudent({
+        id: '',
+        userId: user.id,
+        rollNumber: 19070124042
+    });
+    await insertFaculty({
+        id: '',
+        userId: user.id,
+        employeeNumber: 19070124042
+    })
     const u = await getUser(user.email);
     u.password = u.password.toString();
     expect(user).toEqual(u);
