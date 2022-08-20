@@ -164,6 +164,20 @@ export class UserService {
         }
     }
 
+    public async updatePreferences(email: string, preferences: entity.Preferences) {
+        
+        try {
+            const user = await database.getUser(email);
+            if (user.id === '') {
+                throw new errors.ErrUpdateUserField;
+            }
+            await database.updatePreferences(email, preferences.uiTheme, 
+                preferences.editorTheme, preferences.wantsEmailNotifications);
+        } catch (err) {
+            throw err;
+        }
+    }
+
     public async deleteUser(id: string) {
 
         try {

@@ -27,3 +27,10 @@ export interface SessionInfo {
     userId: string,
     isStudent: boolean
 }
+
+export interface Preferences {
+
+    uiTheme: string,
+    editorTheme: string,
+    wantsEmailNotifications: boolean
+}
