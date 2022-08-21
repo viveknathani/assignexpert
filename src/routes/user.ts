@@ -54,6 +54,7 @@ userRouter.post('/signup', async (req: express.Request, res: express.Response) =
                 id: '', userId: '', employeeNumber: req.body.employeeNumber
             });
         }
+        res.status(201).json({ message: messages.MESSAGE_201 });
     } catch (err) {
         if (err instanceof errors.ErrInvalidEmailFormat
             || err instanceof errors.ErrInvalidPasswordFormat
@@ -73,7 +74,10 @@ userRouter.post('/login', async (req: express.Request, res: express.Response) =>
         res.cookie('session', response.sessionId, getCookieConfig());
         res.status(200).json({
             firstName: response.firstName,
-            lastName: response.lastName
+            lastName: response.lastName,
+            uiTheme: response.uiTheme,
+            editorTheme: response.editorTheme,
+            wantsEmailNotifications: response.wantsEmailNotifications
         });
     } catch (err) {
         if (err instanceof errors.ErrInvalidEmailPassword) {
