@@ -90,7 +90,10 @@ export class UserService {
             return {
                 firstName: user.firstName,
                 lastName: user.lastName,
-                sessionId
+                sessionId,
+                uiTheme: user.uiTheme,
+                editorTheme: user.editorTheme,
+                wantsEmailNotifications: user.wantsEmailNotifications
             }
         } catch (err) {
 
@@ -171,7 +174,7 @@ export class UserService {
             if (user.id === '') {
                 throw new errors.ErrUpdateUserField;
             }
-            await database.updatePreferences(email, preferences.uiTheme, 
+            await database.updatePreferences(user.id, preferences.uiTheme, 
                 preferences.editorTheme, preferences.wantsEmailNotifications);
         } catch (err) {
             throw err;
@@ -208,6 +211,9 @@ export class UserService {
             const cacheClient = cache.getClient();
             if (!cacheClient.isOpen) {
                 await cacheClient.connect();
+            }
+            if (sessionId === undefined) {
+                return undefined;
             }
             const data = await cacheClient.get(sessionId);
             if (data === undefined || data === null) {
