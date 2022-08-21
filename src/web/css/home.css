@@ -1,0 +1,66 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
+
+* {
+   margin: 0 0;
+   padding: 0 0;
+	 border: 0;
+   box-sizing: border-box;
+   font-family: 'Inter', sans-serif;
+}
+
+:root {
+   --white: #FFFFFF;
+   --black: #000000;
+   --primary: #008037;
+   --secondary: #E9EFF4;
+}                      
+
+.navBar {
+   background-color: var(--secondary);
+   height: 8vh;
+   width: 100vw;
+   display: grid;
+   grid-template-columns: 9fr 0.5fr 0.6fr;
+}
+
+.line {
+   background-color: var(--primary);
+   height: 0.45vh;
+   width: 100vw;
+}
+
+.title {
+   display: inline-block;
+   color: var(--black);
+   font-size: 4.1vh;
+   font-family: 'Fredoka One', cursive;
+   margin-left: 2vw; 
+   margin-top: 1.5vh;
+   height: 6.45vh;
+}
+
+.navButtons {
+   display: inline-block;
+   margin-top: 1vh;
+   width: 6vh;
+   height: 6vh;
+   border-radius: 100%;
+   background-color: var(--white);
+   border: 0.32vh solid var(--primary);
+}
+
+.navButtons:hover {
+   scale: 1.08;
+   cursor: pointer;
+}
+
+.settingsIcon {
+   font-size: 3.5vh;
+   margin-top: 0.96vh;
+   margin-left: 1vh;
+}
+
+#logoutIcon {
+   margin-left: 1.2vh;
+}
