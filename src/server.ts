@@ -1,8 +1,12 @@
 import dotenv from 'dotenv';
+dotenv.config();
+
+import express from 'express';
+import cookieParser from 'cookie-parser';
 import { QueryResult } from 'pg';
 import { queryWithTransaction, setupDatabase } from './database';
 import { getClient, setupCache } from './cache';
-dotenv.config();
+import api from './routes';
 
 async function main() {
 
@@ -15,8 +19,14 @@ async function main() {
     setupCache(process.env.REDIS_URL || '', '', '')
     const client = getClient();
     await client.connect();
+
+    const app: express.Application = express();
+    app.use(express.json());
+    app.use(cookieParser());
+    app.use('/api', api);
+    app.listen(process.env.PORT, () => console.log('server is up!'));
 }
 
 main()
-.then(() => console.log('server is up!'))
+.then(() => {})
 .catch((err) => console.log(err));
