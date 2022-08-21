@@ -42,6 +42,20 @@ async function injectSessionInfoMiddleWare(req: express.Request, res: express.Re
         }
 };
 
+/**
+ * @api {post} /api/user/signup Signup
+ * @apiGroup User
+ * @apiName Signup
+ * @apiBody {boolean} isStudent Mandatory
+ * @apiBody {string} firstName Mandatory 
+ * @apiBody {string} lastName  Mandatory 
+ * @apiBody {string} email     Mandatory 
+ * @apiBody {string} password  Mandatory (format: Min. 8 chars, atleast 1 number, 1 lowercase character, 1 uppercase character, 1 special character)
+ * @apiBody {number} rollNumber|employeeNumber Mandatory
+ * @apiError (ClientError) {json} 400 InvalidEmailFormat or InvalidPasswordFormat or InvalidPasswordFormat
+ * @apiError (ServerError) {json} 500 Need to check server logs
+ * @apiVersion 0.1.0
+ */
 userRouter.post('/signup', async (req: express.Request, res: express.Response) => {
     try {
         const { isStudent } = req.body;
@@ -67,6 +81,19 @@ userRouter.post('/signup', async (req: express.Request, res: express.Response) =
     }
 });
 
+/**
+ * @api {post} /api/user/login Login
+ * @apiGroup User
+ * @apiName Login
+ * @apiBody {string} email     Mandatory 
+ * @apiBody {string} password  Mandatory
+ * @apiError (ClientError) {json} 400 InvalidEmailPassword
+ * @apiError (ServerError) {json} 500 Need to check server logs
+ * @apiSuccess {string} firstName First name of the user.
+ * @apiSuccess {string} lastName Lastt name of the user.
+ * @apiVersion 0.1.0
+ * @apiDescription HTTP-only cookie is set.
+ */
 userRouter.post('/login', async (req: express.Request, res: express.Response) => {
     try {
         const { email, password } = req.body;
@@ -89,6 +116,14 @@ userRouter.post('/login', async (req: express.Request, res: express.Response) =>
     }
 });
 
+/**
+ * @api {post} /api/user/logout Logout
+ * @apiGroup User
+ * @apiName Logout
+ * @apiError (ServerError) {json} 500 Need to check server logs
+ * @apiVersion 0.1.0
+ * @apiDescription The HTTP-only cookie set during login will be used.
+ */
 userRouter.post('/logout', async (req: express.Request, res: express.Response) => {
     try {
         await userService.logout(req.cookies['session']);
@@ -102,6 +137,19 @@ userRouter.post('/logout', async (req: express.Request, res: express.Response) =
 
 userRouter.use('/', injectSessionInfoMiddleWare);
 
+/**
+ * @api {put} /api/user/firstName Update first name
+ * @apiGroup User
+ * @apiName Update first name
+ * @apiBody {string} email      Mandatory 
+ * @apiBody {string} firstName  Mandatory, the new first name 
+ * @apiError (ClientError) {json} 400 ErrUpdateUserField
+ * @apiError (ServerError) {json} 500 Need to check server logs
+ * @apiVersion 0.1.0
+ * @apiDescription This will only update the database. In order to reflect
+ * the changes in the user interface, a refresh or view update might be needed.
+ * User needs to be authenticated to hit this endpoint.
+ */
 userRouter.put('/firstName', async (req: express.Request, res: express.Response) => {
     try {
         const { email, firstName } = req.body;
@@ -117,6 +165,19 @@ userRouter.put('/firstName', async (req: express.Request, res: express.Response)
     }
 });
 
+/**
+ * @api {put} /api/user/lastName Update last name
+ * @apiGroup User
+ * @apiName Update last name
+ * @apiBody {string} email      Mandatory 
+ * @apiBody {string} lastName  Mandatory, the new last name
+ * @apiError (ClientError) {json} 400 ErrUpdateUserField 
+ * @apiError (ServerError) {json} 500 Need to check server logs
+ * @apiVersion 0.1.0
+ * @apiDescription This will only update the database. In order to reflect
+ * the changes in the user interface, a refresh or view update might be needed.
+ * User needs to be authenticated to hit this endpoint.
+ */
 userRouter.put('/lastName', async (req: express.Request, res: express.Response) => {
     try {
         const { email, lastName } = req.body;
@@ -132,6 +193,18 @@ userRouter.put('/lastName', async (req: express.Request, res: express.Response) 
     }
 });
 
+/**
+ * @api {put} /api/user/password Update password
+ * @apiGroup User
+ * @apiName Update password
+ * @apiBody {string} email        Mandatory 
+ * @apiBody {string} oldPassword  Mandatory, the password you have
+ * @apiBody {string} newPassword  Mandatory, the password you want
+ * @apiError (ClientError) {json} 400 ErrUpdateUserField
+ * @apiError (ServerError) {json} 500 Need to check server logs
+ * @apiVersion 0.1.0
+ * @apiDescription User needs to be authenticated to hit this endpoint.
+ */
 userRouter.put('/password', async (req: express.Request, res: express.Response) => {
     try {
         const { email, oldPassword, newPassword } = req.body;
@@ -147,6 +220,19 @@ userRouter.put('/password', async (req: express.Request, res: express.Response) 
     }
 });
 
+/**
+ * @api {put} /api/user/preferences Update preferences
+ * @apiGroup User
+ * @apiName Update preferences
+ * @apiBody {string} email        Mandatory 
+ * @apiBody {string} uiTheme      Mandatory
+ * @apiBody {string} editorTheme  Mandatory
+ * @apiBody {boolean} wantsEmailNotifications  Mandatory
+ * @apiError (ClientError) {json} 400 ErrUpdateUserField
+ * @apiError (ServerError) {json} 500 Need to check server logs
+ * @apiVersion 0.1.0
+ * @apiDescription User needs to be authenticated to hit this endpoint.
+ */
 userRouter.put('/preferences', async (req: express.Request, res: express.Response) => {
     try {
         const { email } = req.body;
