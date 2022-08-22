@@ -34,3 +34,9 @@ export interface Preferences {
     editorTheme: string,
     wantsEmailNotifications: boolean
 }
+
+export interface TestCase {
+
+    input: string,
+    output: string
+}

@@ -43,3 +43,12 @@ export class ErrUpdateUserField extends Error {
         Object.setPrototypeOf(this,ErrUpdateUserField.prototype);
     }
 }
+
+export class ErrUnsupportedLanguage extends Error {
+
+    constructor() {
+
+        super('Unsupported language.');
+        Object.setPrototypeOf(this,ErrUpdateUserField.prototype);
+    }
+}
