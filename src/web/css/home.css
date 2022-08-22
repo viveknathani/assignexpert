@@ -64,3 +64,49 @@
 #logoutIcon {
    margin-left: 1.2vh;
 }
+
+.classContainer {
+   display: grid;
+   grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+   justify-items: center;
+   align-items: center;
+}
+
+.classes {
+   width: 12vw;
+   height: 19vh;
+   margin-top: 8vh;
+   background-color: var(--secondary);
+   border: 0.32vh solid var(--primary);
+   border-radius: 4%;
+}
+
+.classes:hover {
+   scale: 1.09;
+   cursor: pointer;
+}
+
+#addClass {
+   position: relative;
+}
+
+.plusV{
+   display: inline-block;
+   background-color: var(--black);
+   width: 0.16vw;
+   height: 9vh;
+   margin-left: 5.8vw;
+   margin-top: 4.9vh;
+}
+
+.plusH {
+   display: inline-block;
+   background-color: var(--black);
+   width: 4.85vw;
+   height: 0.3vh;
+   position: absolute;
+   top: 9.2vh;
+   left: 3.39vw;
+   z-index: 1;
+}
+
