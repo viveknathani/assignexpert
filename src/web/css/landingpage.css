@@ -1,0 +1,52 @@
+/* @import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
+
+* {
+   margin: 0 0;
+   padding: 0 0;
+   border: 0;
+   box-sizing: border-box;
+   font-family: 'Inter', sans-serif;
+}
+
+:root {
+   --white: #FFFFFF;
+   --black: #000000;
+   --primary: #008037;
+   --secondary: #E9EFF4;
+}                       */
+
+div
+{
+    text-align: center;
+    font-size: 30px;
+    color: white;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 700px;
+    width:48%;
+}
+.one
+{
+    background-color:white;    
+    float: right;  
+}
+.two
+{
+    background-color: #E9EFF4;
+    float: left;
+}
+
+h2
+{
+    color: black;
+}
+
+
+/* .three
+{
+    background-color: hotpink;
+    float: left;
+} */
