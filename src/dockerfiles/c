@@ -1,0 +1,8 @@
+FROM alpine:latest
+COPY submission.c .
+COPY input.txt .
+# build-base is a package that will install gcc and its dependencies, amongst other things.
+RUN apk add build-base
+RUN ["gcc", "submission.c", "-o", "submission"]
+RUN ["mkdir", "outputs"]
+CMD ["/bin/sh", "-c", "./submission < input.txt > /outputs/submission.txt"]
