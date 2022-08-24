@@ -40,3 +40,10 @@ export interface TestCase {
     input: string,
     output: string
 }
+
+export interface JobQueueData {
+
+    code: string,
+    language: string,
+    testCases: TestCase[]
+}
