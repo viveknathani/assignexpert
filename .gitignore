@@ -13,3 +13,5 @@ build
 # swap files
 *.swp
 
+# ignore the area used by containers for code execution
+execution-area/
