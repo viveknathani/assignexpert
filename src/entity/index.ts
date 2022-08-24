@@ -34,3 +34,16 @@ export interface Preferences {
     editorTheme: string,
     wantsEmailNotifications: boolean
 }
+
+export interface Class {
+    id: string,
+    facultyId: string,
+    name: string,
+    code: string    
+}
+
+export interface Member {
+    id: string,
+    classId: string,
+    studentId: string
+}

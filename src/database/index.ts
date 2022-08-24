@@ -70,3 +70,4 @@ export async function queryWithTransaction(prepared: string,
 }
 
 export * from './user';
+export * from './class';
