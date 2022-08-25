@@ -47,3 +47,13 @@ export interface JobQueueData {
     language: string,
     testCases: TestCase[]
 }
+
+export enum JobProgress {
+    STARTED,
+    MKDIR,
+    DOCKER_BUILD,
+    DOCKER_RUN,
+    DOCKER_RMI,
+    PROCESS_OUTPUTS,
+    RM
+}
