@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { Job } from 'bullmq';
 import util from 'util';
 import path from 'path';
+import { getClient } from '../cache';
 
 const exec = util.promisify(require('child_process').exec);
 
@@ -17,7 +18,7 @@ export class CodeExecutionService {
     private constructor() {}
 
      // follows the singleton pattern
-     public static getInstance(): CodeExecutionService {
+    public static getInstance(): CodeExecutionService {
 
         if (!CodeExecutionService.instance) {
             CodeExecutionService.instance = new CodeExecutionService();
@@ -49,19 +50,20 @@ export class CodeExecutionService {
     }
 
     public job = async(job: Job) => {
-        try {
-            const data: entity.JobQueueData = job.data;
-            const jobId = job.name;
-            const executionAreaPath = `./execution-area`;
-            const directoryPath = `${executionAreaPath}/${jobId}`;
-            const submissionfileName = `submission.${this.getExtension(data.language)}`;
-            const inputFileName = "input.txt";
-            const dockerFileParent = (process.env.NODE_ENV === 'test') ? `./src` : `./build`;
-            const dockerFilePath = `${dockerFileParent}/dockerfiles/${data.language}`;
-            const submissionFilePath = path.resolve(`${directoryPath}/${submissionfileName}`);
-            const inputFilePath = path.resolve(`${directoryPath}/${inputFileName}`);
-            const outputFilePath =  path.resolve(`${directoryPath}/output.txt`);
 
+        const data: entity.JobQueueData = job.data;
+        const jobId = job.name;
+        const executionAreaPath = `./execution-area`;
+        const directoryPath = `${executionAreaPath}/${jobId}`;
+        const submissionfileName = `submission.${this.getExtension(data.language)}`;
+        const inputFileName = "input.txt";
+        const dockerFileParent = (process.env.NODE_ENV === 'test') ? `./src` : `./build`;
+        const dockerFilePath = `${dockerFileParent}/dockerfiles/${data.language}`;
+        const submissionFilePath = path.resolve(`${directoryPath}/${submissionfileName}`);
+        const inputFilePath = path.resolve(`${directoryPath}/${inputFileName}`);
+        const outputFilePath =  path.resolve(`${directoryPath}/output.txt`);
+        
+        try {
             await job.updateProgress(entity.JobProgress.STARTED);
             await fs.promises.mkdir(directoryPath);
             await fs.promises.mkdir(`${directoryPath}/outputs`);
@@ -75,13 +77,43 @@ export class CodeExecutionService {
                 encoding: 'utf-8'
             });
             await job.updateProgress(entity.JobProgress.MKDIR);
+        } catch (err) {
+            console.log(err);
+            throw errors.ErrJobMkdir;
+        }
+
+        try {
             await exec(`docker build -t ${jobId} -f ${dockerFilePath} --build-arg SUBMISSION_FILE_PATH=${jobId}/${submissionfileName} --build-arg INPUT_FILE_PATH=${jobId}/${inputFileName} ${executionAreaPath}`);
             await job.updateProgress(entity.JobProgress.DOCKER_BUILD);
+        } catch (err) {
+            console.log(err);
+            await this.setResultInCache(jobId, {
+                resultStatus: entity.ResultStatus.CE,
+                resultMessage: err as string 
+            })
+            throw errors.ErrCodeCompileError;
+        }
+
+        try {
             await exec(`docker run -v ${path.resolve(directoryPath)}/outputs:/outputs ${jobId}`);
             await job.updateProgress(entity.JobProgress.DOCKER_RUN);
+        } catch (err) {
+            console.log(err);
+            await this.setResultInCache(jobId, {
+                resultStatus: entity.ResultStatus.RE,
+                resultMessage: err as string 
+            })
+            throw errors.ErrRuntimeError;
+        }
+
+        try {
             await exec(`docker rmi -f ${jobId}`);
             await job.updateProgress(entity.JobProgress.DOCKER_RMI);
-            await this.processOutputs(jobId, data.testCases);
+            const diff = await this.processOutputs(inputFilePath, outputFilePath);
+            await this.setResultInCache(jobId, {
+                resultStatus: (diff === "") ? entity.ResultStatus.AC : entity.ResultStatus.WA,
+                resultMessage: diff
+            });
             await job.updateProgress(entity.JobProgress.PROCESS_OUTPUTS);
             await fs.promises.rm(directoryPath, {
                 recursive: true,
@@ -89,7 +121,18 @@ export class CodeExecutionService {
             });
             await job.updateProgress(entity.JobProgress.RM);
         } catch (err) {
-            console.log(err);
+            throw err;
+        }
+    }
+
+    private async setResultInCache(jobId: string, data: entity.CodeExecutionResult) {
+        try {
+            const cacheClient = getClient();
+            if (!cacheClient.isOpen) {
+                await cacheClient.connect();
+            }
+            await cacheClient.set(jobId, JSON.stringify(data));
+        } catch (err) {
             throw err;
         }
     }
@@ -109,8 +152,17 @@ export class CodeExecutionService {
         return result;
     }
 
-    private async processOutputs(jobId: string, testCases: entity.TestCase[]) {
-        
+    private async processOutputs(actualOutputFile: string, expectedOutputFile: string): Promise<string> {
+        let result = "";
+        await exec(`diff ${actualOutputFile} ${expectedOutputFile} 1>&2`, (err: any, _: any, stderr: any) => {
+            if (err) {
+                console.log(err);
+            }
+            if (stderr) {
+                result = stderr;
+            }
+        });
+        return result;
     }
 
     public async getJobResult(jobId: string) {
