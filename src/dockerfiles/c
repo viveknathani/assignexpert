@@ -1,6 +1,8 @@
 FROM alpine:latest
-COPY submission.c .
-COPY input.txt .
+ARG SUBMISSION_FILE_PATH
+ARG INPUT_FILE_PATH
+COPY ${SUBMISSION_FILE_PATH} .
+COPY ${INPUT_FILE_PATH} .
 # build-base is a package that will install gcc and its dependencies, amongst other things.
 RUN apk add build-base
 RUN ["gcc", "submission.c", "-o", "submission"]
