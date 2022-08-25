@@ -96,7 +96,7 @@ export class CodeExecutionService {
         }
 
         try {
-            await exec(`docker run -v ${path.resolve(directoryPath)}/outputs:/outputs ${jobId}`);
+            await exec(`docker run --network none -v ${path.resolve(directoryPath)}/outputs:/outputs ${jobId}`);
             await job.updateProgress(entity.JobProgress.DOCKER_RUN);
         } catch (err) {
             console.log(err);
@@ -122,6 +122,23 @@ export class CodeExecutionService {
             });
             await job.updateProgress(entity.JobProgress.RM);
         } catch (err) {
+            console.log(err);
+            throw err;
+        }
+    }
+
+    public async getJobResult(jobId: string): Promise<entity.ResultStatus | undefined> {
+        try {
+            const cacheClient = getClient();
+            if (!cacheClient.isOpen) {
+                await cacheClient.connect();
+            }
+            const data = await cacheClient.get(jobId);
+            if (data === undefined || data === null) {
+                return undefined;
+            }
+            return JSON.parse(data);
+        } catch (err) {
             throw err;
         }
     }
@@ -146,7 +163,7 @@ export class CodeExecutionService {
     }
 
     private getFileContent(testCases: entity.TestCase[], writeInput: boolean): string {
-        let result = `${testCases.length}\n`;
+        let result = (writeInput) ? `${testCases.length}\n` : "";
         for (let i = 0; i < testCases.length; ++i) {
             result += (writeInput) ? `${testCases[i].input}\n` : `${testCases[i].output}\n`;
         }
@@ -154,19 +171,9 @@ export class CodeExecutionService {
     }
 
     private async processOutputs(actualOutputFile: string, expectedOutputFile: string): Promise<string> {
-        let result = "";
-        await exec(`diff ${actualOutputFile} ${expectedOutputFile} 1>&2`, (err: any, _: any, stderr: any) => {
-            if (err) {
-                console.log(err);
-            }
-            if (stderr) {
-                result = stderr;
-            }
-        });
-        return result;
-    }
-
-    public async getJobResult(jobId: string) {
-
+        const { stdout, stderr } = await exec(`diff ${actualOutputFile} ${expectedOutputFile}`)
+        console.log(`stdout: ${stdout}`);
+        console.log(`stderr: ${stderr}`);
+        return stderr;
     }
 }
