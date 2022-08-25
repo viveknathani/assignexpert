@@ -61,7 +61,8 @@ export class CodeExecutionService {
         const dockerFilePath = `${dockerFileParent}/dockerfiles/${data.language}`;
         const submissionFilePath = path.resolve(`${directoryPath}/${submissionfileName}`);
         const inputFilePath = path.resolve(`${directoryPath}/${inputFileName}`);
-        const outputFilePath =  path.resolve(`${directoryPath}/output.txt`);
+        const expectedOutputFilePath = path.resolve(`${directoryPath}/output.txt`);
+        const actualOutputFilePath = path.resolve(`${directoryPath}/outputs/submission.txt`);
         
         try {
             await job.updateProgress(entity.JobProgress.STARTED);
@@ -73,7 +74,7 @@ export class CodeExecutionService {
             await fs.promises.writeFile(inputFilePath, this.getFileContent(data.testCases, true), {
                 encoding: 'utf-8'
             });
-            await fs.promises.writeFile(outputFilePath, this.getFileContent(data.testCases, false), {
+            await fs.promises.writeFile(expectedOutputFilePath, this.getFileContent(data.testCases, false), {
                 encoding: 'utf-8'
             });
             await job.updateProgress(entity.JobProgress.MKDIR);
@@ -109,7 +110,7 @@ export class CodeExecutionService {
         try {
             await exec(`docker rmi -f ${jobId}`);
             await job.updateProgress(entity.JobProgress.DOCKER_RMI);
-            const diff = await this.processOutputs(inputFilePath, outputFilePath);
+            const diff = await this.processOutputs(actualOutputFilePath, expectedOutputFilePath);
             await this.setResultInCache(jobId, {
                 resultStatus: (diff === "") ? entity.ResultStatus.AC : entity.ResultStatus.WA,
                 resultMessage: diff
