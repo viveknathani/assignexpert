@@ -57,3 +57,22 @@ export enum JobProgress {
     PROCESS_OUTPUTS,
     RM
 }
+
+export enum ResultStatus {
+    AC = "AC",
+    WA = "WA",
+    TLE = "TLE",
+    MLE = "MLE",
+    CE = "CE",
+    RE = "RE",
+    PR = "PR"
+}
+
+export interface CodeExecutionResult {
+    
+    resultStatus: ResultStatus,
+    resultMessage: string,
+    timeTaken?: number,
+    memoryUsedInKiloBytes?: number,
+    points?: number
+}
