@@ -49,6 +49,33 @@ export class ErrUnsupportedLanguage extends Error {
     constructor() {
 
         super('Unsupported language.');
-        Object.setPrototypeOf(this,ErrUpdateUserField.prototype);
+        Object.setPrototypeOf(this,ErrUnsupportedLanguage.prototype);
+    }
+}
+
+export class ErrJobMkdir extends Error {
+
+    constructor() {
+
+        super('Failed in making files and directories for the job.');
+        Object.setPrototypeOf(this,ErrJobMkdir.prototype);
+    }
+}
+
+export class ErrCodeCompileError extends Error {
+
+    constructor() {
+
+        super('Compile error.');
+        Object.setPrototypeOf(this,ErrCodeCompileError.prototype);
+    }
+}
+
+export class ErrRuntimeError extends Error {
+
+    constructor() {
+
+        super('Runtime error.');
+        Object.setPrototypeOf(this,ErrRuntimeError.prototype);
     }
 }
