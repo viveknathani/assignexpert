@@ -27,5 +27,6 @@ test('execute c', async () => {
             output: "5"
         }
     ];
-    codeExecutionService.runCode(code, language, testCases);
+    const timeLimit = 1;
+    codeExecutionService.runCode(code, language, testCases, timeLimit);
 });

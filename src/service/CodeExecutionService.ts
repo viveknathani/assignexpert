@@ -32,7 +32,7 @@ export class CodeExecutionService {
         return CodeExecutionService.instance;
     }
 
-    public runCode(code: string, language: string, testCases: entity.TestCase[]) {
+    public runCode(code: string, language: string, testCases: entity.TestCase[], timeLimit: number) {
         try {
             if (!this.supportedLanguages.has(language)) {
                 throw new errors.ErrUnsupportedLanguage;
@@ -41,7 +41,7 @@ export class CodeExecutionService {
             // in differentiating the uuid from our session-ids during debugging
             const jobId = `job-${uuidv4()}`;
             jobQueue.addJob(jobId, {
-                code, language, testCases
+                code, language, testCases, timeLimit
             });
             return jobId;
         } catch (err) {
@@ -63,6 +63,7 @@ export class CodeExecutionService {
         const inputFilePath = path.resolve(`${directoryPath}/${inputFileName}`);
         const expectedOutputFilePath = path.resolve(`${directoryPath}/output.txt`);
         const actualOutputFilePath = path.resolve(`${directoryPath}/outputs/submission.txt`);
+        const timeOutFilePath = path.resolve(`${directoryPath}/outputs/timeout.txt`);
         
         try {
             await job.updateProgress(entity.JobProgress.STARTED);
@@ -84,7 +85,7 @@ export class CodeExecutionService {
         }
 
         try {
-            await exec(`docker build -t ${jobId} -f ${dockerFilePath} --build-arg SUBMISSION_FILE_PATH=${jobId}/${submissionfileName} --build-arg INPUT_FILE_PATH=${jobId}/${inputFileName} ${executionAreaPath}`);
+            await exec(`docker build -t ${jobId} -f ${dockerFilePath} --build-arg SUBMISSION_FILE_PATH=${jobId}/${submissionfileName} --build-arg INPUT_FILE_PATH=${jobId}/${inputFileName} --build-arg TIME_LIMIT=${data.timeLimit} ${executionAreaPath}`);
             await job.updateProgress(entity.JobProgress.DOCKER_BUILD);
         } catch (err) {
             console.log(err);
@@ -110,17 +111,38 @@ export class CodeExecutionService {
         try {
             await exec(`docker rmi -f ${jobId}`);
             await job.updateProgress(entity.JobProgress.DOCKER_RMI);
+            const tle = await this.hasTimedOut(timeOutFilePath);
+            if (tle) {
+                await this.setResultInCache(jobId, {
+                    resultStatus: entity.ResultStatus.TLE,
+                    resultMessage: ""
+                });
+                throw errors.ErrTimeLimitExceeded;
+            }
+        } catch (err) {
+            console.log(err);
+            throw err;
+        }
+
+        try {
+            
+        } catch (err) {
+            console.log(err);
+            throw err;
+        }
+
+        try {
             const diff = await this.processOutputs(actualOutputFilePath, expectedOutputFilePath);
             await this.setResultInCache(jobId, {
                 resultStatus: (diff === "") ? entity.ResultStatus.AC : entity.ResultStatus.WA,
                 resultMessage: diff
             });
             await job.updateProgress(entity.JobProgress.PROCESS_OUTPUTS);
-            await fs.promises.rm(directoryPath, {
-                recursive: true,
-                force: true
-            });
-            await job.updateProgress(entity.JobProgress.RM);
+            // await fs.promises.rm(directoryPath, {
+            //     recursive: true,
+            //     force: true
+            // });
+            // await job.updateProgress(entity.JobProgress.RM);
         } catch (err) {
             console.log(err);
             throw err;
@@ -171,9 +193,21 @@ export class CodeExecutionService {
     }
 
     private async processOutputs(actualOutputFile: string, expectedOutputFile: string): Promise<string> {
-        const { stdout, stderr } = await exec(`diff ${actualOutputFile} ${expectedOutputFile}`)
-        console.log(`stdout: ${stdout}`);
-        console.log(`stderr: ${stderr}`);
-        return stdout;
+        try {
+            const { stdout, stderr } = await exec(`diff ${actualOutputFile} ${expectedOutputFile} 2>&1`);
+            console.log(`stdout: ${stdout}`);
+            console.log(`stderr: ${stderr}`);
+            return stdout;
+        } catch (err) {
+            return err as string;
+        }
+        
+    }
+
+    private async hasTimedOut(timeOutFilePath: string): Promise<boolean> {
+        const data = await fs.promises.readFile(timeOutFilePath, {
+            encoding: 'utf-8'
+        });
+        return (data !== '0\n');
     }
 }

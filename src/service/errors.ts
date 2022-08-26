@@ -79,3 +79,12 @@ export class ErrRuntimeError extends Error {
         Object.setPrototypeOf(this,ErrRuntimeError.prototype);
     }
 }
+
+export class ErrTimeLimitExceeded extends Error {
+
+    constructor() {
+
+        super('TLE.');
+        Object.setPrototypeOf(this,ErrRuntimeError.prototype);
+    }
+}
