@@ -174,6 +174,6 @@ export class CodeExecutionService {
         const { stdout, stderr } = await exec(`diff ${actualOutputFile} ${expectedOutputFile}`)
         console.log(`stdout: ${stdout}`);
         console.log(`stderr: ${stderr}`);
-        return stderr;
+        return stdout;
     }
 }
