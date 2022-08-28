@@ -1,0 +1,141 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
+
+* {
+   margin: 0 0;
+   padding: 0 0;
+	 border: 0;
+   box-sizing: border-box;
+   font-family: 'Inter', sans-serif;
+}
+
+:root {
+   --white: #FFFFFF;
+   --black: #000000;
+   --primary: #008037;
+   --secondary: #E9EFF4;
+}
+
+.miscallaneous {
+   display: grid;
+   margin-top: 4.2vh;
+   grid-template-columns: 1fr 1fr;
+   align-items: flex-end;
+}
+
+.className {
+   justify-self: flex-start;
+   font-size: 4.3vh;
+   font-weight: 600;
+   color: var(--primary);
+   background-color: var(--white);
+   padding-left: 4vw;
+}
+
+.members {
+   justify-self: flex-end;
+   font-size: 3.5vh;
+   color: var(--black);
+   background-color: var(--white);
+   padding-right: 4vw;
+   font-weight: 500;
+}
+
+.members:hover {
+   font-weight: 700;
+   cursor: pointer;
+}
+
+.assigned {
+   margin-top: 7vh;
+   margin-left: 4.2vw;
+   font-size: 3vh;
+   color: var(--black);
+   background-color: var(--white);
+}
+
+.assigned:hover {
+   font-size: 3.05vh;
+   font-weight: 600;
+   cursor: pointer;
+}
+
+.arrowDown {
+   font-size: 3vh;
+   color: var(--primary);
+   margin-right: 0.5vw;
+}
+
+.assignedContainer {
+   display: none;
+   margin-top: 4vh;
+   grid-template-columns: 1fr;
+   row-gap: 2vh;
+}
+
+.assignedContainer.show{
+   display: grid;
+}
+
+.assignments {
+   justify-self: center;
+   width: 85vw;
+   height: 6vh;
+   background-color: var(--secondary);
+   color: var(--black);
+   border: 0.32vh solid var(--primary);
+   border-radius: 7px;
+   display: grid;
+   grid-template-columns: 1fr 1fr;
+   align-items: center;
+}
+
+.assignmentName {
+   justify-self: flex-start;
+   margin-left: 1.5vw;
+   font-size: 2.3vh;
+   color: var(--black);
+}
+
+.difficultyLevel {
+   justify-self: flex-end;
+   margin-right: 1.5vw;
+   font-size: 2.3vh;
+   color: var(--black);
+}
+
+/*Animations*/
+
+.turn90Degreescw {
+   animation-name: rotate90cw;
+   animation-duration: 0.2s;
+   animation-timing-function: ease-in-out;
+   animation-fill-mode: both;
+}
+
+@keyframes rotate90cw {
+   from {
+      transform: rotate(0);
+   }
+ 
+   to {
+      transform: rotate(90deg);
+   }
+}
+
+.turn90Degreesacw {
+   animation-name: rotate90acw;
+   animation-duration: 0.2s;
+   animation-timing-function: ease-in-out;
+   animation-fill-mode: forwards;
+}
+
+@keyframes rotate90acw {
+   from {
+      transform: rotate(90deg);
+   }
+ 
+   to {
+      transform: rotate(0);
+   }
+}
