@@ -8,10 +8,10 @@ const statementDeleteClass = "delete from classes where id = $1;"
 const statementSelectClassesForFaculty = `select * from classes where "facultyId" = $1;`
 const statementSelectClass = "select * from classes where id = $1;"
 const statementUpdateClassName = 'update classes set name = $1 where id = $2;'
-const statementInsertMember = `insert into member (id, "classId", "studentId") values($1, $2, $3); `
-const statementDeleteMember = `delete from member where "classId" = $1 and "studentId" = $2;`
-const statementSelectStudentsForClass = `select * from students,members where "classId" = $1 and members."studentId" = students.id;`
-const statementSelectClassesForStudent = `select * from classes,members where "studentId" = $1 and members."classId" = classes.id;`
+const statementInsertMember = `insert into members (id, "classId", "studentId") values($1, $2, $3); `
+const statementDeleteMember = `delete from members where "classId" = $1 and "studentId" = $2;`
+const statementSelectStudentsForClass = `select students.id as id, students."userId" as "userId", students."rollNumber" as "rollNumber" from students,members where "classId" = $1 and members."studentId" = students.id;`
+const statementSelectClassesForStudent = `select classes.id as id, classes."facultyId" as "facultyId", classes.name as name, classes.code as code from classes,members where "studentId" = $1 and members."classId" = classes.id;`
 
 // take a class and insert it into the database.
 // uuid will be created and assigned before inserting.
