@@ -1,0 +1,8 @@
+FROM python:3.9-slim
+ARG SUBMISSION_FILE_PATH
+ARG INPUT_FILE_PATH
+ENV TIME_LIMIT 0
+COPY ${SUBMISSION_FILE_PATH} .
+COPY ${INPUT_FILE_PATH} .
+RUN ["mkdir", "outputs"]
+CMD ["/bin/sh", "-c", "timeout ${TIME_LIMIT} python ./submission.py < input.txt > /outputs/submission.txt; echo $? > /outputs/timeout.txt"]
