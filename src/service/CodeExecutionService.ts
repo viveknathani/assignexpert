@@ -7,6 +7,7 @@ import { Job } from 'bullmq';
 import util from 'util';
 import path from 'path';
 import { getClient } from '../cache';
+import { ExecException } from 'child_process';
 
 const exec = util.promisify(require('child_process').exec);
 
@@ -32,7 +33,7 @@ export class CodeExecutionService {
         return CodeExecutionService.instance;
     }
 
-    public runCode(code: string, language: string, testCases: entity.TestCase[], timeLimit: number) {
+    public runCode(code: string, language: string, testCases: entity.TestCase[], timeLimit: number, memoryLimit: number) {
         try {
             if (!this.supportedLanguages.has(language)) {
                 throw new errors.ErrUnsupportedLanguage;
@@ -41,7 +42,7 @@ export class CodeExecutionService {
             // in differentiating the uuid from our session-ids during debugging
             const jobId = `job-${uuidv4()}`;
             jobQueue.addJob(jobId, {
-                code, language, testCases, timeLimit
+                code, language, testCases, timeLimit, memoryLimit
             });
             return jobId;
         } catch (err) {
@@ -97,13 +98,19 @@ export class CodeExecutionService {
         }
 
         try {
-            await exec(`docker run --network none -v ${path.resolve(directoryPath)}/outputs:/outputs ${jobId}`);
+            await exec(`docker run -m ${data.memoryLimit} --memory-swap ${data.memoryLimit} --network none -v ${path.resolve(directoryPath)}/outputs:/outputs ${jobId}`);
             await job.updateProgress(entity.JobProgress.DOCKER_RUN);
+            
         } catch (err) {
-            console.log(err);
+            if (this.isExecException(err)) {
+                await this.setResultInCache(jobId, {
+                    resultStatus: (err.code === 137) ? entity.ResultStatus.MLE : entity.ResultStatus.RE,
+                    resultMessage: err.signal || ""
+                });
+            }
             await this.setResultInCache(jobId, {
                 resultStatus: entity.ResultStatus.RE,
-                resultMessage: err as string 
+                resultMessage: err as string
             })
             throw errors.ErrRuntimeError;
         }
@@ -138,11 +145,11 @@ export class CodeExecutionService {
                 resultMessage: diff
             });
             await job.updateProgress(entity.JobProgress.PROCESS_OUTPUTS);
-            // await fs.promises.rm(directoryPath, {
-            //     recursive: true,
-            //     force: true
-            // });
-            // await job.updateProgress(entity.JobProgress.RM);
+            await fs.promises.rm(directoryPath, {
+                recursive: true,
+                force: true
+            });
+            await job.updateProgress(entity.JobProgress.RM);
         } catch (err) {
             console.log(err);
             throw err;
@@ -209,5 +216,12 @@ export class CodeExecutionService {
             encoding: 'utf-8'
         });
         return (data !== '0\n');
+    }
+
+    private isExecException(object: unknown): object is ExecException {
+        return Object.prototype.hasOwnProperty.call(object, "code")
+        && Object.prototype.hasOwnProperty.call(object, "killed")
+        && Object.prototype.hasOwnProperty.call(object, "signals")
+        && Object.prototype.hasOwnProperty.call(object, "cmd")
     }
 }

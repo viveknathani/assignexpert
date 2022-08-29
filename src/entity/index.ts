@@ -46,7 +46,8 @@ export interface JobQueueData {
     code: string,
     language: string,
     testCases: TestCase[],
-    timeLimit: number
+    timeLimit: number,
+    memoryLimit: number
 }
 
 export enum JobProgress {
