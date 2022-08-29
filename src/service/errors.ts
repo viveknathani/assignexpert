@@ -62,6 +62,24 @@ export class ErrJobMkdir extends Error {
     }
 }
 
+export class ErrNoContainerCreate extends Error {
+
+    constructor() {
+
+        super('Failed in making a container for the job.');
+        Object.setPrototypeOf(this,ErrNoContainerCreate.prototype);
+    }
+}
+
+export class ErrNoContainerRun extends Error {
+
+    constructor() {
+
+        super('Failed in running a container.');
+        Object.setPrototypeOf(this,ErrNoContainerRun.prototype);
+    }
+}
+
 export class ErrCodeCompileError extends Error {
 
     constructor() {

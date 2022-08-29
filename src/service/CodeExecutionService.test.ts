@@ -28,5 +28,6 @@ test('execute c', async () => {
         }
     ];
     const timeLimit = 1;
-    codeExecutionService.runCode(code, language, testCases, timeLimit);
+    const memoryLimit = 512;
+    codeExecutionService.runCode({code, language, testCases, timeLimit, memoryLimit});
 });

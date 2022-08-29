@@ -41,7 +41,9 @@ export interface TestCase {
     output: string
 }
 
-export interface JobQueueData {
+export interface JobQueueData {}
+
+export interface CodeExecutionInput extends JobQueueData {
 
     code: string,
     language: string,
@@ -50,14 +52,21 @@ export interface JobQueueData {
     memoryLimit: number
 }
 
-export enum JobProgress {
-    STARTED,
+export interface CodeExecutionOutput {
+
+    resultStatus: ResultStatus,
+    resultMessage: string,
+    timeTaken: number,
+    memoryUsed: number
+}
+
+export enum CodeExecutionProgress {
+    START,
     MKDIR,
-    DOCKER_BUILD,
-    DOCKER_RUN,
-    DOCKER_RMI,
-    PROCESS_OUTPUTS,
-    RM
+    DOCKER_CREATE,
+    DOCKER_START,
+    COMPUTE_RESULT,
+    CLEAN
 }
 
 export enum ResultStatus {
@@ -68,13 +77,4 @@ export enum ResultStatus {
     CE = "CE",
     RE = "RE",
     PR = "PR"
-}
-
-export interface CodeExecutionResult {
-    
-    resultStatus: ResultStatus,
-    resultMessage: string,
-    timeTaken?: number,
-    memoryUsedInKiloBytes?: number,
-    points?: number
 }

@@ -33,17 +33,15 @@ export class CodeExecutionService {
         return CodeExecutionService.instance;
     }
 
-    public runCode(code: string, language: string, testCases: entity.TestCase[], timeLimit: number, memoryLimit: number) {
+    public runCode(codeExecutionInput: entity.CodeExecutionInput) {
         try {
-            if (!this.supportedLanguages.has(language)) {
+            if (!this.supportedLanguages.has(codeExecutionInput.language)) {
                 throw new errors.ErrUnsupportedLanguage;
             }
             // appending the "job-" prefix to the uuid can help
             // in differentiating the uuid from our session-ids during debugging
             const jobId = `job-${uuidv4()}`;
-            jobQueue.addJob(jobId, {
-                code, language, testCases, timeLimit, memoryLimit
-            });
+            jobQueue.addJob(jobId, codeExecutionInput);
             return jobId;
         } catch (err) {
             throw err;
@@ -52,24 +50,18 @@ export class CodeExecutionService {
 
     public job = async(job: Job) => {
 
-        const data: entity.JobQueueData = job.data;
-        const jobId = job.name;
+        const data: entity.CodeExecutionInput = job.data;
         const executionAreaPath = `./execution-area`;
-        const directoryPath = `${executionAreaPath}/${jobId}`;
-        const submissionfileName = `submission.${this.getExtension(data.language)}`;
-        const inputFileName = "input.txt";
-        const dockerFileParent = (process.env.NODE_ENV === 'test') ? `./src` : `./build`;
-        const dockerFilePath = `${dockerFileParent}/dockerfiles/${data.language}`;
-        const submissionFilePath = path.resolve(`${directoryPath}/${submissionfileName}`);
-        const inputFilePath = path.resolve(`${directoryPath}/${inputFileName}`);
-        const expectedOutputFilePath = path.resolve(`${directoryPath}/output.txt`);
-        const actualOutputFilePath = path.resolve(`${directoryPath}/outputs/submission.txt`);
-        const timeOutFilePath = path.resolve(`${directoryPath}/outputs/timeout.txt`);
-        
+        const directoryPath = `${executionAreaPath}/${job.id}`;
+        const submissionFilePath = `${directoryPath}/submission.${this.getExtension(data.language)}`;
+        const inputFilePath = `${directoryPath}/input.txt`;
+        const expectedOutputFilePath = `${directoryPath}/output.txt`;
+        const actualOutputFilePath = `${directoryPath}/submission.txt`;
+
+        // setup directory
         try {
-            await job.updateProgress(entity.JobProgress.STARTED);
+            await job.updateProgress(entity.CodeExecutionProgress.START)
             await fs.promises.mkdir(directoryPath);
-            await fs.promises.mkdir(`${directoryPath}/outputs`);
             await fs.promises.writeFile(submissionFilePath, data.code, {
                 encoding: 'utf-8'
             });
@@ -79,84 +71,97 @@ export class CodeExecutionService {
             await fs.promises.writeFile(expectedOutputFilePath, this.getFileContent(data.testCases, false), {
                 encoding: 'utf-8'
             });
-            await job.updateProgress(entity.JobProgress.MKDIR);
+            await job.updateProgress(entity.CodeExecutionProgress.MKDIR);
         } catch (err) {
             console.log(err);
             throw errors.ErrJobMkdir;
         }
 
+        // create container with a mounted directory with memory limit, time limit and no network support
         try {
-            await exec(`docker build -t ${jobId} -f ${dockerFilePath} --build-arg SUBMISSION_FILE_PATH=${jobId}/${submissionfileName} --build-arg INPUT_FILE_PATH=${jobId}/${inputFileName} --build-arg TIME_LIMIT=${data.timeLimit} ${executionAreaPath}`);
-            await job.updateProgress(entity.JobProgress.DOCKER_BUILD);
+            await exec(`docker create -m ${data.memoryLimit}m --memory-swap ${data.memoryLimit}m --network none -e TIME_LIMIT=${data.timeLimit} --name ${job.id} -v ${path.resolve(directoryPath)}:/ae assignexpert-${data.language}`);
+            await job.updateProgress(entity.CodeExecutionProgress.DOCKER_CREATE)
         } catch (err) {
             console.log(err);
-            await this.setResultInCache(jobId, {
-                resultStatus: entity.ResultStatus.CE,
-                resultMessage: err as string 
-            })
-            throw errors.ErrCodeCompileError;
+            throw errors.ErrNoContainerCreate;
         }
 
+        let codeExecutionOutput: entity.CodeExecutionOutput = {
+            timeTaken: 0,
+            memoryUsed: 0,
+            resultStatus: entity.ResultStatus.CE,
+            resultMessage: ''
+        };
+
+        // run the container, check for CE, RE, TLE, MLE, WA, AC, store result in cache
         try {
-            await exec(`docker run -m ${data.memoryLimit} --memory-swap ${data.memoryLimit} --network none -v ${path.resolve(directoryPath)}/outputs:/outputs ${jobId}`);
-            await job.updateProgress(entity.JobProgress.DOCKER_RUN);
-            
-        } catch (err) {
-            if (this.isExecException(err)) {
-                await this.setResultInCache(jobId, {
-                    resultStatus: (err.code === 137) ? entity.ResultStatus.MLE : entity.ResultStatus.RE,
-                    resultMessage: err.signal || ""
-                });
+            await exec(`docker start -a ${job.id}`);
+            await job.updateProgress(entity.CodeExecutionProgress.DOCKER_START);
+
+            const compilationFileContent = await fs.promises.readFile(`${directoryPath}/compile.txt`, {
+                encoding: 'utf-8'
+            });
+            if (compilationFileContent !== "") {
+                codeExecutionOutput.resultStatus = entity.ResultStatus.CE;
+                codeExecutionOutput.resultMessage = compilationFileContent;
+                throw errors.ErrCodeCompileError;
             }
-            await this.setResultInCache(jobId, {
-                resultStatus: entity.ResultStatus.RE,
-                resultMessage: err as string
-            })
-            throw errors.ErrRuntimeError;
-        }
 
-        try {
-            await exec(`docker rmi -f ${jobId}`);
-            await job.updateProgress(entity.JobProgress.DOCKER_RMI);
-            const tle = await this.hasTimedOut(timeOutFilePath);
-            if (tle) {
-                await this.setResultInCache(jobId, {
-                    resultStatus: entity.ResultStatus.TLE,
-                    resultMessage: ""
-                });
+            const runtimeFileContent = await fs.promises.readFile(`${directoryPath}/runtime.txt`, {
+                encoding: 'utf-8'
+            });
+            if (runtimeFileContent !== "") {
+                codeExecutionOutput.resultStatus = entity.ResultStatus.RE;
+                codeExecutionOutput.resultMessage = runtimeFileContent;
+                throw errors.ErrRuntimeError;
+            }
+
+            const timeoutFileContent = await fs.promises.readFile(`${directoryPath}/timeout.txt`, {
+                encoding: 'utf-8'
+            });
+            if (timeoutFileContent !== "0\n") {
+                codeExecutionOutput.resultStatus = entity.ResultStatus.TLE;
+                codeExecutionOutput.resultMessage = "Time limit exceeded.";
                 throw errors.ErrTimeLimitExceeded;
             }
-        } catch (err) {
-            console.log(err);
-            throw err;
-        }
 
-        try {
-            
-        } catch (err) {
-            console.log(err);
-            throw err;
-        }
-
-        try {
             const diff = await this.processOutputs(actualOutputFilePath, expectedOutputFilePath);
-            await this.setResultInCache(jobId, {
-                resultStatus: (diff === "") ? entity.ResultStatus.AC : entity.ResultStatus.WA,
-                resultMessage: diff
-            });
-            await job.updateProgress(entity.JobProgress.PROCESS_OUTPUTS);
+            if (diff !== "") {
+                codeExecutionOutput.resultStatus = entity.ResultStatus.WA;
+                codeExecutionOutput.resultMessage = diff;
+            } else {
+                codeExecutionOutput.resultStatus = entity.ResultStatus.AC;
+                codeExecutionOutput.resultMessage = "";
+            }
+
+        } catch (err) {
+            console.log(err);
+            if (this.isExecException(err)) {
+                const MLE_CODE = 137;
+                if (err.code === MLE_CODE) {
+                    codeExecutionOutput.resultStatus = entity.ResultStatus.MLE;
+                    codeExecutionOutput.resultMessage = "Memory limit exceeded."
+                }
+            }
+        } finally {
+            await job.updateProgress(entity.CodeExecutionProgress.COMPUTE_RESULT);
+            await this.setResultInCache(job.id || job.name, codeExecutionOutput);
+        }
+
+        // destory the container and the directory
+        try {
+            await exec(`docker rm ${job.id}`);
             await fs.promises.rm(directoryPath, {
                 recursive: true,
                 force: true
             });
-            await job.updateProgress(entity.JobProgress.RM);
+            await job.updateProgress(entity.CodeExecutionProgress.CLEAN);
         } catch (err) {
-            console.log(err);
             throw err;
         }
     }
 
-    public async getJobResult(jobId: string): Promise<entity.ResultStatus | undefined> {
+    public async getJobResult(jobId: string): Promise<entity.CodeExecutionOutput | undefined> {
         try {
             const cacheClient = getClient();
             if (!cacheClient.isOpen) {
@@ -172,7 +177,7 @@ export class CodeExecutionService {
         }
     }
 
-    private async setResultInCache(jobId: string, data: entity.CodeExecutionResult) {
+    private async setResultInCache(jobId: string, data: entity.CodeExecutionOutput) {
         try {
             const cacheClient = getClient();
             if (!cacheClient.isOpen) {
@@ -209,13 +214,6 @@ export class CodeExecutionService {
             return err as string;
         }
         
-    }
-
-    private async hasTimedOut(timeOutFilePath: string): Promise<boolean> {
-        const data = await fs.promises.readFile(timeOutFilePath, {
-            encoding: 'utf-8'
-        });
-        return (data !== '0\n');
     }
 
     private isExecException(object: unknown): object is ExecException {

@@ -1,11 +1,6 @@
 FROM alpine:latest
-ARG SUBMISSION_FILE_PATH
-ARG INPUT_FILE_PATH
 ENV TIME_LIMIT 0
-COPY ${SUBMISSION_FILE_PATH} .
-COPY ${INPUT_FILE_PATH} .
 # build-base is a package that will install gcc and its dependencies, amongst other things.
 RUN apk add build-base
-RUN ["gcc", "submission.c", "-o", "submission"]
-RUN ["mkdir", "outputs"]
-CMD ["/bin/sh", "-c", "timeout ${TIME_LIMIT} ./submission < input.txt > /outputs/submission.txt; echo $? > /outputs/timeout.txt"]
+RUN ["mkdir", "ae"]
+CMD ["/bin/sh", "-c", "gcc /ae/submission.c -o /ae/submission 2> /ae/compile.txt; timeout ${TIME_LIMIT} /ae/submission < /ae/input.txt > /ae/submission.txt 2> /ae/runtime.txt; echo $? > /ae/timeout.txt"]
