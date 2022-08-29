@@ -12,12 +12,14 @@ const statementInsertMember = `insert into members (id, "classId", "studentId") 
 const statementDeleteMember = `delete from members where "classId" = $1 and "studentId" = $2;`
 const statementSelectStudentsForClass = `select students.id as id, students."userId" as "userId", students."rollNumber" as "rollNumber" from students,members where "classId" = $1 and members."studentId" = students.id;`
 const statementSelectClassesForStudent = `select classes.id as id, classes."facultyId" as "facultyId", classes.name as name, classes.code as code from classes,members where "studentId" = $1 and members."classId" = classes.id;`
+const statementSelectClassFromCode = `select * from classes where code = $1;`
 
 // take a class and insert it into the database.
 // uuid will be created and assigned before inserting.
 export async function insertClass(classEntry: entity.Class) {
 
     classEntry.id = uuidv4();
+    classEntry.code = classEntry.id;
     await execWithTransaction(statementInsertClass, classEntry.id, classEntry.facultyId, classEntry.name, classEntry.code);
 }
 
@@ -100,4 +102,20 @@ export async function getClassesForStudent(studentId: string): Promise<entity.Cl
         return undefined;
     },studentId);
     return classes;
+}
+
+// get the first matching class from database based on code.
+// if none exists, all fields are empty strings
+export async function getClassFromCode(code: string): Promise<entity.Class> {
+    let classEntry: entity.Class = {
+        id: '', facultyId: '', name: '', code: ''
+    };
+    await queryWithTransaction(statementSelectClassFromCode, 
+        function scanRows(result: QueryResult<any>): Error | undefined {
+            
+            classEntry = result.rows[0];
+            return undefined;             
+    }, code);
+
+    return classEntry as entity.Class;
 }

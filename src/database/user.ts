@@ -6,6 +6,7 @@ import { execWithTransaction, queryWithTransaction } from '.';
 const statementInsertUser = `insert into users (id, "firstName", "lastName", email, password, "uiTheme", "editorTheme", "wantsEmailNotifications") values ($1, $2, $3, $4, $5, $6, $7, $8);`
 const statementSelectUserFromEmail = "select * from users where email = $1;"
 const statementSelectStudentFromUserId = `select * from students where "userId" = $1;`;
+const statementSelectFacultyFromUserId = `select * from faculties where "userId" = $1;`;
 const statementDeleteUser = "delete from users where id = $1;"
 const statementUpdateFirstName = `update users set "firstName" = $1 where id = $2;`;
 const statementUpdateLastName = `update users set "lastName" = $1 where id = $2;`;
@@ -69,6 +70,21 @@ export async function getStudent(userId: string) {
     }, userId);
 
     return student;
+}
+
+export async function getFaculty(userId: string) {
+
+    let faculty: entity.Faculty = {
+        id: '', userId: '', employeeNumber: 0
+    };
+
+    await queryWithTransaction(statementSelectFacultyFromUserId, function scanRows(result: QueryResult<any>): Error | undefined {        
+
+        faculty = result.rows[0];
+        return undefined;             
+    }, userId);
+
+    return faculty;
 }
 
 // delete a user based on id.

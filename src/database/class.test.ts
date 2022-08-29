@@ -3,8 +3,8 @@ dotenv.config();
 
 import { setupDatabase, terminatePool } from '.';
 import * as entity from '../entity/';
-import { insertClass, deleteClass, getClassesForFaculty, getClass, updateName, insertMember, deleteMember, getStudentsForClass, getClassesForStudent } from './class';
-import { deleteUser, getUser, insertFaculty, insertStudent, insertUser, updateFirstName, updateLastName, updatePassword, updatePreferences } from './user';
+import { insertClass, deleteClass, getClassesForFaculty, getClassFromCode, updateName, insertMember, deleteMember, getStudentsForClass, getClassesForStudent } from './class';
+import { deleteUser, insertFaculty, insertStudent, insertUser } from './user';
 
 setupDatabase(process.env.DATABASE_URL || '');
 afterAll(async () => await terminatePool())
@@ -64,6 +64,9 @@ test('insert/get/update/delete class', async () => {
     
     class1.name = "DSA";
     await updateName(class1.id,class1.name);
+
+    const c: entity.Class = await getClassFromCode(class1.code);
+    expect(c.id).toEqual(class1.id);
     
     const classes: entity.Class[] = await getClassesForFaculty(faculty1.id);
     expect(classes[0].id).toEqual(class1.id);
