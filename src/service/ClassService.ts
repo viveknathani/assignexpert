@@ -74,7 +74,7 @@ export class ClassService {
         }
     }
 
-    public async getAllClasses(id: string, isStudent: string): Promise<entity.Class[] | undefined> {
+    public async getAllClasses(id: string, isStudent: boolean): Promise<entity.Class[] | undefined> {
         try{
             if(isStudent) {
                 const s: entity.Student = await database.getStudent(id);
