@@ -3,4 +3,4 @@ ENV TIME_LIMIT 0
 # build-base is a package that will install gcc and its dependencies, amongst other things.
 RUN apk add build-base
 RUN ["mkdir", "ae"]
-CMD ["/bin/sh", "-c", "gcc /ae/submission.c -o /ae/submission 2> /ae/compile.txt; timeout ${TIME_LIMIT} /ae/submission < /ae/input.txt > /ae/submission.txt 2> /ae/runtime.txt; echo $? > /ae/timeout.txt"]
+CMD ["/bin/sh", "-c", "gcc /ae/submission.c -o /ae/submission 2> /ae/compile.txt; timeout ${TIME_LIMIT} /usr/bin/time -f '%M-%e' -o /ae/stats.txt /ae/submission < /ae/input.txt > /ae/submission.txt 2> /ae/runtime.txt; echo $? > /ae/timeout.txt"]

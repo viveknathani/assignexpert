@@ -93,7 +93,8 @@ export class CodeExecutionService {
             resultMessage: ''
         };
 
-        // run the container, check for CE, RE, TLE, MLE, WA, AC, store result in cache
+        // run the container, check for {CE, RE, TLE, MLE, WA, AC}, 
+        // compute stats, store result in cache
         try {
             await exec(`docker start -a ${job.id}`);
             await job.updateProgress(entity.CodeExecutionProgress.DOCKER_START);
@@ -133,6 +134,13 @@ export class CodeExecutionService {
                 codeExecutionOutput.resultStatus = entity.ResultStatus.AC;
                 codeExecutionOutput.resultMessage = "";
             }
+
+            const statsFileContent = await fs.promises.readFile(`${directoryPath}/stats.txt`, {
+                encoding: 'utf-8'
+            });
+            const stats = statsFileContent.split("-");
+            codeExecutionOutput.memoryUsed = parseFloat(stats[0]);
+            codeExecutionOutput.timeTaken = parseFloat(stats[1]);
 
         } catch (err) {
             console.log(err);
