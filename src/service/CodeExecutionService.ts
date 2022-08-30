@@ -53,7 +53,7 @@ export class CodeExecutionService {
         const data: entity.CodeExecutionInput = job.data;
         const executionAreaPath = `./execution-area`;
         const directoryPath = `${executionAreaPath}/${job.id}`;
-        const submissionFilePath = `${directoryPath}/submission.${this.getExtension(data.language)}`;
+        const submissionFilePath = `${directoryPath}/${this.getFileName(data.language)}`;
         const inputFilePath = `${directoryPath}/input.txt`;
         const expectedOutputFilePath = `${directoryPath}/output.txt`;
         const actualOutputFilePath = `${directoryPath}/submission.txt`;
@@ -141,7 +141,7 @@ export class CodeExecutionService {
             const stats = statsFileContent.split("-");
             codeExecutionOutput.memoryUsed = parseFloat(stats[0]);
             codeExecutionOutput.timeTaken = parseFloat(stats[1]);
-
+            await job.updateProgress(entity.CodeExecutionProgress.COMPUTE_RESULT);
         } catch (err) {
             console.log(err);
             if (this.isExecException(err)) {
@@ -152,7 +152,6 @@ export class CodeExecutionService {
                 }
             }
         } finally {
-            await job.updateProgress(entity.CodeExecutionProgress.COMPUTE_RESULT);
             await this.setResultInCache(job.id || job.name, codeExecutionOutput);
         }
 
@@ -197,11 +196,14 @@ export class CodeExecutionService {
         }
     }
     
-    private getExtension(language: string): string {
+    private getFileName(language: string): string {
         if (language === "python") {
-            return "py";
+            return "submission.py";
         }
-        return language;
+        if (language === "java") {
+            return "Submission.java";
+        }
+        return `submission.${language}`;
     }
 
     private getFileContent(testCases: entity.TestCase[], writeInput: boolean): string {
@@ -214,12 +216,13 @@ export class CodeExecutionService {
 
     private async processOutputs(actualOutputFile: string, expectedOutputFile: string): Promise<string> {
         try {
-            const { stdout, stderr } = await exec(`diff ${actualOutputFile} ${expectedOutputFile} 2>&1`);
-            console.log(`stdout: ${stdout}`);
-            console.log(`stderr: ${stderr}`);
+            const { stdout } = await exec(`diff ${actualOutputFile} ${expectedOutputFile} 2>&1`);
             return stdout;
         } catch (err) {
-            return err as string;
+            if (this.isExecException(err)) {
+                return err.message;
+            }
+            return "";
         }
         
     }
@@ -227,7 +230,6 @@ export class CodeExecutionService {
     private isExecException(object: unknown): object is ExecException {
         return Object.prototype.hasOwnProperty.call(object, "code")
         && Object.prototype.hasOwnProperty.call(object, "killed")
-        && Object.prototype.hasOwnProperty.call(object, "signals")
         && Object.prototype.hasOwnProperty.call(object, "cmd")
     }
 }
