@@ -1,9 +1,4 @@
-FROM eclipse-temurin:11
-ARG SUBMISSION_FILE_PATH
-ARG INPUT_FILE_PATH
+FROM eclipse-temurin:11-alpine
 ENV TIME_LIMIT 0
-COPY ${SUBMISSION_FILE_PATH} .
-COPY ${INPUT_FILE_PATH} .
-RUN ["javac", "submission.java"]
-RUN ["mkdir", "outputs"]
-CMD ["/bin/sh", "-c", "timeout ${TIME_LIMIT} java submission < input.txt > /outputs/submission.txt; echo $? > /outputs/timeout.txt"]
+RUN ["mkdir", "ae"]
+CMD ["/bin/sh", "-c", "javac /ae/Submission.java 2> /ae/compile.txt; timeout ${TIME_LIMIT} /usr/bin/time -f '%M-%e' -o /ae/stats.txt java -cp /ae/ Submission < /ae/input.txt > /ae/submission.txt 2> /ae/runtime.txt; echo $? > /ae/timeout.txt"]

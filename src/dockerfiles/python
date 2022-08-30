@@ -1,8 +1,4 @@
-FROM python:3.9-slim
-ARG SUBMISSION_FILE_PATH
-ARG INPUT_FILE_PATH
+FROM python:3.9-alpine
 ENV TIME_LIMIT 0
-COPY ${SUBMISSION_FILE_PATH} .
-COPY ${INPUT_FILE_PATH} .
-RUN ["mkdir", "outputs"]
-CMD ["/bin/sh", "-c", "timeout ${TIME_LIMIT} python ./submission.py < input.txt > /outputs/submission.txt; echo $? > /outputs/timeout.txt"]
+RUN ["mkdir", "ae"]
+CMD ["/bin/sh", "-c", "touch /ae/compile.txt; timeout ${TIME_LIMIT} /usr/bin/time -f '%M-%e' -o /ae/stats.txt python /ae/submission.py < /ae/input.txt > /ae/submission.txt 2> /ae/runtime.txt; echo $? > /ae/timeout.txt"]
