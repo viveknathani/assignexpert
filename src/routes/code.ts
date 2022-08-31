@@ -1,6 +1,6 @@
 import * as express from 'express';
 import * as messages from './http_messages';
-import { CodeExecutionService, errors } from '../service';
+import { CodeExecutionService } from '../service';
 
 const codeRouter: express.Router = express.Router();
 const codeExecutionService: CodeExecutionService = CodeExecutionService.getInstance();
