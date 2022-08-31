@@ -16,7 +16,7 @@ export class ClassService {
         return ClassService.instance;
     }
 
-    public async insertClass(classEntry: entity.Class, isStudent: boolean) {
+    public async insertClass(classEntry: entity.Class, isStudent: boolean): Promise<string> {
         try{
             if(isStudent){
                 throw new errors.ErrInvalidStudentOperation;
@@ -26,6 +26,7 @@ export class ClassService {
                 throw new errors.ErrCodeExists;
             }
             await database.insertClass(classEntry);
+            return classEntry.code;
         } catch (err) {
             throw err;
         }
@@ -50,7 +51,7 @@ export class ClassService {
         }
     }
 
-    public async updateClassName(id: string, isStudent: boolean, newName: string){
+    public async updateClassName(id: string, facultyId: string, isStudent: boolean, newName: string){
         try {
             if(isStudent){
                 throw new errors.ErrInvalidStudentOperation;
@@ -58,6 +59,9 @@ export class ClassService {
             const c = await database.getClass(id);
             if(c === undefined || c.id === undefined || c.id===''){
                 throw new errors.ErrClassNotFound;
+            }
+            if(c.facultyId != facultyId) {
+                throw new errors.ErrInvalidFacultyOperation;
             }
             await database.updateName(id,newName);            
         } catch (err) {
@@ -67,6 +71,10 @@ export class ClassService {
 
     public async getAllMembers(id: string): Promise<entity.Student[] | undefined> {
         try{
+            const c = await database.getClass(id);
+            if(c === undefined || c.id === undefined || c.id===''){
+                throw new errors.ErrClassNotFound;
+            }
             const students = await database.getStudentsForClass(id);
             return students;
         } catch (err) {

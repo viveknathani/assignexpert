@@ -18,7 +18,7 @@ const user1: entity.User = {
     id: '1',
     firstName: 'Naman',
     lastName: 'Bansal',
-    email: 'naman@gmail.com',
+    email: 'naman.bansal@gmail.com',
     password: 'Namanpassword191@',
     uiTheme: 'light',
     editorTheme: 'light',
@@ -35,7 +35,7 @@ const user2: entity.User = {
     id: '2',
     firstName: 'Aman',
     lastName: 'Mittal',
-    email: 'aman.mittal@me.com',
+    email: 'aman.mit@me.com',
     password: 'Amanpassword191@',
     uiTheme: 'light',
     editorTheme: 'light',
@@ -66,7 +66,7 @@ test('insert/update/get class for faculty', async () => {
     class1.facultyId = faculty.id;
     await classService.insertClass(class1,decoded.isStudent);
     
-    await classService.updateClassName(class1.id,decoded.isStudent, 'DSA');
+    await classService.updateClassName(class1.id,class1.facultyId,decoded.isStudent, 'DSA');
 
     const c: entity.Class[]|undefined = await classService.getAllClasses(user2.id,decoded.isStudent);
     if(c != undefined){
