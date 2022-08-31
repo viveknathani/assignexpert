@@ -7,14 +7,14 @@ import { Job } from 'bullmq';
 import util from 'util';
 import path from 'path';
 import { getClient } from '../cache';
-import { ExecException } from 'child_process';
+import { ExecException, exec as _exec } from 'child_process';
 
-const exec = util.promisify(require('child_process').exec);
+const exec = util.promisify(_exec);
 
 export class CodeExecutionService {
 
     private static instance: CodeExecutionService;
-    private static hasAddedWorker: boolean = false;
+    private static hasAddedWorker = false;
     private supportedLanguages = new Set(["c", "cpp", "python", "java"]);
     private constructor() {}
 
@@ -93,7 +93,7 @@ export class CodeExecutionService {
             throw errors.ErrNoContainerCreate;
         }
 
-        let codeExecutionOutput: entity.CodeExecutionOutput = {
+        const codeExecutionOutput: entity.CodeExecutionOutput = {
             timeTaken: 0,
             memoryUsed: 0,
             resultStatus: entity.ResultStatus.CE,

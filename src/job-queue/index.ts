@@ -10,7 +10,7 @@ const queue = new Queue('assignexpert', {
     connection: redisConnection
 });
 
-export function addJob(jobId: string, data: entity.JobQueueData) {
+export function addJob(jobId: string, data: entity.CodeExecutionInput) {
     queue.add(jobId, data, {
         jobId
     });

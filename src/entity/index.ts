@@ -41,9 +41,7 @@ export interface TestCase {
     output: string
 }
 
-export interface JobQueueData {}
-
-export interface CodeExecutionInput extends JobQueueData {
+export interface CodeExecutionInput {
 
     executionType: 'judge' | 'run';
     code: string,

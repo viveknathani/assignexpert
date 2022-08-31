@@ -40,7 +40,7 @@ async function injectSessionInfoMiddleWare(req: express.Request, res: express.Re
             console.log(err);
             res.status(500).json({ message: messages.MESSAGE_500 });
         }
-};
+}
 
 /**
  * @api {post} /api/user/signup Signup
