@@ -178,33 +178,35 @@
             }).then((res) => res.json())
             .then((data) => {
                 localStorage.setItem("jobId", data.jobId);
+                pollServer();
             }).catch(err => {
                 console.log(err);
             });
-
-            const interval = setInterval(() => {
-                fetch(`/api/code/result?jobId=${localStorage.getItem("jobId")}`, {
-                    method: 'GET'
-                }).then((res) => res.json())
-                .then((data) => {
-                    if (data.resultStatus) {
-                        const resultArea = document.getElementById("result");
-                        const stats = document.createElement('p');
-                        stats.id = 'stats';
-                        stats.innerText = `memory used = ${data.memoryUsed}KB, time taken = ${data.timeTaken}s`;
-                        const textarea = document.createElement('textarea');
-                        textarea.innerText = data.resultMessage;
-                        textarea.diabled = true;
-                        while (resultArea.firstChild) {
-                            resultArea.removeChild(resultArea.firstChild);
+            function pollServer() {
+                const interval = setInterval(() => {
+                    fetch(`/api/code/result?jobId=${localStorage.getItem("jobId")}`, {
+                        method: 'GET'
+                    }).then((res) => res.json())
+                    .then((data) => {
+                        if (data.resultStatus) {
+                            const resultArea = document.getElementById("result");
+                            const stats = document.createElement('p');
+                            stats.id = 'stats';
+                            stats.innerText = `memory used = ${data.memoryUsed}KB, time taken = ${data.timeTaken}s`;
+                            const textarea = document.createElement('textarea');
+                            textarea.innerText = data.resultMessage;
+                            textarea.diabled = true;
+                            while (resultArea.firstChild) {
+                                resultArea.removeChild(resultArea.firstChild);
+                            }
+                            resultArea.appendChild(stats);
+                            resultArea.appendChild(textarea);
+                            resultArea.style.display = 'block';
+                            clearInterval(interval);
                         }
-                        resultArea.appendChild(stats);
-                        resultArea.appendChild(textarea);
-                        resultArea.style.display = 'block';
-                        clearInterval(interval);
-                    }
-                });
-            }, 1000);
+                    });
+                }, 1000);
+            }
         }
 
         document.addEventListener('DOMContentLoaded', function() {
