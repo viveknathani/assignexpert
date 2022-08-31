@@ -45,8 +45,10 @@ export interface JobQueueData {}
 
 export interface CodeExecutionInput extends JobQueueData {
 
+    executionType: 'judge' | 'run';
     code: string,
     language: string,
+    inputForRun: string,
     testCases: TestCase[],
     timeLimit: number,
     memoryLimit: number

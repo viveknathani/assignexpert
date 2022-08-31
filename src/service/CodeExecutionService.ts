@@ -58,6 +58,10 @@ export class CodeExecutionService {
         const expectedOutputFilePath = `${directoryPath}/output.txt`;
         const actualOutputFilePath = `${directoryPath}/submission.txt`;
 
+        // control time limit and memory limit
+        data.timeLimit = Math.min(data.timeLimit, 10); // 10 seconds
+        data.memoryLimit = Math.min(data.memoryLimit, 1024); // 1GB
+
         // setup directory
         try {
             await job.updateProgress(entity.CodeExecutionProgress.START)
@@ -65,7 +69,10 @@ export class CodeExecutionService {
             await fs.promises.writeFile(submissionFilePath, data.code, {
                 encoding: 'utf-8'
             });
-            await fs.promises.writeFile(inputFilePath, this.getFileContent(data.testCases, true), {
+            await fs.promises.writeFile(inputFilePath, 
+                (data.executionType === 'judge')
+                ? this.getFileContent(data.testCases, true)
+                : data.inputForRun, {
                 encoding: 'utf-8'
             });
             await fs.promises.writeFile(expectedOutputFilePath, this.getFileContent(data.testCases, false), {
@@ -126,13 +133,21 @@ export class CodeExecutionService {
                 throw errors.ErrTimeLimitExceeded;
             }
 
-            const diff = await this.processOutputs(actualOutputFilePath, expectedOutputFilePath);
-            if (diff !== "") {
-                codeExecutionOutput.resultStatus = entity.ResultStatus.WA;
-                codeExecutionOutput.resultMessage = diff;
+            if (data.executionType === 'judge') {
+                const diff = await this.processOutputs(actualOutputFilePath, expectedOutputFilePath);
+                if (diff !== "") {
+                    codeExecutionOutput.resultStatus = entity.ResultStatus.WA;
+                    codeExecutionOutput.resultMessage = diff;
+                } else {
+                    codeExecutionOutput.resultStatus = entity.ResultStatus.AC;
+                    codeExecutionOutput.resultMessage = "";
+                }
             } else {
+                const output = await fs.promises.readFile(actualOutputFilePath, {
+                    encoding: 'utf-8'
+                });
                 codeExecutionOutput.resultStatus = entity.ResultStatus.AC;
-                codeExecutionOutput.resultMessage = "";
+                codeExecutionOutput.resultMessage = output;
             }
 
             const statsFileContent = await fs.promises.readFile(`${directoryPath}/stats.txt`, {
