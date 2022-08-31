@@ -106,3 +106,38 @@ export class ErrTimeLimitExceeded extends Error {
         Object.setPrototypeOf(this,ErrRuntimeError.prototype);
     }
 }
+
+export class ErrInvalidStudentOperation extends Error {
+    constructor() {
+
+        super('Unauthorized access for students.');
+        Object.setPrototypeOf(this,ErrInvalidStudentOperation.prototype);
+    }
+}
+
+export class ErrInvalidFacultyOperation extends Error {
+    constructor() {
+
+        super('Unauthorized access for faculties.');
+        Object.setPrototypeOf(this,ErrInvalidFacultyOperation.prototype);
+    }
+}
+
+export class ErrCodeExists extends Error {
+
+    constructor() {
+        
+        super('This class code already exists.');
+        Object.setPrototypeOf(this,ErrCodeExists.prototype);
+    }
+}
+
+export class ErrClassNotFound extends Error {
+
+    constructor() {
+        
+        super('Class not found.');
+        Object.setPrototypeOf(this,ErrClassNotFound.prototype);
+    }
+}
+

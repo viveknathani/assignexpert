@@ -78,3 +78,17 @@ export enum ResultStatus {
     RE = "RE",
     PR = "PR"
 }
+
+export interface Class {
+    id: string,
+    facultyId: string,
+    name: string,
+    code: string    
+}
+
+export interface Member {
+    id: string,
+    classId: string,
+    studentId: string
+}
+

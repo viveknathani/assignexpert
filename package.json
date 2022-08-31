@@ -13,7 +13,8 @@
     "pretty": "npx prettier --write .",
     "lint": "npx eslint . --fix",
     "quality": "npm run lint && npm run pretty",
-    "ci": "npm run quality && npm run test && npm run build"
+    "ci": "npm run quality && npm run test && npm run build",
+    "docs": "npx apidoc -i src/routes/ -o docs"
   },
   "author": "assignexpert",
   "license": "MIT",
@@ -40,6 +41,7 @@
     "@types/supertest": "^2.0.12",
     "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "^5.31.0",
+    "apidoc": "^0.52.0",
     "copyfiles": "^2.4.1",
     "eslint": "^8.20.0",
     "jest": "^28.1.3",
