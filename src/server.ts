@@ -6,7 +6,8 @@ import cookieParser from 'cookie-parser';
 import { QueryResult } from 'pg';
 import { queryWithTransaction, setupDatabase } from './database';
 import { getClient, setupCache } from './cache';
-import api from './routes';
+import path from 'path';
+import { api, pageRouter } from './routes';
 
 async function main() {
 
@@ -23,6 +24,8 @@ async function main() {
     const app: express.Application = express();
     app.use(express.json());
     app.use(cookieParser());
+    app.use('/web', express.static(path.join(__dirname, './web')))
+    app.use(pageRouter);
     app.use('/api', api);
     app.listen(process.env.PORT, () => console.log('server is up!'));
 }

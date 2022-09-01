@@ -7,7 +7,7 @@
     "start": "export NODE_ENV=production && node build/server.js",
     "dev": "export NODE_ENV=development && npm run build && node build/server.js",
     "clean": "npx rimraf build/",
-    "copy-files": "npx copyfiles -u 1 src/**/*.html src/**/*.css build/",
+    "copy-files": "npx copyfiles -u 1 \"src/web/**/*\" build/",
     "build": "npm run clean && npx tsc && npm run copy-files",
     "test": "export NODE_ENV=test && npx jest --coverage --passWithNoTests",
     "pretty": "npx prettier --write .",
@@ -20,6 +20,7 @@
   "license": "MIT",
   "dependencies": {
     "bcrypt": "^5.0.1",
+    "bullmq": "^1.89.2",
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",

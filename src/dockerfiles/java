@@ -1,0 +1,4 @@
+FROM eclipse-temurin:11-alpine
+ENV TIME_LIMIT 0
+RUN ["mkdir", "ae"]
+CMD ["/bin/sh", "-c", "javac /ae/Submission.java 2> /ae/compile.txt; timeout ${TIME_LIMIT} /usr/bin/time -f '%M-%e' -o /ae/stats.txt java -cp /ae/ Submission < /ae/input.txt > /ae/submission.txt 2> /ae/runtime.txt; echo $? > /ae/timeout.txt"]

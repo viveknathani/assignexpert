@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AssignExpert - run</title>
+    <script src="/web/ace-editor/src-min/ace.js" type="text/javascript" charset="utf-8"></script>
+    <style type="text/css" media="screen">
+        @import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
+        * {
+            margin: 0 0;
+            padding: 0 0;
+            box-sizing: border-box;
+        }
+        :root {
+            --white: #FFFFFF;
+            --black: #000000;
+            --primary: #008037;
+            --secondary: #E9EFF4;
+        } 
+        #prefs {
+            margin-top: 1%;
+            margin-left: 1%;
+            font-family: 'Inter', sans-serif;
+        }
+        #editor {
+            margin-left: 1%;
+            margin-top: 1%;
+            margin-right: 10%;
+            height: 400px;
+            width: 90%;
+            border: 1px solid var(--black);
+        }
+        .navBar {
+            background-color: var(--secondary);
+            height: 8vh;
+            width: 100vw;
+            display: grid;
+            grid-template-columns: 9fr 0.5fr 0.6fr;
+        }
+        .title {
+            display: inline-block;
+            color: var(--black);
+            font-size: 4.1vh;
+            font-family: 'Fredoka One', cursive;
+            margin-left: 2vw; 
+            margin-top: 1.5vh;
+            height: 6.45vh;
+        }
+        .line {
+            background-color: var(--primary);
+            height: 0.45vh;
+            width: 100vw;
+        }
+        textarea {
+            margin-left: 1%;
+            margin-top: 1%;
+            resize: none;
+            background-color: var(--white);
+            border: 1px solid var(--black);
+            font-family: 'Consolas';
+            width: 90%;
+        }
+        #buttons {
+            width: 90%;
+        }
+        #code-submit {
+            margin-top: 1%;
+            margin-left: 1%;
+            background-color: #008037;
+            border: none;
+            padding-left: 1%;
+            padding-right: 1%;
+            color: var(--white);
+            font-size: 16px;
+        }
+        #code-submit:hover {
+            cursor: pointer;
+        }
+        #result p {
+            margin-top: 1%;
+            margin-left: 1%;
+            width: 90%;
+        }
+    </style>
+</head>
+<body>
+    <div class="navBar">
+        <div class="title">AssignExpert</div>
+    </div>
+    <div class="line"></div>
+    <div id="prefs">
+        <label for="language">Language: </label>
+        <select name="language" id="language">
+            <option value="c">c</option>
+            <option value="cpp">cpp</option>
+            <option value="python">python</option>
+            <option value="java">java</option>
+        </select>
+
+        <label for="theme">Theme: </label>
+        <select name="theme" id="theme">
+            <option value="monokai">monokai</option>
+            <option value="chrome">chrome</option>
+            <option value="github">github</option>
+            <option value="textmate">textmate</option>
+            <option value="xcode">xcode</option>
+            <option value="dracula">dracula</option>
+            <option value="solarized_dark">solarized_dark</option>
+            <option value="twilight">twilight</option>
+        </select>
+
+        <label for="font-size">Font Size: </label>
+        <select name="font-size" id="font-size">
+            <option value="12px">12px</option>
+            <option value="14px">14px</option>
+            <option value="16px">16px</option>
+            <option value="18px">18px</option>
+            <option value="20px">20px</option>
+            <option value="22px">22px</option>
+            <option value="24px">24px</option>
+        </select>
+    </div>
+    <div id="editor"></div>
+    <div id="input">
+        <textarea placeholder="input"></textarea>
+    </div>
+    <div id="buttons">
+        <button type="button" id="code-submit">submit</button>
+    </div>
+    <div id="result" style="display: none;">
+        
+    </div>
+    <script>
+        const editor = ace.edit("editor");
+        editor.setTheme("ace/theme/monokai");
+        editor.session.setMode("ace/mode/c_cpp");
+        editor.setShowPrintMargin(false);
+
+        const languageMenu = document.getElementById("language");
+        languageMenu.addEventListener('change', (event) => {
+            let language = event.target.value;
+            language = (language === 'c' || language === 'cpp') ? 'c_cpp' : language;
+            editor.session.setMode(`ace/mode/${language}`);
+        });
+
+        const themeMenu = document.getElementById("theme");
+        themeMenu.addEventListener('change', (event) => {
+            editor.setTheme(`ace/theme/${event.target.value}`);
+        });
+
+        const fontSizeMenu = document.getElementById("font-size");
+        fontSizeMenu.addEventListener('change', (event) => {
+            editor.setFontSize(event.target.value);
+        });
+
+        const textarea = document.getElementsByTagName("textarea")[1];
+        const submitButton = document.getElementById("code-submit");
+        const submitCode = function (e) {
+            e.preventDefault();
+            let language = languageMenu.value;
+            fetch('/api/code/run', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    executionType: 'run',
+                    code: editor.session.getValue(),
+                    language: language,
+                    inputForRun: textarea.value,
+                    testCases: [],
+                    timeLimit: 5,
+                    memoryLimit: 512
+                })
+            }).then((res) => res.json())
+            .then((data) => {
+                localStorage.setItem("jobId", data.jobId);
+                pollServer();
+            }).catch(err => {
+                console.log(err);
+            });
+            function pollServer() {
+                const interval = setInterval(() => {
+                    fetch(`/api/code/result?jobId=${localStorage.getItem("jobId")}`, {
+                        method: 'GET'
+                    }).then((res) => res.json())
+                    .then((data) => {
+                        if (data.resultStatus) {
+                            const resultArea = document.getElementById("result");
+                            const stats = document.createElement('p');
+                            stats.id = 'stats';
+                            stats.innerText = `memory used = ${data.memoryUsed}KB, time taken = ${data.timeTaken}s`;
+                            const textarea = document.createElement('textarea');
+                            textarea.innerText = data.resultMessage;
+                            textarea.diabled = true;
+                            while (resultArea.firstChild) {
+                                resultArea.removeChild(resultArea.firstChild);
+                            }
+                            resultArea.appendChild(stats);
+                            resultArea.appendChild(textarea);
+                            resultArea.style.display = 'block';
+                            clearInterval(interval);
+                        }
+                    });
+                }, 1000);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('code-submit').addEventListener('click', submitCode);
+        });
+    </script>
+</body>
+</html>

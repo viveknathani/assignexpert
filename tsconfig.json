@@ -22,10 +22,11 @@
     "exclude": [
         "node_modules",
         "build",
-        "web",
+        "src/web",
         "coverage",
         "docs",
         "cypress",
-        "jest.config.js"
+        "jest.config.js",
+        "execution-area"
     ]
 }

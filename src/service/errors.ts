@@ -44,6 +44,69 @@ export class ErrUpdateUserField extends Error {
     }
 }
 
+export class ErrUnsupportedLanguage extends Error {
+
+    constructor() {
+
+        super('Unsupported language.');
+        Object.setPrototypeOf(this,ErrUnsupportedLanguage.prototype);
+    }
+}
+
+export class ErrJobMkdir extends Error {
+
+    constructor() {
+
+        super('Failed in making files and directories for the job.');
+        Object.setPrototypeOf(this,ErrJobMkdir.prototype);
+    }
+}
+
+export class ErrNoContainerCreate extends Error {
+
+    constructor() {
+
+        super('Failed in making a container for the job.');
+        Object.setPrototypeOf(this,ErrNoContainerCreate.prototype);
+    }
+}
+
+export class ErrNoContainerRun extends Error {
+
+    constructor() {
+
+        super('Failed in running a container.');
+        Object.setPrototypeOf(this,ErrNoContainerRun.prototype);
+    }
+}
+
+export class ErrCodeCompileError extends Error {
+
+    constructor() {
+
+        super('Compile error.');
+        Object.setPrototypeOf(this,ErrCodeCompileError.prototype);
+    }
+}
+
+export class ErrRuntimeError extends Error {
+
+    constructor() {
+
+        super('Runtime error.');
+        Object.setPrototypeOf(this,ErrRuntimeError.prototype);
+    }
+}
+
+export class ErrTimeLimitExceeded extends Error {
+
+    constructor() {
+
+        super('TLE.');
+        Object.setPrototypeOf(this,ErrRuntimeError.prototype);
+    }
+}
+
 export class ErrInvalidStudentOperation extends Error {
     constructor() {
 
@@ -77,3 +140,4 @@ export class ErrClassNotFound extends Error {
         Object.setPrototypeOf(this,ErrClassNotFound.prototype);
     }
 }
+

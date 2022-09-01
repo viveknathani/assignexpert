@@ -35,6 +35,50 @@ export interface Preferences {
     wantsEmailNotifications: boolean
 }
 
+export interface TestCase {
+
+    input: string,
+    output: string
+}
+
+export interface CodeExecutionInput {
+
+    executionType: 'judge' | 'run';
+    code: string,
+    language: string,
+    inputForRun: string,
+    testCases: TestCase[],
+    timeLimit: number,
+    memoryLimit: number
+}
+
+export interface CodeExecutionOutput {
+
+    resultStatus: ResultStatus,
+    resultMessage: string,
+    timeTaken: number,
+    memoryUsed: number
+}
+
+export enum CodeExecutionProgress {
+    START,
+    MKDIR,
+    DOCKER_CREATE,
+    DOCKER_START,
+    COMPUTE_RESULT,
+    CLEAN
+}
+
+export enum ResultStatus {
+    AC = "AC",
+    WA = "WA",
+    TLE = "TLE",
+    MLE = "MLE",
+    CE = "CE",
+    RE = "RE",
+    PR = "PR"
+}
+
 export interface Class {
     id: string,
     facultyId: string,
@@ -47,3 +91,4 @@ export interface Member {
     classId: string,
     studentId: string
 }
+
