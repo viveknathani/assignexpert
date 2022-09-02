@@ -95,15 +95,15 @@ classRouter.put('/name', async (req: express.Request, res: express.Response) => 
  * @api {get} /api/class/students Get all students
  * @apiGroup Class
  * @apiName Get all students
- * @apiParam {string} id, class id
+ * @apiQuery {string} classId, class id
  * @apiError (ClientError) {json} 400 ErrClassNotFound
  * @apiError (ServerError) {json} 500 Need to check server logs
  * @apiVersion 0.1.0
  */
 classRouter.get('/students',async (req: express.Request, res: express.Response) => {
     try{
-        const id = req.query['id'] as string;
-        const students = await classService.getAllStudents(id);
+        const classId = req.query['classId'] as string;
+        const students = await classService.getAllStudents(classId);
         res.status(200).json(students);
     }catch (err) {
         if (err instanceof errors.ErrClassNotFound) {
