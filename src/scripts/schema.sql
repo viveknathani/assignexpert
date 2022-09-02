@@ -76,7 +76,7 @@ create table if not exists assignments (
 create table if not exists templates (
     id uuid primary key,
     "assignmentId" uuid references assignments(id) on delete cascade,
-    lang language,
+    lang language[],
     snippet text,
     "preSnippet" text,
     "postSnippet" text

@@ -92,3 +92,61 @@ export interface Member {
     studentId: string
 }
 
+export enum language {
+    c = 'c',
+    cpp = 'cpp',
+    python = 'python',
+    java = 'java'
+}
+
+export enum DifficultyLevel {
+    EASY = 'EASY',
+    MEDIUM = 'MEDIUM',
+    DIFFICULT = 'DIFFICULT'
+}
+
+export interface Assignment {
+    id: string,
+    "classId": string,
+    title: string,
+    description: string,
+    "sampleInput": string,
+    "sampleOutput": string,
+    constraints: string,
+    points: number,
+    "hasTemplate": boolean,
+    "acceptedLanguages": language[],
+    holdPoints: boolean,
+    deadline: Date,
+    difficultyLevel: DifficultyLevel,    
+}
+
+export interface Template {
+    id: string,
+    "assignmentId": string,
+    lang: language,
+    snippet: string,
+    "preSnippet": string,
+    "postSnippet": string
+}
+
+export interface AssignmentTestCase {
+    id: string,
+    "assignmentId": string,
+    points: number,
+    input: string,
+    output: string
+}
+
+export interface AssignmentDetails {
+    assignment: Assignment,
+    templates?: Template[],
+    testCases?: AssignmentTestCase[]     
+}
+
+export interface AssignmentSummary {
+    id: string,
+    title: string,
+    difficultyLevel: string,
+    hasCompleted?: boolean
+}
