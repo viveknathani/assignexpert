@@ -81,11 +81,18 @@ export class UserService {
                 throw new errors.ErrInvalidEmailPassword;
             }
 
-            const temp = await database.getStudent(user.id);
-            const sessionId = await this.createSession({
+            const tempStudent = await database.getStudent(user.id);
+            const sessionInfo: entity.SessionInfo = {
                 userId: user.id,
-                isStudent: temp !== undefined && temp.id !== ''
-            });
+                isStudent: tempStudent !== undefined && tempStudent.id !== ''
+            }
+            if (sessionInfo.isStudent) {
+                sessionInfo.studentId = tempStudent.id;
+            } else {
+                const tempFaculty = await database.getFaculty(user.id);
+                sessionInfo.facultyId = tempFaculty.id;
+            }
+            const sessionId = await this.createSession(sessionInfo);
 
             return {
                 firstName: user.firstName,

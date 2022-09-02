@@ -20,7 +20,7 @@ classRouter.post('/', async (req: express.Request, res: express.Response) => {
     try {
         const classCode = await classService.insertClass({
             id:'', 
-            facultyId:req.body.entityId, 
+            facultyId:req.body.facultyId, 
             name:req.body.name, code: ''
         },req.body.isStudent);
         res.status(200).json({ code: classCode });
@@ -75,7 +75,7 @@ classRouter.post('/', async (req: express.Request, res: express.Response) => {
  */
 classRouter.put('/name', async (req: express.Request, res: express.Response) => {
     try {
-        await classService.updateClassName(req.body.classId, req.body.entityId,
+        await classService.updateClassName(req.body.classId, req.body.facultyId,
             req.body.isStudent, req.body.newName);
         res.status(204).json({ message: messages.MESSAGE_204 });
     } catch (err) {

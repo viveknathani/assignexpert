@@ -35,6 +35,11 @@ async function injectSessionInfoMiddleWare(req: express.Request, res: express.Re
             }
             req.body.userId = sessionInfo.userId;
             req.body.isStudent = sessionInfo.isStudent;
+            if (sessionInfo.isStudent) {
+                req.body.studentId = sessionInfo.studentId
+            } else {
+                req.body.facultyId = sessionInfo.facultyId
+            }
             next();
         } catch (err) {
             console.log(err);
