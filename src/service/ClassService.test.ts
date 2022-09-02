@@ -86,7 +86,7 @@ test('join/get class for student', async () => {
     }
 
     await classService.joinClass(user1.id, class1.code, decoded.isStudent);
-    const students: entity.Student[] | undefined = await classService.getAllMembers(class1.id);
+    const students: entity.Student[] | undefined = await classService.getAllStudents(class1.id);
     if(students != undefined) {
         expect(students[0].userId).toEqual(user1.id);
     }

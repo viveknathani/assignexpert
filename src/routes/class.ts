@@ -6,11 +6,9 @@ const classRouter: express.Router = express.Router();
 const classService: ClassService = ClassService.getInstance();
 
 /**
- * @api {post} /api/user/class/insert insert
+ * @api {post} /api/class/ Insert class
  * @apiGroup Class
- * @apiName Insert Class
- * @apiBody {string} entityId Mandatory, faculty id 
- * @apiBody {boolean} isStudent  Mandatory
+ * @apiName Insert class
  * @apiBody {string} name Mandatory
  * @apiError (ClientError) {json} 400 InvalidStudentOperation
  * @apiError (ServerError) {json} 500 Need to check server logs
@@ -38,12 +36,10 @@ classRouter.post('/insert', async (req: express.Request, res: express.Response) 
 
 
 /**
- * @api {post} /api/user/class/join join
+ * @api {post} /api/class/join Join class
  * @apiGroup Class
- * @apiName Join a Class
- * @apiBody {string} userId Mandatory
+ * @apiName Join class
  * @apiBody {string} code Mandatory, class code
- * @apiBody {boolean} isStudent  Mandatory
  * @apiError (ClientError) {json} 400 InvalidFacultyOperation
  * @apiError (ServerError) {json} 500 Need to check server logs
  * @apiVersion 0.1.0
@@ -65,12 +61,10 @@ classRouter.post('/insert', async (req: express.Request, res: express.Response) 
 
 
 /**
- * @api {put} /api/user/class/name Update class name
+ * @api {put} /api/class/name Update class name
  * @apiGroup Class
  * @apiName Update class name
  * @apiBody {string} id Mandatory, class id
- * @apiBody {string} entityId Mandatory, faculty id
- * @apiBody {boolean} isStudent Mandatory
  * @apiBody {string} newName  Mandatory, the new class name 
  * @apiError (ClientError) {json} 400 ErrInvalidStudentOperation or ErrClassNotFound or ErrInvalidFacultyOperation
  * @apiError (ServerError) {json} 500 Need to check server logs
@@ -98,17 +92,18 @@ classRouter.put('/name', async (req: express.Request, res: express.Response) => 
 
 
 /**
- * @api {get} /api/user/class/members get all members
+ * @api {get} /api/class/students Get all students
  * @apiGroup Class
- * @apiName Get Class Members
- * @apiBody {string} id Mandatory, class id
+ * @apiName Get all students
+ * @apiParam {string} id, class id
  * @apiError (ClientError) {json} 400 ErrClassNotFound
  * @apiError (ServerError) {json} 500 Need to check server logs
  * @apiVersion 0.1.0
  */
-classRouter.get('/members',async (req: express.Request, res: express.Response) => {
+classRouter.get('/students',async (req: express.Request, res: express.Response) => {
     try{
-        const students = await classService.getAllMembers(req.body.id);
+        const id = req.query['id'] as string;
+        const students = await classService.getAllStudents(id);
         res.status(200).json(students);
     }catch (err) {
         if (err instanceof errors.ErrClassNotFound) {
@@ -123,11 +118,9 @@ classRouter.get('/members',async (req: express.Request, res: express.Response) =
 
 
 /**
- * @api {get} /api/user/class/all get all classes
+ * @api {get} /api/class/all Get Classes
  * @apiGroup Class
  * @apiName Get Classes
- * @apiBody {string} userId Mandatory
- * @apiBody {boolean} isStudent Mandatory
  * @apiError (ServerError) {json} 500 Need to check server logs
  * @apiVersion 0.1.0
  */
@@ -142,5 +135,5 @@ classRouter.get('/members',async (req: express.Request, res: express.Response) =
 });
 
 export {
-     classRouter
+    classRouter
 };
