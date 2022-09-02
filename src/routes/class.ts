@@ -16,7 +16,7 @@ const classService: ClassService = ClassService.getInstance();
  * @apiVersion 0.1.0
  * @apiDescription User needs to be authenticated befor this step.
  */
-classRouter.post('/insert', async (req: express.Request, res: express.Response) => {
+classRouter.post('/', async (req: express.Request, res: express.Response) => {
     try {
         const classCode = await classService.insertClass({
             id:'', 
@@ -64,7 +64,7 @@ classRouter.post('/insert', async (req: express.Request, res: express.Response) 
  * @api {put} /api/class/name Update class name
  * @apiGroup Class
  * @apiName Update class name
- * @apiBody {string} id Mandatory, class id
+ * @apiBody {string} classId Mandatory, class id
  * @apiBody {string} newName  Mandatory, the new class name 
  * @apiError (ClientError) {json} 400 ErrInvalidStudentOperation or ErrClassNotFound or ErrInvalidFacultyOperation
  * @apiError (ServerError) {json} 500 Need to check server logs
@@ -75,7 +75,7 @@ classRouter.post('/insert', async (req: express.Request, res: express.Response) 
  */
 classRouter.put('/name', async (req: express.Request, res: express.Response) => {
     try {
-        await classService.updateClassName(req.body.id, req.body.entityId,
+        await classService.updateClassName(req.body.classId, req.body.entityId,
             req.body.isStudent, req.body.newName);
         res.status(204).json({ message: messages.MESSAGE_204 });
     } catch (err) {

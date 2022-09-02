@@ -51,7 +51,8 @@ async function injectSessionInfoMiddleWare(req: express.Request, res: express.Re
  * @apiBody {string} lastName  Mandatory 
  * @apiBody {string} email     Mandatory 
  * @apiBody {string} password  Mandatory (format: Min. 8 chars, atleast 1 number, 1 lowercase character, 1 uppercase character, 1 special character)
- * @apiBody {number} rollNumber|employeeNumber Mandatory
+ * @apiBody {number} rollNumber Mandatory if isStudent is true
+ * @apiBody {number} employeeNumber Mandatory if isStudent is false
  * @apiError (ClientError) {json} 400 InvalidEmailFormat or InvalidPasswordFormat or InvalidPasswordFormat
  * @apiError (ServerError) {json} 500 Need to check server logs
  * @apiVersion 0.1.0
