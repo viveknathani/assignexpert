@@ -107,15 +107,15 @@ export enum DifficultyLevel {
 
 export interface Assignment {
     id: string,
-    "classId": string,
+    classId: string,
     title: string,
     description: string,
-    "sampleInput": string,
-    "sampleOutput": string,
+    sampleInput: string,
+    sampleOutput: string,
     constraints: string,
     points: number,
-    "hasTemplate": boolean,
-    "acceptedLanguages": language[],
+    hasTemplate: boolean,
+    acceptedLanguages: language[],
     holdPoints: boolean,
     deadline: Date,
     difficultyLevel: DifficultyLevel,    
@@ -123,16 +123,16 @@ export interface Assignment {
 
 export interface Template {
     id: string,
-    "assignmentId": string,
+    assignmentId: string,
     lang: language,
     snippet: string,
-    "preSnippet": string,
-    "postSnippet": string
+    preSnippet: string,
+    postSnippet: string
 }
 
 export interface AssignmentTestCase {
     id: string,
-    "assignmentId": string,
+    assignmentId: string,
     points: number,
     input: string,
     output: string
@@ -149,4 +149,28 @@ export interface AssignmentSummary {
     title: string,
     difficultyLevel: string,
     hasCompleted?: boolean
+}
+
+export interface Submission {
+    id: string,
+    assignmentId: string,
+    studentId: string,
+    code: string,
+    lang: language,
+    resultStatus: ResultStatus,
+    resultMessage: string,
+    timeTaken: number,
+    memoryUsedInKiloBytes: number,
+    points: number,
+    submittedAt: Date,
+    markCompleted: boolean
+}
+
+export interface SubmissionSummary {
+    studentRollNumber: string
+    resultStatus: ResultStatus
+    points: number
+    timeTaken: number,
+    memoryUsed: number
+    submittedAt: Date
 }

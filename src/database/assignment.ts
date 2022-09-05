@@ -13,7 +13,13 @@ const statementInsertTemplate = `insert into templates (id, "assignmentId", lang
 const statementSelectTemplates = `select * from templates where "assignmentId" = $1;`
 const statementInsertTestCase = `insert into "testCases" (id, "assignmentId", points, input, output) values ($1, $2, $3, $4, $5);`
 const statementSelectTestCases = `select * from "testCases" where "assignmentId" = $1;`
-
+const statementInsertSubmission = `insert into submissions (id, "assignmentid", 
+    "studentId", code, lang, "resultStatus", "resultMessage", "timeTaken", "memoryUsedInKiloBytes", points,
+    "submittedAt", "markCompleted") values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12);`
+const statementUpdateSubmission = `update submissions set "markCompleted" =  true where id = $1;`
+const statementSelectSubmission = `select * from submissions where id = $1;`
+const statementSelectSubmissionSummariesByAssignmentId = `select rollNumber as "studentRollNumber", "resultStatus", points, "timeTaken", "memoryUsedInKiloBytes", "submittedAt"
+    from submissions and students where "assignmentId" = $1 and students.id = assignments."studentId";`
 
 // take an assignment and insert it into the database.
 // uuid will be created and assigned before inserting.
@@ -48,10 +54,8 @@ export async function deleteAssignment(id: string) {
     await execWithTransaction(statementDeleteAssignment, id);
 }
 
-
-
 //get assignment, templates and testcases from an id
-export async function getAssignmentDetails(id: string) {
+export async function getAssignmentDetails(id: string): Promise<entity.AssignmentDetails> {
     let assignment: entity.Assignment = {
         id: '', classId: '', title: '', description: '', sampleInput: '', sampleOutput: '',
         constraints: '', points: 0, hasTemplate: false, acceptedLanguages: [],holdPoints: true, 
@@ -83,4 +87,46 @@ export async function getAssignmentDetails(id: string) {
         assignment: assignment, templates: templates, testCases: testCases
     }
     return assignmentDetails;
+}
+
+// take a submission and insert it into the database.
+// uuid will be created and assigned before inserting.
+export async function insertSubmission(submission: entity.Submission) {
+    submission.id = uuidv4();
+    await execWithTransaction(statementInsertSubmission, submission.id, submission.assignmentId, submission.studentId,
+        submission.code, submission.lang, submission.resultStatus, submission.resultMessage, submission.timeTaken, submission.memoryUsedInKiloBytes,
+        submission.points, submission.submittedAt, submission.markCompleted);
+}
+
+//update markCompleted in submissions to true using id
+export async function updateSubmission(id: string) {
+    await execWithTransaction(statementUpdateSubmission, id);
+}
+
+//get a submission using id
+export async function getSubmission(id: string): Promise<entity.Submission> {
+
+    let submission: entity.Submission = {
+        id: '', assignmentId: '', studentId: '', code: '', lang: entity.language['c'], resultStatus: entity.ResultStatus['WA'], resultMessage: '',
+        timeTaken: 0, memoryUsedInKiloBytes: 0, points: 0, submittedAt: new Date(), markCompleted: false
+    };
+
+    await queryWithTransaction(statementSelectSubmission, function scanRows(result: QueryResult<any>): Error | undefined {        
+
+        submission = result.rows[0];
+        return undefined;             
+    }, id);
+
+    return submission;
+}
+
+export async function getSubmissionSumaries(id: string) {
+    const submissionSumaries: entity.SubmissionSummary[] = [];
+    await queryWithTransaction(statementSelectSubmissionSummariesByAssignmentId, function scanRows(result: QueryResult<any>):Error |undefined {
+        for (let i = 0; i<result.rows.length; i++) {
+            submissionSumaries.push(result.rows[i]);
+        }
+        return undefined;
+    },id);
+    return submissionSumaries;        
 }
