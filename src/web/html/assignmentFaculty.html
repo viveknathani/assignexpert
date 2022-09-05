@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <script src="https://kit.fontawesome.com/2965379893.js" crossorigin="anonymous"></script>
+   <title>Assignment</title>
+   <link rel="stylesheet" type="text/css" href="../css/assignment.css" />
+   <link rel="stylesheet" type="text/css" href="../css/home.css" />
+   <script defer src="../javascript/assignmentFaculty.js"></script>
+</head>
+<body>
+   <div class="navBar">
+      <div class="title">AssignExpert</div>
+      <div class="navButtons"><i class="fa-solid fa-gear settingsIcon"></i></div>
+      <div class="navButtons"><i class="fa-solid fa-right-from-bracket settingsIcon" id="logoutIcon"></i></div>
+   </div>
+   <div class="line"></div>
+   <div class="titleAndSubmissions">
+      <h2 class="assignmentName">Title</h2>
+      <button class="submissions">Submissions</button>
+   </div>
+   <h3 class="miniHeadings">Problem Statement</h3>
+   <textarea class="writeProblem"></textarea>
+   <h3 class="miniHeadings" id="testCaseHeading">Test Cases</h3>
+   <div class="testCasesContainer">
+      <div class="testCaseContainer">
+         <h4>Input: </h4>
+         <textarea class="inputOutput"></textarea>
+         <br><br>
+         <h4>Output: </h4>
+         <textarea class="inputOutput"></textarea>
+      </div>
+   </div>
+   <div class="addCaseContainer">
+      <i class="fa-solid fa-circle-plus addCaseIcon" onclick="addNewCase()"></i>&nbsp;&nbsp;&nbsp;&nbsp;
+      <i class="fa-solid fa-circle-minus addCaseIcon" onclick="removeCase()"></i>
+   </div><br><br><br><br>
+</body>
+</html>

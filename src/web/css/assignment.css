@@ -1,0 +1,126 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
+
+* {
+   margin: 0 0;
+   padding: 0 0;
+	 border: 0;
+   box-sizing: border-box;
+   font-family: 'Inter', sans-serif;
+}
+
+:root {
+   --white: #FFFFFF;
+   --black: #000000;
+   --primary: #008037;
+   --secondary: #E9EFF4;
+}
+
+.titleAndSubmissions {
+   display: grid;
+   margin-top: 6vh;
+   height: 8.4vh;
+   grid-template-columns: 1fr 1fr;
+}
+
+.assignmentName {
+   display: inline-block;
+   margin-left: 4.6vw;
+   justify-self: flex-start;
+   align-self: flex-start;
+   font-size: 4.5vh;
+   color: var(--primary);
+   font-weight: bold;
+}
+
+.submissions {
+   display: inline-block;
+   margin-right: 4.6vw;
+   justify-self: flex-end;
+   align-self: flex-end;
+   font-size: 2.4vh;
+   font-weight: 600;
+   color: var(--black);
+   padding: 0.2vh 0.4vw;
+   background-color: var(--white);
+   border: 0.4vh solid var(--primary);
+   border-radius: 7px;
+}
+
+.submissions:hover {
+   scale: 1.1;
+   cursor: pointer;
+}
+
+.miniHeadings {
+   margin-top: 3.5vh;
+   font-size: 2.6vh;
+   font-weight: 600;
+   color: var(--black);
+   margin-left: 5.1vw;
+}
+
+#testCaseHeading {
+   margin-top: 5.5vh;
+}
+
+.writeProblem {
+   margin-top: 3.5vh;
+   margin-left: 5.3vw;
+   padding: 1.6vh 1.5vw;
+   font-size: 2.4vh;
+   width: 56vw;
+   height: 35vh;
+   background-color: var(--secondary);
+   color: var(--black);
+}
+
+.testCaseContainer {
+   display: inline-block;
+   position: relative;
+   margin-top: 3.5vh;
+   margin-left: 5.3vw;
+   padding: 2.8vh 2.3vw;
+   min-width: 40vw;
+   min-height: 40vh;
+   background-color: var(--white);
+   border: 0.21vh solid var(--primary);
+}
+
+.inputOutput {
+   margin-top: 2vh;
+   width: 34vw;
+   height: 11vh;
+   background-color: var(--secondary);
+   padding: 0.8vh 0.8vw;
+}
+
+.addCaseContainer {
+   width: 96.3vw;
+   margin-top: 6vh;
+   text-align: center;
+}
+
+.addCaseIcon {
+   font-size: 5vh;
+   color: var(--black);
+}
+
+.addCaseIcon:hover {
+   scale: 1.2;
+   color: var(--primary);
+   cursor: pointer;
+}
+
+.minusIcon {
+   position: absolute;
+   top: 1vh;
+   right: 0.5vw;
+   font-size: 3.5vh;
+   color: var(--black);
+}
+
+.minusIcon:hover {
+   scale: 1.2;
+   cursor: pointer;
+}
