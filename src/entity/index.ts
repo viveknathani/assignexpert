@@ -94,3 +94,8 @@ export interface Member {
     studentId: string
 }
 
+export interface Email {
+    to: string[],
+    subject: string,
+    content: string
+}
