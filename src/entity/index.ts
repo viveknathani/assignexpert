@@ -32,9 +32,9 @@ export interface SessionInfo {
 
 export interface Preferences {
 
-    uiTheme: string,
-    editorTheme: string,
-    wantsEmailNotifications: boolean
+    uiTheme?: string,
+    editorTheme?: string,
+    wantsEmailNotifications?: boolean
 }
 
 export interface TestCase {

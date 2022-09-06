@@ -192,6 +192,20 @@ export class UserService {
     public async updatePreferences(userId: string, preferences: entity.Preferences) {
         
         try {
+            const user = await database.getUserById(userId);
+
+            if (!preferences.uiTheme) {
+                preferences.uiTheme = user.uiTheme;
+            }
+
+            if (!preferences.editorTheme) {
+                preferences.editorTheme = user.editorTheme;
+            }
+
+            if (!preferences.wantsEmailNotifications) {
+                preferences.wantsEmailNotifications = user.wantsEmailNotifications;
+            }
+
             await database.updatePreferences(userId, preferences.uiTheme, 
                 preferences.editorTheme, preferences.wantsEmailNotifications);
         } catch (err) {
