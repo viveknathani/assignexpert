@@ -94,3 +94,10 @@ export interface Member {
     studentId: string
 }
 
+export interface UpdateUser {
+    firstName?: string,
+    lastName?: string,
+    oldPassword?: string,
+    newPassword?: string,
+    preferences?: Preferences
+}
