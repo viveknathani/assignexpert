@@ -18,15 +18,15 @@ const statementSelectTemplates = `select * from templates where "assignmentId" =
 const statementInsertTestCase = `insert into "testCases" (id, "assignmentId", points, input, output) values ($1, $2, $3, $4, $5);`
 const statementUpdateTestCase = `update "testCases" set points = $1, input = $2, output = $3 where id = $4;`
 const statementSelectTestCases = `select * from "testCases" where "assignmentId" = $1;`
-const statementInsertSubmission = `insert into submissions (id, "assignmentid", 
+const statementInsertSubmission = `insert into submissions (id, "assignmentId", 
     "studentId", code, lang, "resultStatus", "resultMessage", "timeTaken", "memoryUsedInKiloBytes", points,
     "submittedAt", "markCompleted") values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12);`
 const statementUpdateSubmission = `update submissions set "markCompleted" =  true where id = $1;`
 const statementSelectSubmission = `select * from submissions where id = $1;`
 const statementSelectSubmissionSummariesByAssignmentId = `select "rollNumber" as "studentRollNumber", "resultStatus", points, "timeTaken", "memoryUsedInKiloBytes", "submittedAt"
-    from submissions and students where "assignmentId" = $1 and students.id = assignments."studentId";`
-const statementSelectSubmissionSummariesByAssignmentIdForStudent = `select rollNumber as "studentRollNumber", "resultStatus", points, "timeTaken", "memoryUsedInKiloBytes", "submittedAt"
-from submissions and students where "assignmentId" = $1 and students.id = assignments."studentId" and student.id = $2;`
+    from submissions, students where "assignmentId" = $1 and students.id = submissions."studentId";`
+const statementSelectSubmissionSummariesByAssignmentIdForStudent = `select "rollNumber" as "studentRollNumber", "resultStatus", points, "timeTaken", "memoryUsedInKiloBytes", "submittedAt"
+from submissions, students where "assignmentId" = $1 and students.id = submissions."studentId" and students.id = $2;`
 
 // take an assignment and insert it into the database.
 // uuid will be created and assigned before inserting.
@@ -58,7 +58,7 @@ export async function insertAssignment(assignmentDetails: entity.AssignmentDetai
 
 //update an assignment, it's templates and testcases
 export async function updateAssignment(assignmentDetails: entity.AssignmentDetails) {
-    await execWithTransaction(statementUpdateAssignment, assignmentDetails.assignment.id, assignmentDetails.assignment.classId, assignmentDetails.assignment.title,
+    await execWithTransaction(statementUpdateAssignment, assignmentDetails.assignment.id, assignmentDetails.assignment.title,
         assignmentDetails.assignment.description, assignmentDetails.assignment.sampleInput, assignmentDetails.assignment.sampleOutput, assignmentDetails.assignment.constraints,
         assignmentDetails.assignment.points, assignmentDetails.assignment.hasTemplate, assignmentDetails.assignment.acceptedLanguages, assignmentDetails.assignment.holdPoints, assignmentDetails.assignment.deadline, assignmentDetails.assignment.difficultyLevel);
     if(assignmentDetails.templates) {

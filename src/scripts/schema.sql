@@ -68,15 +68,15 @@ create table if not exists assignments (
     points real,
     "hasTemplate" boolean,
     "acceptedLanguages" language[],
-    holdPoints boolean,
+    "holdPoints" boolean,
     deadline timestamp,
-    difficultyLevel difficulty_level,
+    "difficultyLevel" difficulty_level
 );
 
 create table if not exists templates (
     id uuid primary key,
     "assignmentId" uuid references assignments(id) on delete cascade,
-    lang language[],
+    lang language,
     snippet text,
     "preSnippet" text,
     "postSnippet" text
