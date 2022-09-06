@@ -27,6 +27,8 @@ const statementSelectSubmissionSummariesByAssignmentId = `select "rollNumber" as
     from submissions, students where "assignmentId" = $1 and students.id = submissions."studentId";`
 const statementSelectSubmissionSummariesByAssignmentIdForStudent = `select "rollNumber" as "studentRollNumber", "resultStatus", points, "timeTaken", "memoryUsedInKiloBytes", "submittedAt"
 from submissions, students where "assignmentId" = $1 and students.id = submissions."studentId" and students.id = $2;`
+const statementGetMarkedCompleteSubmissionForAssignmentForStudent = `select * from submissions where "assignmentId" = $1, "studentId" = $2 and "markCompleted"=true;`
+
 
 // take an assignment and insert it into the database.
 // uuid will be created and assigned before inserting.
@@ -180,4 +182,19 @@ export async function getSubmissionSummariesForStudent(assignmentId: string, stu
         return undefined;
     }, assignmentId, studentId);
     return submissionSummaries;   
+}
+
+export async function getMarkedCompleteSubmissionForAssignmentForStudent(assignmentId: string, studentId: string): Promise<entity.Submission>{
+    let submission: entity.Submission = {
+        id: '', assignmentId: '', studentId: '', code: '', lang: entity.language['c'], resultStatus: entity.ResultStatus['WA'], resultMessage: '',
+        timeTaken: 0, memoryUsedInKiloBytes: 0, points: 0, submittedAt: new Date(), markCompleted: false
+    };
+
+    await queryWithTransaction(statementGetMarkedCompleteSubmissionForAssignmentForStudent, function scanRows(result: QueryResult<any>): Error | undefined {        
+
+        submission = result.rows[0];
+        return undefined;             
+    }, assignmentId,studentId);
+
+    return submission;    
 }

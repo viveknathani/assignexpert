@@ -141,3 +141,11 @@ export class ErrClassNotFound extends Error {
     }
 }
 
+export class ErrAssignmentNotFound extends Error {
+
+    constructor() {
+        
+        super('Assignment not found.');
+        Object.setPrototypeOf(this,ErrAssignmentNotFound.prototype);
+    }
+}
