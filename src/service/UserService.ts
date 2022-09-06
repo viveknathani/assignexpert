@@ -124,36 +124,51 @@ export class UserService {
         }
     }
 
-    public async updateFirstName(email: string, firstName: string) {
+    public async updateUser(userId: string, updateUserInfo: entity.UpdateUser) {
 
         try {
-            const user = await database.getUser(email);
-            if (user.id === '') {
-                throw new errors.ErrUpdateUserField;
+            if (updateUserInfo.firstName) {
+                await this.updateFirstName(userId, updateUserInfo.firstName);
             }
-            await database.updateFirstName(user.id, firstName);
+
+            if (updateUserInfo.lastName) {
+                await this.updateLastName(userId, updateUserInfo.lastName);
+            }
+
+            if (updateUserInfo.oldPassword && updateUserInfo.newPassword) {
+                await this.updatePassword(userId, updateUserInfo.oldPassword, updateUserInfo.newPassword);
+            }
+
+            if (updateUserInfo.preferences) {
+                await this.updatePreferences(userId, updateUserInfo.preferences);
+            }
         } catch (err) {
             throw err;
         }
     }
 
-    public async updateLastName(email: string, lastName: string) {
+    public async updateFirstName(userId: string, firstName: string) {
 
         try {
-            const user = await database.getUser(email);
-            if (user.id === '') {
-                throw new errors.ErrUpdateUserField;
-            }
-            await database.updateLastName(user.id, lastName);
+            await database.updateFirstName(userId, firstName);
         } catch (err) {
             throw err;
         }
     }
 
-    public async updatePassword(email: string, oldPassword: string, newPassword: string) {
+    public async updateLastName(userId: string, lastName: string) {
 
         try {
-            const user = await database.getUser(email);
+            await database.updateLastName(userId, lastName);
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    public async updatePassword(userId: string, oldPassword: string, newPassword: string) {
+
+        try {
+            const user = await database.getUserById(userId);
             if (user.id === '') {
                 throw new errors.ErrUpdateUserField;
             }
@@ -174,14 +189,10 @@ export class UserService {
         }
     }
 
-    public async updatePreferences(email: string, preferences: entity.Preferences) {
+    public async updatePreferences(userId: string, preferences: entity.Preferences) {
         
         try {
-            const user = await database.getUser(email);
-            if (user.id === '') {
-                throw new errors.ErrUpdateUserField;
-            }
-            await database.updatePreferences(user.id, preferences.uiTheme, 
+            await database.updatePreferences(userId, preferences.uiTheme, 
                 preferences.editorTheme, preferences.wantsEmailNotifications);
         } catch (err) {
             throw err;
