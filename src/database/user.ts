@@ -5,6 +5,7 @@ import { execWithTransaction, queryWithTransaction } from '.';
 
 const statementInsertUser = `insert into users (id, "firstName", "lastName", email, password, "uiTheme", "editorTheme", "wantsEmailNotifications") values ($1, $2, $3, $4, $5, $6, $7, $8);`
 const statementSelectUserFromEmail = "select * from users where email = $1;"
+const statementSelectUserFromId = "select * from users where id = $1;"
 const statementSelectStudentFromUserId = `select * from students where "userId" = $1;`;
 const statementSelectFacultyFromUserId = `select * from faculties where "userId" = $1;`;
 const statementDeleteUser = "delete from users where id = $1;"
@@ -53,6 +54,23 @@ export async function getUser(email: string): Promise<entity.User> {
             user = result.rows[0];
             return undefined;             
     }, email);
+
+    return user as entity.User;
+}
+
+// get the first matching user from database based on id.
+// if none exists, all fields are empty strings.
+export async function getUserById(userId: string): Promise<entity.User> {
+
+    let user: entity.User = {
+        id: '', email: '', password: '', firstName: '', lastName: '', wantsEmailNotifications: true, uiTheme: '', editorTheme: ''
+    };
+    await queryWithTransaction(statementSelectUserFromId, 
+        function scanRows(result: QueryResult<any>): Error | undefined {
+            
+            user = result.rows[0];
+            return undefined;             
+    }, userId);
 
     return user as entity.User;
 }
