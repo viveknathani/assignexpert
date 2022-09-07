@@ -1,0 +1,56 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
+
+* {
+   margin: 0 0;
+   padding: 0 0;
+	 border: 0;
+   box-sizing: border-box;
+   font-family: 'Inter', sans-serif;
+}
+
+:root {
+   --white: #FFFFFF;
+   --black: #000000;
+   --primary: #008037;
+   --secondary: #E9EFF4;
+}
+
+.assignmentName {
+   display: inline-block;
+   font-size: 4.3vh;
+   font-weight: 600;
+   color: var(--primary);
+   background-color: var(--white);
+   margin-left: 4vw;
+   margin-top: 7vh;
+}
+
+table {
+   width: 85vw;
+   margin: auto;
+   margin-top: 8vh;
+   background-color: var(--secondary);
+}
+
+th {
+   background-color: var(--primary);
+   color: var(--white);
+   font-size: 3vh;
+   padding: 2.5vh 2vw;
+   font-weight: 600;
+   text-align: left;
+}
+
+td {
+   background-color: var(--secondary);
+   color: var(--black);
+   font-size: 2.5vh;
+   padding: 2vh 1.5vw;
+   font-weight: 500;
+}
+
+table, th, td {
+   border: 0.25vw solid white;
+   border-collapse: collapse;
+}
