@@ -122,18 +122,19 @@ test('update user fields', async () => {
     }
     await userService.signupFaculty(user, faculty);
     user.firstName = 'AliceUpdated';
-    await userService.updateFirstName(user.email, user.firstName);
+
+    await userService.updateFirstName(user.id, user.firstName);
     let u = await database.getUser(user.email);
     expect(u.firstName).toBe(user.firstName);
 
 
     user.lastName = 'WonderlandUpdated';
-    await userService.updateLastName(user.email, user.lastName);
+    await userService.updateLastName(user.id, user.lastName);
     u = await database.getUser(user.email);
     expect(u.lastName).toBe(user.lastName);
 
     user.password = 'alicepasswordUpdated1@';
-    await userService.updatePassword(user.email, unhashedPassword, user.password);
+    await userService.updatePassword(user.id, unhashedPassword, user.password);
     await userService.login(user.email, user.password);
     await userService.deleteUser(user.id);
 });

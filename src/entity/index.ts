@@ -32,9 +32,9 @@ export interface SessionInfo {
 
 export interface Preferences {
 
-    uiTheme: string,
-    editorTheme: string,
-    wantsEmailNotifications: boolean
+    uiTheme?: string,
+    editorTheme?: string,
+    wantsEmailNotifications?: boolean
 }
 
 export interface TestCase {
@@ -92,6 +92,14 @@ export interface Member {
     id: string,
     classId: string,
     studentId: string
+}
+
+export interface UpdateUser {
+    firstName?: string,
+    lastName?: string,
+    oldPassword?: string,
+    newPassword?: string,
+    preferences?: Preferences
 }
 
 export interface Email {
