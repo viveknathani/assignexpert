@@ -155,7 +155,7 @@ export class CodeExecutionService {
             });
             const stats = statsFileContent.split("-");
             codeExecutionOutput.memoryUsed = parseFloat(stats[0]);
-            codeExecutionOutput.timeTaken = parseFloat(stats[1]);
+            codeExecutionOutput.timeTaken = parseFloat(stats[1]) * 1000.0;
             await job.updateProgress(entity.CodeExecutionProgress.COMPUTE_RESULT);
         } catch (err) {
             console.log(err);
