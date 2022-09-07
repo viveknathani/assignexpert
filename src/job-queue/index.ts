@@ -6,21 +6,20 @@ const redisConnection = new IORedis(process.env.REDIS_URL || "", {
     maxRetriesPerRequest: null
 });
 
-const queue = new Queue('assignexpert', {
+// Queues
+const executionQueue = new Queue('assignexpert-execution', {
     connection: redisConnection
 });
 
-export function addJob(jobId: string, data: entity.CodeExecutionInput) {
-    queue.add(jobId, data, {
-        jobId
-    });
-}
+const emailQueue = new Queue('assignexpert-email', {
+    connection: redisConnection
+});
 
-export function addWorker(job: (job: Job) => Promise<void>) {
-    const worker = new Worker('assignexpert', job, {
+// Workers
+export function addExecutionWorker(job: (job: Job) => Promise<void>) {
+    const worker = new Worker('assignexpert-execution', job, {
         connection: redisConnection
     });
-
     worker.on('error', (err) => {
         console.log(`error: ${job.name} - ${err.message}`);
     });
@@ -42,14 +41,41 @@ export function addWorker(job: (job: Job) => Promise<void>) {
     });
 }
 
-export async function getJobProgress(jobId: string): Promise<number> {
-    try {
-        const job = await queue.getJob(jobId);
-        if (!job || typeof job.progress !== 'number') {
-            return -1;
+export function addEmailWorker(job: (job: Job) => Promise<void>) {
+    const worker = new Worker('assignexpert-email', job, {
+        connection: redisConnection
+    });
+    worker.on('error', (err) => {
+        console.log(`error: ${job.name} - ${err.message}`);
+    });
+
+    worker.on('failed', (job) => {
+        console.log(`failed: ${job.name}`);
+    });
+
+    worker.on('completed', async (job) => {
+        try {
+            console.log(`done: ${job.name}`);
+        } catch (err) {
+            console.log(err);
         }
-        return job.progress;
-    } catch (err) {
-        throw err;
-    }
+    });
+
+    worker.on('active', (job) => {
+        console.log(`starting: ${job.name}`);
+    });
 }
+
+// Jobs
+export function addExecutionJob(jobId: string, data: entity.CodeExecutionInput) {
+    executionQueue.add(jobId, data, {
+        jobId
+    });
+}
+
+export function addEmailJob(jobId: string, data: entity.Email) {
+    emailQueue.add(jobId, data, {
+        jobId
+    });
+}
+

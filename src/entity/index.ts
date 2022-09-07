@@ -101,3 +101,9 @@ export interface UpdateUser {
     newPassword?: string,
     preferences?: Preferences
 }
+
+export interface Email {
+    to: string[],
+    subject: string,
+    content: string
+}
