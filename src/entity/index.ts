@@ -76,7 +76,8 @@ export enum ResultStatus {
     MLE = "MLE",
     CE = "CE",
     RE = "RE",
-    PR = "PR"
+    PR = "PR",
+    NA = "NA"
 }
 
 export interface Class {
@@ -167,10 +168,10 @@ export interface Submission {
 }
 
 export interface SubmissionSummary {
-    studentRollNumber: string
-    resultStatus: ResultStatus
-    points: number
+    studentRollNumber: string,
+    resultStatus: ResultStatus,
+    points: number,
     timeTaken: number,
-    memoryUsed: number
+    memoryUsed: number,
     submittedAt: Date
 }

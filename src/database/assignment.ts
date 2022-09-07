@@ -28,6 +28,7 @@ const statementSelectSubmissionSummariesByAssignmentId = `select "rollNumber" as
 const statementSelectSubmissionSummariesByAssignmentIdForStudent = `select "rollNumber" as "studentRollNumber", "resultStatus", points, "timeTaken", "memoryUsedInKiloBytes", "submittedAt"
 from submissions, students where "assignmentId" = $1 and students.id = submissions."studentId" and students.id = $2;`
 const statementGetMarkedCompleteSubmissionForAssignmentForStudent = `select * from submissions where "assignmentId" = $1, "studentId" = $2 and "markCompleted"=true;`
+const statementUpdateSubmissionResult = `update submissions set "memoryUsedInKiloBytes" = $1, "timeTaken" = $2, "resultStatus" = $3, "resultMessage" = $4, points = $5 where id = $6;`
 
 
 // take an assignment and insert it into the database.
@@ -55,6 +56,7 @@ export async function insertAssignment(assignmentDetails: entity.AssignmentDetai
                 assignmentDetails.testCases[i].points, assignmentDetails.testCases[i].input, assignmentDetails.testCases[i].output);
         }
     }
+    return assignmentDetails.assignment.id;
 }
 
 
@@ -133,11 +135,11 @@ export async function getAssignmentSummariesForClass( id: string): Promise <enti
 
 // take a submission and insert it into the database.
 // uuid will be created and assigned before inserting.
-export async function insertSubmission(submission: entity.Submission) {
-    submission.id = uuidv4();
+export async function insertSubmission(submission: entity.Submission): Promise<string> {
     await execWithTransaction(statementInsertSubmission, submission.id, submission.assignmentId, submission.studentId,
         submission.code, submission.lang, submission.resultStatus, submission.resultMessage, submission.timeTaken, submission.memoryUsedInKiloBytes,
         submission.points, submission.submittedAt, submission.markCompleted);
+    return submission.id;
 }
 
 //update markCompleted in submissions to true using id
@@ -197,4 +199,8 @@ export async function getMarkedCompleteSubmissionForAssignmentForStudent(assignm
     }, assignmentId,studentId);
 
     return submission;    
+}
+
+export async function updateSubmissionResult(submissionId: string,data: entity.CodeExecutionOutput, points: number) {
+    await execWithTransaction(statementUpdateSubmissionResult, data.memoryUsed, data.timeTaken, data.resultStatus, data.resultMessage, points, submissionId);
 }
