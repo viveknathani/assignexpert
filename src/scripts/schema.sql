@@ -15,6 +15,12 @@ create type "result_status" as enum (
     'PR' --- partially right
 );
 
+create type "difficulty_level" as enum (
+    'EASY',
+    'MEDIUM',
+    'DIFFICULT'
+);
+
 create table if not exists users (
     id uuid primary key,
     email varchar(319) not null,
@@ -62,15 +68,18 @@ create table if not exists assignments (
     points real,
     "hasTemplate" boolean,
     "acceptedLanguages" language[],
-    holdPoints boolean,
-    deadline timestamp
+    "holdPoints" boolean,
+    deadline timestamp,
+    "difficultyLevel" difficulty_level
 );
 
 create table if not exists templates (
     id uuid primary key,
     "assignmentId" uuid references assignments(id) on delete cascade,
     lang language,
-    code text
+    snippet text,
+    "preSnippet" text,
+    "postSnippet" text
 );
 
 create table if not exists "testCases" (
@@ -92,5 +101,6 @@ create table if not exists submissions (
     "timeTaken" real,
     "memoryUsedInKiloBytes" real,
     points real,
-    "submittedAt" timestamp
+    "submittedAt" timestamp,
+    "markCompleted" boolean
 );

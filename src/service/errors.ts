@@ -141,3 +141,29 @@ export class ErrClassNotFound extends Error {
     }
 }
 
+export class ErrAssignmentNotFound extends Error {
+
+    constructor() {
+        
+        super('Assignment not found.');
+        Object.setPrototypeOf(this,ErrAssignmentNotFound.prototype);
+    }
+}
+
+export class ErrSubmissionNotFound extends Error {
+
+    constructor() {
+        
+        super('Submission not found.');
+        Object.setPrototypeOf(this,ErrSubmissionNotFound.prototype);
+    }
+}
+
+export class ErrAssignmentAlreadyCompleted extends Error {
+
+    constructor() {
+        
+        super('Assignment already has a submission marked complete.');
+        Object.setPrototypeOf(this,ErrAssignmentAlreadyCompleted.prototype);
+    }
+}

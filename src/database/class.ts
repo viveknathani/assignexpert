@@ -119,3 +119,14 @@ export async function getClassFromCode(code: string): Promise<entity.Class> {
 
     return classEntry as entity.Class;
 }
+
+//return true if a student is a member of a class
+export async function isMember(classId: string, studentId: string): Promise<boolean> {
+    const c : entity.Class[] = await getClassesForStudent(studentId);
+    for( let i = 0; i < c.length; i++) {
+        if(c[i].id == classId){
+            return true;
+        }
+    }
+    return false;
+}
