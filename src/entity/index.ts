@@ -25,7 +25,9 @@ export interface Faculty {
 export interface SessionInfo {
     
     userId: string,
-    isStudent: boolean
+    isStudent: boolean,
+    facultyId?: string,
+    studentId?: string
 }
 
 export interface Preferences {
