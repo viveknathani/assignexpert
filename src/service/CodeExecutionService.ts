@@ -26,7 +26,7 @@ export class CodeExecutionService {
         }
 
         if (!CodeExecutionService.hasAddedWorker) {
-            jobQueue.addWorker(CodeExecutionService.instance.job);
+            jobQueue.addExecutionWorker(CodeExecutionService.instance.job);
             CodeExecutionService.hasAddedWorker = true;
         }
 
@@ -41,7 +41,7 @@ export class CodeExecutionService {
             // appending the "job-" prefix to the uuid can help
             // in differentiating the uuid from our session-ids during debugging
             const jobId = `job-${uuidv4()}`;
-            jobQueue.addJob(jobId, codeExecutionInput);
+            jobQueue.addExecutionJob(jobId, codeExecutionInput);
             return jobId;
         } catch (err) {
             throw err;

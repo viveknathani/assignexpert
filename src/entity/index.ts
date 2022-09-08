@@ -32,9 +32,9 @@ export interface SessionInfo {
 
 export interface Preferences {
 
-    uiTheme: string,
-    editorTheme: string,
-    wantsEmailNotifications: boolean
+    uiTheme?: string,
+    editorTheme?: string,
+    wantsEmailNotifications?: boolean
 }
 
 export interface TestCase {
@@ -176,4 +176,18 @@ export interface SubmissionSummary {
     timeTaken: number,
     memoryUsed: number,
     submittedAt: Date
+}
+
+export interface UpdateUser {
+    firstName?: string,
+    lastName?: string,
+    oldPassword?: string,
+    newPassword?: string,
+    preferences?: Preferences
+}
+
+export interface Email {
+    to: string[],
+    subject: string,
+    content: string
 }
