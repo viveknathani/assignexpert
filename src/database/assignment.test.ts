@@ -5,7 +5,7 @@ import { setupDatabase, terminatePool } from '.';
 import * as entity from '../entity/';
 import { insertClass, deleteClass, insertMember, deleteMember } from './class';
 import { deleteUser, insertFaculty, insertStudent, insertUser } from './user';
-import { insertAssignment,deleteAssignment, updateAssignment, getAssignmentDetails, getAssignmentSummariesForClass, insertSubmission, updateSubmission, getSubmission, getSubmissionSummaries, getSubmissionSummariesForStudent, } from './assignment';
+import { insertAssignment, deleteAssignment, updateAssignment, getAssignmentDetails, getAssignmentSummariesForClass, insertSubmission, updateSubmission, getSubmission, getSubmissionSummaries, getSubmissionSummariesForStudent, } from './assignment';
 
 setupDatabase(process.env.DATABASE_URL || '');
 afterAll(async () => await terminatePool())
@@ -59,13 +59,13 @@ test('insert/get/update/delete assignment and submission', async () => {
     await insertStudent(student1);
 
     await insertMember({
-        id: '',
+        id: '1',
         studentId: student1.id,
         classId: class1.id
     });
-    
+
     let assignment: entity.Assignment = {
-        id: '',
+        id: '1',
         classId: class1.id,
         title: 'assignment 1',
         description: '',
@@ -80,7 +80,7 @@ test('insert/get/update/delete assignment and submission', async () => {
         difficultyLevel: entity.DifficultyLevel['EASY']
     }
     const template: entity.Template = {
-        id: '',
+        id: '1',
         assignmentId: assignment.id,
         lang: entity.language['python'],
         snippet: 'b',
@@ -90,7 +90,7 @@ test('insert/get/update/delete assignment and submission', async () => {
     const templates: entity.Template[] = [];
     templates.push(template);
     const testcase: entity.AssignmentTestCase = {
-        id: '',
+        id: '1',
         assignmentId: assignment.id,
         points: 10,
         input: 'a',
@@ -103,17 +103,17 @@ test('insert/get/update/delete assignment and submission', async () => {
         templates: templates,
         testCases: testCases
     };
-    await insertAssignment(assignmentDetails);
+    const assignmentId = await insertAssignment(assignmentDetails);
 
     assignmentDetails.assignment.difficultyLevel = entity.DifficultyLevel['MEDIUM'];
     await updateAssignment(assignmentDetails);
 
     const a: entity.AssignmentDetails = await getAssignmentDetails(assignmentDetails.assignment.id);
     expect(a.assignment.classId).toEqual(assignmentDetails.assignment.classId);
-    if(a.templates && assignmentDetails.templates) {
+    if (a.templates && assignmentDetails.templates) {
         expect(a.templates[0].id).toEqual(assignmentDetails.templates[0].id)
     }
-    if(a.testCases && assignmentDetails.testCases) {
+    if (a.testCases && assignmentDetails.testCases) {
         expect(a.testCases[0].id).toEqual(assignmentDetails.testCases[0].id)
     }
 
@@ -121,8 +121,8 @@ test('insert/get/update/delete assignment and submission', async () => {
     expect(aSummaries[0].id).toEqual(assignmentDetails.assignment.id);
 
     const submission: entity.Submission = {
-        id: '',
-        assignmentId: assignmentDetails.assignment.id,
+        id: '1',
+        assignmentId: assignmentId,
         studentId: student1.id,
         code: '',
         lang: entity.language['python'],
@@ -143,11 +143,11 @@ test('insert/get/update/delete assignment and submission', async () => {
     const ss: entity.SubmissionSummary[] = await getSubmissionSummaries(assignmentDetails.assignment.id);
     expect(parseInt(ss[0].studentRollNumber)).toEqual(student1.rollNumber);
 
-    const sss: entity.SubmissionSummary[] = await getSubmissionSummariesForStudent(assignmentDetails.assignment.id,student1.id);
+    const sss: entity.SubmissionSummary[] = await getSubmissionSummariesForStudent(assignmentDetails.assignment.id, student1.id);
     expect(parseInt(sss[0].studentRollNumber)).toEqual(student1.rollNumber);
 
     await deleteAssignment(assignmentDetails.assignment.id);
-    await deleteMember(class1.id,student1.id);
+    await deleteMember(class1.id, student1.id);
     await deleteClass(class1.id);
     await deleteUser(user1.id);
     await deleteUser(user2.id);
