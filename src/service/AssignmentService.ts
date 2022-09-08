@@ -22,8 +22,8 @@ export class AssignmentService {
             if(isStudent) {
                 throw new errors.ErrInvalidStudentOperation;
             }
-            const c = await database.getClass(assignmentDetails.assignment.classId);
-            if(c.facultyId != facultyId){
+            const classEntry = await database.getClass(assignmentDetails.assignment.classId);
+            if(classEntry.facultyId != facultyId){
                 throw new errors.ErrInvalidFacultyOperation;
             }
             const id = await database.insertAssignment(assignmentDetails);
@@ -38,12 +38,12 @@ export class AssignmentService {
             if(isStudent) {
                 throw new errors.ErrInvalidStudentOperation;
             }
-            const a = await database.getAssignmentDetails(id);
-            if(a === undefined || a.assignment.id === ''|| a.assignment.id === undefined) {
+            const assignmentDetails = await database.getAssignmentDetails(id);
+            if(assignmentDetails === undefined || assignmentDetails.assignment.id === ''|| assignmentDetails.assignment.id === undefined) {
                 throw new errors.ErrAssignmentNotFound;
             }
-            const c = await database.getClass(a.assignment.classId);
-            if(c.facultyId != facultyId) {
+            const classEntry = await database.getClass(assignmentDetails.assignment.classId);
+            if(classEntry.facultyId != facultyId) {
                 throw new errors.ErrInvalidFacultyOperation;
             }
             await database.deleteAssignment(id);
@@ -62,29 +62,29 @@ export class AssignmentService {
     
     public async getAllAssignments(classId: string, isStudent: boolean, entityId: string): Promise<entity.AssignmentSummary[]> {
         try {
-            let a: entity.AssignmentSummary[] = [];
+            let assignmentSummaries: entity.AssignmentSummary[] = [];
             if(!isStudent) {
-                const c = await database.getClass(classId);
-                if(c.facultyId!=entityId){
+                const classEntry = await database.getClass(classId);
+                if(classEntry.facultyId!=entityId){
                     throw new errors.ErrInvalidFacultyOperation;
                 }
-                a = await database.getAssignmentSummariesForClass(classId);
+                assignmentSummaries = await database.getAssignmentSummariesForClass(classId);
             } else {
                 const isMember = await database.isMember(classId,entityId);
                 if(!isMember){
                     throw new errors.ErrInvalidStudentOperation;
                 }
-                a = await database.getAssignmentSummariesForClass(classId);
-                for(let i = 0; i < a.length; i++) {
-                    const s: entity.Submission = await database.getMarkedCompleteSubmissionForAssignmentForStudent(a[i].id,entityId);
-                    if(s === undefined || s.id === undefined || s.id === '') {
-                        a[i].hasCompleted = false;
+                assignmentSummaries = await database.getAssignmentSummariesForClass(classId);
+                for(let i = 0; i < assignmentSummaries.length; i++) {
+                    const submission: entity.Submission = await database.getMarkedCompleteSubmissionForAssignmentForStudent(assignmentSummaries[i].id,entityId);
+                    if(submission === undefined || submission.id === undefined || submission.id === '') {
+                        assignmentSummaries[i].hasCompleted = false;
                     } else {
-                        a[i].hasCompleted = true;
+                        assignmentSummaries[i].hasCompleted = true;
                     }
                 }
             }
-            return a;
+            return assignmentSummaries;
         } catch (err) {
             throw err;
         }
@@ -92,26 +92,26 @@ export class AssignmentService {
 
     public async getAssignment(assignmentId: string, isStudent: boolean, entityId: string): Promise<entity.AssignmentDetails> {
         try {
-            let a: entity.AssignmentDetails = await database.getAssignmentDetails(assignmentId);
-            if(a === undefined || a.assignment.id === undefined || a.assignment.id ===''){
+            let assignmentdetails: entity.AssignmentDetails =  await database.getAssignmentDetails(assignmentId);
+            if(assignmentdetails === undefined || assignmentdetails.assignment.id === undefined || assignmentdetails.assignment.id ===''){
                 throw new errors.ErrAssignmentNotFound;
             }
             if(!isStudent) {
-                const c = await database.getClass(a.assignment.classId);
-                if(c.facultyId!=entityId){
+                const classEntry = await database.getClass(assignmentdetails.assignment.classId);
+                if(classEntry.facultyId!=entityId){
                     throw new errors.ErrInvalidFacultyOperation;
                 }
-                return a;
+                return assignmentdetails;
             } else {
-                const isMember = await database.isMember(a.assignment.classId,entityId);
+                const isMember = await database.isMember(assignmentdetails.assignment.classId,entityId);
                 if(!isMember){
                     throw new errors.ErrInvalidStudentOperation;
                 }
                 const assignmentDetails: entity.AssignmentDetails = {
-                    assignment: a.assignment,
-                    templates: a.templates,
+                    assignment: assignmentdetails.assignment,
+                    templates: assignmentdetails.templates,
                 }
-                return assignmentDetails;
+                return assignmentdetails;
             }
         } catch (err) {
             throw err;
@@ -120,9 +120,9 @@ export class AssignmentService {
 
     public async makeSubmission(submission: entity.Submission): Promise<string> {
         const codeExecutionService: CodeExecutionService = CodeExecutionService.getInstance();
-        const a: entity.AssignmentDetails = await database.getAssignmentDetails(submission.assignmentId);
-        const s = await database.getMarkedCompleteSubmissionForAssignmentForStudent(submission.assignmentId,submission.studentId);
-        if(s === undefined || s.id === ''|| s.id === undefined){
+        const assignmentDetails: entity.AssignmentDetails = await database.getAssignmentDetails(submission.assignmentId);
+        const completeSubmission = await database.getMarkedCompleteSubmissionForAssignmentForStudent(submission.assignmentId,submission.studentId);
+        if(completeSubmission === undefined || completeSubmission.id === ''|| completeSubmission.id === undefined){
             throw new errors.ErrAssignmentAlreadyCompleted;
         }
         
@@ -139,10 +139,10 @@ export class AssignmentService {
         //get code snippet to be run depending on the language
         if(submission.lang===entity.language['c']){
             codeExecutionInput.language = "c";
-            if(a.templates){
-                for(let i =0; i<a.templates.length; i++){
-                    if(a.templates[i].lang===entity.language['c']){
-                        codeExecutionInput.code = a.templates[i].preSnippet + submission.code + a.templates[i].postSnippet;
+            if(assignmentDetails.templates){
+                for(let i =0; i<assignmentDetails.templates.length; i++){
+                    if(assignmentDetails.templates[i].lang===entity.language['c']){
+                        codeExecutionInput.code = assignmentDetails.templates[i].preSnippet + submission.code + assignmentDetails.templates[i].postSnippet;
                     }
                 }
             }
@@ -151,10 +151,10 @@ export class AssignmentService {
             }
         } else if(submission.lang===entity.language['cpp']){
             codeExecutionInput.language = "cpp";
-            if(a.templates){
-                for(let i =0; i<a.templates.length; i++){
-                    if(a.templates[i].lang===entity.language['cpp']){
-                        codeExecutionInput.code = a.templates[i].preSnippet + submission.code + a.templates[i].postSnippet;
+            if(assignmentDetails.templates){
+                for(let i =0; i<assignmentDetails.templates.length; i++){
+                    if(assignmentDetails.templates[i].lang===entity.language['cpp']){
+                        codeExecutionInput.code = assignmentDetails.templates[i].preSnippet + submission.code + assignmentDetails.templates[i].postSnippet;
                     }
                 }
             }
@@ -163,10 +163,10 @@ export class AssignmentService {
             }
         }else if(submission.lang===entity.language['python']){
             codeExecutionInput.language = "python";
-            if(a.templates){
-                for(let i =0; i<a.templates.length; i++){
-                    if(a.templates[i].lang===entity.language['python']){
-                        codeExecutionInput.code = a.templates[i].preSnippet + submission.code + a.templates[i].postSnippet;
+            if(assignmentDetails.templates){
+                for(let i =0; i<assignmentDetails.templates.length; i++){
+                    if(assignmentDetails.templates[i].lang===entity.language['python']){
+                        codeExecutionInput.code = assignmentDetails.templates[i].preSnippet + submission.code + assignmentDetails.templates[i].postSnippet;
                     }
                 }
             }
@@ -175,10 +175,10 @@ export class AssignmentService {
             }
         }else if(submission.lang===entity.language['java']){
             codeExecutionInput.language = "java";
-            if(a.templates){
-                for(let i =0; i<a.templates.length; i++){
-                    if(a.templates[i].lang===entity.language['java']){
-                        codeExecutionInput.code = a.templates[i].preSnippet + submission.code + a.templates[i].postSnippet;
+            if(assignmentDetails.templates){
+                for(let i =0; i<assignmentDetails.templates.length; i++){
+                    if(assignmentDetails.templates[i].lang===entity.language['java']){
+                        codeExecutionInput.code = assignmentDetails.templates[i].preSnippet + submission.code + assignmentDetails.templates[i].postSnippet;
                     }
                 }
             }
@@ -191,9 +191,9 @@ export class AssignmentService {
         }
 
         //get testcases in the form of entity TestCase as required by the code execution service
-        if(a.testCases){
-            for(let i = 0; i<a.testCases.length;i++){
-                codeExecutionInput.testCases[i] = a.testCases[i];
+        if(assignmentDetails.testCases){
+            for(let i = 0; i<assignmentDetails.testCases.length;i++){
+                codeExecutionInput.testCases[i] = assignmentDetails.testCases[i];
             }
         }
 
@@ -205,8 +205,8 @@ export class AssignmentService {
 
     public async markSubmissionAsComplete(studentId: string, submissionId: string){
         try{
-            const s = await database.getSubmission(submissionId);
-            if(s.studentId != studentId || s.id==='' || s.id===undefined || s === undefined){
+            const submission = await database.getSubmission(submissionId);
+            if(submission.studentId != studentId || submission.id==='' || submission.id===undefined || submission === undefined){
                 throw new errors.ErrInvalidStudentOperation;
             }
             await database.updateSubmission(submissionId);
@@ -217,40 +217,40 @@ export class AssignmentService {
     
     public async getSubmission(studentId: string, submissionId: string): Promise<entity.Submission>{
         try{
-            let s = await database.getSubmission(submissionId);
-            if(s.studentId!=studentId) {
+            let submission = await database.getSubmission(submissionId);
+            if(submission.studentId!=studentId) {
                 throw new errors.ErrInvalidStudentOperation;
             }
-            const a = await database.getAssignmentDetails(s.assignmentId);
+            const assignmentDetails = await database.getAssignmentDetails(submission.assignmentId);
 
             //update the result in the database
-            if(s.resultMessage === '' || s.resultMessage === undefined){
+            if(submission.resultMessage === '' || submission.resultMessage === undefined){
                 const codeExecutionService: CodeExecutionService = CodeExecutionService.getInstance();
                 const data = await codeExecutionService.getJobResult(`job-${submissionId}`);
                 if(data === undefined){
                     throw new errors.ErrSubmissionNotFound;
                 }
-                s.memoryUsedInKiloBytes = data.memoryUsed;
-                s.timeTaken = data.timeTaken;
-                s.resultStatus = data.resultStatus;
-                s.resultMessage = data.resultMessage;
+                submission.memoryUsedInKiloBytes = data.memoryUsed;
+                submission.timeTaken = data.timeTaken;
+                submission.resultStatus = data.resultStatus;
+                submission.resultMessage = data.resultMessage;
                 if(data.resultStatus===entity.ResultStatus.AC){
-                    s.points = a.assignment.points;
+                    submission.points = assignmentDetails.assignment.points;
                 } else {
-                    s.points = 0;
+                    submission.points = 0;
                 }
-                await database.updateSubmissionResult(s.id,data,s.points);                
+                await database.updateSubmissionResult(submission.id,data,submission.points);                
             }
             
             //display resultStatus as Not Available for assignments where holdPoints is true
-            if(s.resultStatus===entity.ResultStatus.AC || s.resultStatus===entity.ResultStatus.PR || s.resultStatus===entity.ResultStatus.WA){
-                if(a.assignment.holdPoints){
-                    s.resultStatus = entity.ResultStatus['NA'];
-                    s.resultMessage = '';
-                    s.points = 0;
+            if(submission.resultStatus===entity.ResultStatus.AC || submission.resultStatus===entity.ResultStatus.PR || submission.resultStatus===entity.ResultStatus.WA){
+                if(assignmentDetails.assignment.holdPoints){
+                    submission.resultStatus = entity.ResultStatus['NA'];
+                    submission.resultMessage = '';
+                    submission.points = 0;
                 }
             }
-            return s;
+            return submission;
         } catch (err) {
             throw err;
         }
@@ -259,25 +259,25 @@ export class AssignmentService {
     public async getAllSubmissionsForAssignment(assignmentId: string, entityId: string, isStudent: boolean): Promise<entity.SubmissionSummary[]> {
         try{
             if(isStudent) {
-                let ss = await database.getSubmissionSummariesForStudent(assignmentId,entityId);
-                const a = await database.getAssignmentDetails(assignmentId);
-                if(a.assignment.holdPoints){
-                    for(let i = 0; i<ss.length; i++){
-                        if(ss[i].resultStatus===entity.ResultStatus.AC || ss[i].resultStatus===entity.ResultStatus.PR || ss[i].resultStatus===entity.ResultStatus.WA){
-                                ss[i].resultStatus = entity.ResultStatus['NA'];
-                                ss[i].points = 0;
+                let submissionSummaries = await database.getSubmissionSummariesForStudent(assignmentId,entityId);
+                const assignmentDetails = await database.getAssignmentDetails(assignmentId);
+                if(assignmentDetails.assignment.holdPoints){
+                    for(let i = 0; i<submissionSummaries.length; i++){
+                        if(submissionSummaries[i].resultStatus===entity.ResultStatus.AC || submissionSummaries[i].resultStatus===entity.ResultStatus.PR || submissionSummaries[i].resultStatus===entity.ResultStatus.WA){
+                                submissionSummaries[i].resultStatus = entity.ResultStatus['NA'];
+                                submissionSummaries[i].points = 0;
                         }  
                     }
                 }
-                return ss;
+                return submissionSummaries;
             } else {
-                const a = await database.getAssignmentDetails(assignmentId);
-                const c = await database.getClass(a.assignment.classId);
-                if(c.facultyId!=entityId) {
+                const assignmentDetails = await database.getAssignmentDetails(assignmentId);
+                const classEntry = await database.getClass(assignmentDetails.assignment.classId);
+                if(classEntry.facultyId!=entityId) {
                     throw new errors.ErrInvalidFacultyOperation;
                 }
-                const ss = await database.getSubmissionSummaries(assignmentId);
-                return ss;
+                const submissionSummaries = await database.getSubmissionSummaries(assignmentId);
+                return submissionSummaries;
             }
         } catch (err) {
             throw err;
