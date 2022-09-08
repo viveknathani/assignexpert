@@ -1,4 +1,4 @@
-/* @import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
 
 * {
@@ -14,65 +14,66 @@
    --black: #000000;
    --primary: #008037;
    --secondary: #E9EFF4;
-}                       */
-.img
-{
-display: block;
-max-width: 100%;
-height: auto;
-}
+}  
 
-.btn{
-        -webkit-border-radius: 6;
-        -moz-border-radius: 6;
-        border-radius: 6px;
-        font-family: Arial;
-        color: #000000;
-        font-size: 20px;
-        background: #ffffff;
-        padding: 10px 20px 10px 20px;
-        border: solid green 10px;
-        text-decoration: none;
-      }
-      
-.btn:hover 
-{
-        background: #45d158;
-        text-decoration: none;
+.container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
 }
  
-.first-column
-{   
-    text-align:center;
+.div1
+{   display:inline-block;
     background-color:#E9EFF4;
-    align-items: center;
-    width:50%;
-    height:100vh;
-    margin-left:auto;
-    margin-right:auto;
-   
-}
-.second-column
-{
-    align-items: center;
-    width:50%;
+    width:50vw;
     height:100vh;
 }
-
-.hhead
-{
-    color: black;
+.div2
+{   display: inline-block; 
+    background-color:#FFFFFF;
+    height:100vh;
+    width:50vw;
     text-align: center;
 }
 
-.button1
+.logo
 {
- min-height: 60px;
- min-width: 250px;
+    display:inline-block;
+    width: 35vw;
+    height: 70vh;
+    margin-left: 7.5vw;
+    margin-top: 12vh;
+}
+.head1
+{
+    display: inline-block;
+    color: var(--black);
+    font-size: 4.1vh;
+    font-weight: 600;
+    margin-top: 4vh;
 }
 .sub
 {
-color:green;
-text-align: center;
+    display: inline-block;
+    color: var(--primary);
+    font-size: 4.1vh;
+    font-weight: 600;
+    margin-top: 5vh;
 }
 
+.btn{
+    border-radius: 6px;
+    color: #000000;
+    width: 11vw;
+    font-weight: 600;
+    padding: 0.7vh 0.7vw;
+    margin-top: 8vh;
+    font-size: 3vh;
+    background: #ffffff;
+    border: 0.5vh solid var(--primary);
+    text-decoration: none;
+}
+  
+.btn:hover 
+{
+    transform: scale(1.1);
+}
