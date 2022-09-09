@@ -94,7 +94,7 @@ export class CodeExecutionService {
                     }
                     await Promise.all(promises);
                 } else {
-                    const inputFilePath = `${directoryPath}/input.txt`;
+                    const inputFilePath = `${directoryPath}/input1.txt`;
                     await fs.promises.writeFile(inputFilePath, data.inputForRun, {
                         encoding: 'utf-8'
                     });
@@ -107,7 +107,8 @@ export class CodeExecutionService {
 
     private async createContainer(data: entity.CodeExecutionInput, directoryPath: string, jobId: string) {
         try {
-            await exec(`docker create -m ${data.memoryLimitMB}m --memory-swap ${data.memoryLimitMB}m --network none -e TIME_LIMIT=${data.timeLimitSeconds} -e TC_COUNT=${data.testCases.length} --name ${jobId} -v ${path.resolve(directoryPath)}:/ae assignexpert-${data.language}`);
+            const tcCount = (data.executionType === 'judge') ? data.testCases.length : 1;
+            await exec(`docker create -m ${data.memoryLimitMB}m --memory-swap ${data.memoryLimitMB}m --network none -e TIME_LIMIT=${data.timeLimitSeconds} -e TC_COUNT=${tcCount} --name ${jobId} -v ${path.resolve(directoryPath)}:/ae assignexpert-${data.language}`);
         } catch (err) {
             console.log(err);
             throw errors.ErrNoContainerCreate;
@@ -171,6 +172,37 @@ export class CodeExecutionService {
                     output.timeTakenMilliSeconds = parseFloat(stats[1]) * 1000.0;
                     outputs.push(output);
                 }
+            } else {
+                const output = {...defaultOutput};
+                const runTimeFilePath = `${directoryPath}/runtime1.txt`;
+                const runTimeFileContent = await fs.promises.readFile(runTimeFilePath, {
+                    encoding: 'utf-8'
+                });
+                if (runTimeFileContent !== "") {
+                    output.resultStatus = entity.ResultStatus.RE;
+                    output.resultMessage = runTimeFileContent;
+                    throw errors.ErrRuntimeError;
+                }
+                const timeoutFileContent = await fs.promises.readFile(`${directoryPath}/timeout1.txt`, {
+                    encoding: 'utf-8'
+                });
+                if (timeoutFileContent !== "0\n") {
+                    output.resultStatus = entity.ResultStatus.TLE;
+                    output.resultMessage = "Time limit exceeded.";
+                    throw errors.ErrTimeLimitExceeded;
+                }
+                const submissionOutput = await fs.promises.readFile(`${directoryPath}/submission1.txt`, {
+                    encoding: 'utf-8'
+                });
+                output.resultStatus = entity.ResultStatus.AC;
+                output.resultMessage = submissionOutput;
+                const statsFileContent = await fs.promises.readFile(`${directoryPath}/stats1.txt`, {
+                    encoding: 'utf-8'
+                });
+                const stats = statsFileContent.split("-");
+                output.memoryUsedKB = parseFloat(stats[0]);
+                output.timeTakenMilliSeconds = parseFloat(stats[1]) * 1000.0;
+                outputs.push(output);
             }
         } catch (err) {
             console.log(err);
