@@ -3,7 +3,7 @@ ENV TIME_LIMIT 0
 ENV TC_COUNT 0
 # build-base is a package that will install gcc and its dependencies, amongst other things.
 RUN apk add build-base
-COPY python.sh .
+COPY cpp.sh .
 RUN ["mkdir", "ae"]
 RUN ["chmod", "+x", "cpp.sh"]
 CMD ["/bin/sh", "-c", "./cpp.sh ${TC_COUNT} ${TIME_LIMIT}"]
