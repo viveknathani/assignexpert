@@ -4,6 +4,7 @@ import * as messages from './http_messages';
 
 const assignmentRouter: express.Router = express.Router();
 const assignmentService: AssignmentService = AssignmentService.getInstance();
+
 /**
  * @api {post} /api/assignment/ Insert assignment
  * @apiGroup Assignment
@@ -37,6 +38,7 @@ const assignmentService: AssignmentService = AssignmentService.getInstance();
  * @apiBody {string} testCase.input Mandatory
  * @apiBody {string} testCase.output Mandatory
  * @apiError (ClientError) {json} 400 InvalidStudentOperation
+ * @apiError (ClientError) {json} 400 InvalidFacultyOperation
  * @apiError (ServerError) {json} 500 Need to check server logs
  * @apiVersion 0.1.0
  * @apiDescription User needs to be authenticated befor this step.
@@ -54,6 +56,33 @@ assignmentRouter.post('/', async (req: express.Request, res: express.Response) =
         }
         console.log(err);
         res.status(500).json({message: messages.MESSAGE_500});
+    }
+});
+
+/**
+ * @api {post} /api/assignment/ Delete assignment
+ * @apiGroup Assignment
+ * @apiName Delete assignment
+ * @apiBody {string} assignmentId Mandatory
+ * @apiError (ClientError) {json} 400 InvalidStudentOperation
+ * @apiError (ClientError) {json} 400 InvalidFacultyOperation
+ * @apiError (ServerError) {json} 500 Need to check server logs
+ * @apiVersion 0.1.0
+ * @apiDescription User needs to be authenticated befor this step.
+ */
+assignmentRouter.delete('/', async (req: express.Request, res: express.Response) => {
+    try {
+        const { isStudent, facultyId } = req.body;
+        await assignmentService.deleteAssignment(req.body.assignmentId, facultyId, isStudent);
+        res.status(204).json({message: messages.MESSAGE_204});
+    } catch (err) {
+        if (err instanceof errors.ErrInvalidFacultyOperation
+            || err instanceof errors.ErrInvalidStudentOperation) {
+            res.status(400).json({ message: err.message });
+            return;
+        }
+        console.log(err);
+        res.status(500).json({message: messages.MESSAGE_500})
     }
 });
 
