@@ -100,27 +100,23 @@ export class AssignmentService {
 
     public async getAssignment(assignmentId: string, isStudent: boolean, entityId: string): Promise<entity.AssignmentDetails> {
         try {
-            let assignmentdetails: entity.AssignmentDetails =  await database.getAssignmentDetails(assignmentId);
-            if(assignmentdetails === undefined || assignmentdetails.assignment.id === undefined || assignmentdetails.assignment.id ===''){
+            let assignmentDetails: entity.AssignmentDetails =  await database.getAssignmentDetails(assignmentId);
+            if(assignmentDetails === undefined || assignmentDetails.assignment.id === undefined || assignmentDetails.assignment.id ===''){
                 throw new errors.ErrAssignmentNotFound;
             }
             if(!isStudent) {
-                const classEntry = await database.getClass(assignmentdetails.assignment.classId);
+                const classEntry = await database.getClass(assignmentDetails.assignment.classId);
                 if(classEntry.facultyId!=entityId){
                     throw new errors.ErrInvalidFacultyOperation;
                 }
-                return assignmentdetails;
             } else {
-                const isMember = await database.isMember(assignmentdetails.assignment.classId,entityId);
+                const isMember = await database.isMember(assignmentDetails.assignment.classId,entityId);
                 if(!isMember){
                     throw new errors.ErrInvalidStudentOperation;
                 }
-                const assignmentDetails: entity.AssignmentDetails = {
-                    assignment: assignmentdetails.assignment,
-                    templates: assignmentdetails.templates,
-                }
-                return assignmentdetails;
+                assignmentDetails.testCases = [];
             }
+            return assignmentDetails;
         } catch (err) {
             throw err;
         }

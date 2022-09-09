@@ -112,6 +112,35 @@ assignmentRouter.get('/all', async (req: express.Request, res: express.Response)
         console.log(err);
         res.status(500).json({message: messages.MESSAGE_500})
     }
-})
+});
+
+/**
+ * @api {get} /api/assignment Get an assignment
+ * @apiGroup Assignment
+ * @apiName Get an assignment
+ * @apiQuery {string} assignmentId, Mandatory
+ * @apiError (ClientError) {json} 400 InvalidStudentOperation
+ * @apiError (ClientError) {json} 400 InvalidFacultyOperation
+ * @apiError (ServerError) {json} 500 Need to check server logs
+ * @apiVersion 0.1.0
+ */
+ assignmentRouter.get('/', async (req: express.Request, res: express.Response) => {
+    try {
+        const assignmentId = req.query['assignmentId'] as string;
+        const { isStudent } = req.body;
+        const entityId = (isStudent) ? req.body.studentId : req.body.facultyId;
+        const assignment = await assignmentService.getAssignment(assignmentId, isStudent, entityId);
+        res.status(200).json(assignment);
+    } catch (err) {
+        if (err instanceof errors.ErrInvalidFacultyOperation
+            || err instanceof errors.ErrInvalidStudentOperation
+            || err instanceof errors.ErrAssignmentNotFound) {
+            res.status(400).json({ message: err.message });
+            return;
+        }
+        console.log(err);
+        res.status(500).json({message: messages.MESSAGE_500})
+    }
+});
 
 export default assignmentRouter;
