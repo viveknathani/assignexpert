@@ -74,7 +74,7 @@ test('insert/get/update/delete assignment and submission', async () => {
         constraints: '',
         points: 10,
         hasTemplate: true,
-        acceptedLanguages: [entity.language['cpp']],
+        acceptedLanguages: [entity.Language['cpp']],
         holdPoints: true,
         deadline: new Date(),
         difficultyLevel: entity.DifficultyLevel['EASY']
@@ -82,7 +82,7 @@ test('insert/get/update/delete assignment and submission', async () => {
     const template: entity.Template = {
         id: '1',
         assignmentId: assignment.id,
-        lang: entity.language['python'],
+        lang: entity.Language['python'],
         snippet: 'b',
         preSnippet: 'a',
         postSnippet: 'c'
@@ -125,7 +125,7 @@ test('insert/get/update/delete assignment and submission', async () => {
         assignmentId: assignmentId,
         studentId: student1.id,
         code: '',
-        lang: entity.language['python'],
+        lang: entity.Language['python'],
         resultStatus: entity.ResultStatus['AC'],
         resultMessage: '',
         timeTaken: 100,

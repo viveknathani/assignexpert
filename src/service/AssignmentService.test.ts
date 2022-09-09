@@ -67,7 +67,7 @@ const assignment: entity.Assignment = {
     constraints: '',
     points: 10,
     hasTemplate: true,
-    acceptedLanguages: [entity.language.c,entity.language.python],
+    acceptedLanguages: [entity.Language.c,entity.Language.python],
     holdPoints: true,
     deadline: new Date(),
     difficultyLevel: entity.DifficultyLevel.EASY
@@ -76,7 +76,7 @@ const assignment: entity.Assignment = {
 const template1: entity.Template = {
     id: '',
     assignmentId: assignment.id,
-    lang: entity.language.c,
+    lang: entity.Language.c,
     snippet: '',
     preSnippet: '',
     postSnippet: ''
@@ -85,7 +85,7 @@ const template1: entity.Template = {
 const template2: entity.Template = {
     id: '',
     assignmentId: assignment.id,
-    lang: entity.language.python,
+    lang: entity.Language.python,
     snippet: '',
     preSnippet: '',
     postSnippet: ''
@@ -126,7 +126,7 @@ const submission: entity.Submission = {
     assignmentId: assignmentDetails.assignment.id,
     studentId: student.id,
     code: '',
-    lang: entity.language.c,
+    lang: entity.Language.c,
     resultStatus: entity.ResultStatus.NA,
     resultMessage: '',
     timeTaken: 0,

@@ -137,11 +137,11 @@ export class AssignmentService {
         };
 
         //get code snippet to be run depending on the language
-        if(submission.lang===entity.language['c']){
+        if(submission.lang===entity.Language['c']){
             codeExecutionInput.language = "c";
             if(assignmentDetails.templates){
                 for(let i =0; i<assignmentDetails.templates.length; i++){
-                    if(assignmentDetails.templates[i].lang===entity.language['c']){
+                    if(assignmentDetails.templates[i].lang===entity.Language['c']){
                         codeExecutionInput.code = assignmentDetails.templates[i].preSnippet + submission.code + assignmentDetails.templates[i].postSnippet;
                     }
                 }
@@ -149,11 +149,11 @@ export class AssignmentService {
             if(codeExecutionInput.code===''){
                 codeExecutionInput.code = submission.code;
             }
-        } else if(submission.lang===entity.language['cpp']){
+        } else if(submission.lang===entity.Language['cpp']){
             codeExecutionInput.language = "cpp";
             if(assignmentDetails.templates){
                 for(let i =0; i<assignmentDetails.templates.length; i++){
-                    if(assignmentDetails.templates[i].lang===entity.language['cpp']){
+                    if(assignmentDetails.templates[i].lang===entity.Language['cpp']){
                         codeExecutionInput.code = assignmentDetails.templates[i].preSnippet + submission.code + assignmentDetails.templates[i].postSnippet;
                     }
                 }
@@ -161,11 +161,11 @@ export class AssignmentService {
             if(codeExecutionInput.code===''){
                 codeExecutionInput.code = submission.code;
             }
-        }else if(submission.lang===entity.language['python']){
+        }else if(submission.lang===entity.Language['python']){
             codeExecutionInput.language = "python";
             if(assignmentDetails.templates){
                 for(let i =0; i<assignmentDetails.templates.length; i++){
-                    if(assignmentDetails.templates[i].lang===entity.language['python']){
+                    if(assignmentDetails.templates[i].lang===entity.Language['python']){
                         codeExecutionInput.code = assignmentDetails.templates[i].preSnippet + submission.code + assignmentDetails.templates[i].postSnippet;
                     }
                 }
@@ -173,11 +173,11 @@ export class AssignmentService {
             if(codeExecutionInput.code===''){
                 codeExecutionInput.code = submission.code;
             }
-        }else if(submission.lang===entity.language['java']){
+        }else if(submission.lang===entity.Language['java']){
             codeExecutionInput.language = "java";
             if(assignmentDetails.templates){
                 for(let i =0; i<assignmentDetails.templates.length; i++){
-                    if(assignmentDetails.templates[i].lang===entity.language['java']){
+                    if(assignmentDetails.templates[i].lang===entity.Language['java']){
                         codeExecutionInput.code = assignmentDetails.templates[i].preSnippet + submission.code + assignmentDetails.templates[i].postSnippet;
                     }
                 }

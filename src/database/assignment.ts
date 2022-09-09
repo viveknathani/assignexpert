@@ -151,7 +151,7 @@ export async function updateSubmission(id: string) {
 export async function getSubmission(id: string): Promise<entity.Submission> {
 
     let submission: entity.Submission = {
-        id: '', assignmentId: '', studentId: '', code: '', lang: entity.language['c'], resultStatus: entity.ResultStatus['WA'], resultMessage: '',
+        id: '', assignmentId: '', studentId: '', code: '', lang: entity.Language['c'], resultStatus: entity.ResultStatus['WA'], resultMessage: '',
         timeTaken: 0, memoryUsedInKiloBytes: 0, points: 0, submittedAt: new Date(), markCompleted: false
     };
 
@@ -188,7 +188,7 @@ export async function getSubmissionSummariesForStudent(assignmentId: string, stu
 
 export async function getMarkedCompleteSubmissionForAssignmentForStudent(assignmentId: string, studentId: string): Promise<entity.Submission>{
     let submission: entity.Submission = {
-        id: '', assignmentId: '', studentId: '', code: '', lang: entity.language['c'], resultStatus: entity.ResultStatus['WA'], resultMessage: '',
+        id: '', assignmentId: '', studentId: '', code: '', lang: entity.Language['c'], resultStatus: entity.ResultStatus['WA'], resultMessage: '',
         timeTaken: 0, memoryUsedInKiloBytes: 0, points: 0, submittedAt: new Date(), markCompleted: false
     };
 

@@ -95,7 +95,7 @@ export interface Member {
     studentId: string
 }
 
-export enum language {
+export enum Language {
     c = 'c',
     cpp = 'cpp',
     python = 'python',
@@ -118,7 +118,7 @@ export interface Assignment {
     constraints: string,
     points: number,
     hasTemplate: boolean,
-    acceptedLanguages: language[],
+    acceptedLanguages: Language[],
     holdPoints: boolean,
     deadline: Date,
     difficultyLevel: DifficultyLevel,    
@@ -127,7 +127,7 @@ export interface Assignment {
 export interface Template {
     id: string,
     assignmentId: string,
-    lang: language,
+    lang: Language,
     snippet: string,
     preSnippet: string,
     postSnippet: string
@@ -159,7 +159,7 @@ export interface Submission {
     assignmentId: string,
     studentId: string,
     code: string,
-    lang: language,
+    lang: Language,
     resultStatus: ResultStatus,
     resultMessage: string,
     timeTaken: number,
