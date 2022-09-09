@@ -1,5 +1,4 @@
 export interface User {
-
     id: string,
     email: string,
     firstName: string,
@@ -23,7 +22,6 @@ export interface Faculty {
 }
 
 export interface SessionInfo {
-    
     userId: string,
     isStudent: boolean,
     facultyId?: string,
@@ -31,20 +29,17 @@ export interface SessionInfo {
 }
 
 export interface Preferences {
-
     uiTheme?: string,
     editorTheme?: string,
     wantsEmailNotifications?: boolean
 }
 
 export interface TestCase {
-
     input: string,
     output: string
 }
 
 export interface CodeExecutionInput {
-
     executionType: 'judge' | 'run';
     code: string,
     language: string,
@@ -55,7 +50,6 @@ export interface CodeExecutionInput {
 }
 
 export interface CodeExecutionOutput {
-
     resultStatus: ResultStatus,
     resultMessage: string,
     timeTaken: number,
