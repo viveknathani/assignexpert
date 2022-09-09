@@ -1,7 +1,7 @@
 FROM eclipse-temurin:11-alpine
 ENV TIME_LIMIT 0
 ENV TC_COUNT 0
-COPY cpp.sh .
+COPY java.sh .
 RUN ["mkdir", "ae"]
 RUN ["chmod", "+x", "java.sh"]
 CMD ["/bin/sh", "-c", "./java.sh ${TC_COUNT} ${TIME_LIMIT}"]
