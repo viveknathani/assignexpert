@@ -172,8 +172,8 @@
                     language: language,
                     inputForRun: textarea.value,
                     testCases: [],
-                    timeLimit: 5,
-                    memoryLimit: 512
+                    timeLimitSeconds: 5,
+                    memoryLimitMB: 512
                 })
             }).then((res) => res.json())
             .then((data) => {
@@ -188,11 +188,11 @@
                         method: 'GET'
                     }).then((res) => res.json())
                     .then((data) => {
-                        if (data.resultStatus) {
+                        if (data[0].resultStatus) {
                             const resultArea = document.getElementById("result");
                             const stats = document.createElement('p');
                             stats.id = 'stats';
-                            stats.innerText = `memory used = ${data.memoryUsed}KB, time taken = ${data.timeTaken}s`;
+                            stats.innerText = `memory used = ${data[0].memoryUsed}KB, time taken = ${data[0].timeTaken}s`;
                             const textarea = document.createElement('textarea');
                             textarea.innerText = data.resultMessage;
                             textarea.diabled = true;
