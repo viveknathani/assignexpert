@@ -1,7 +1,7 @@
 import * as entity from '../entity';
 import * as database from '../database';
 import * as errors from './errors';
-import { CodeExecutionService } from './CodeExecutionService';
+import { CodeExecutionService, EmailService } from './index';
 
 export class AssignmentService {
     private static instance: AssignmentService;
@@ -27,6 +27,14 @@ export class AssignmentService {
                 throw new errors.ErrInvalidFacultyOperation;
             }
             const id = await database.insertAssignment(assignmentDetails);
+            const emailService: EmailService = EmailService.getInstance();
+            const students = await database.getStudentsWithEmail(assignmentDetails.assignment.classId);
+            const emails = students.map(student => student.email)
+            emailService.sendEmail({
+                to: emails,
+                subject: "New assignment",
+                content: `You have a new assignment - ${assignmentDetails.assignment.title}`
+            });
             return id;
         } catch (err) {
             throw err;
@@ -132,8 +140,8 @@ export class AssignmentService {
             language: '',
             inputForRun: '',
             testCases: [],
-            timeLimit: 10,
-            memoryLimit: 1000,
+            timeLimitSeconds: 10,
+            memoryLimitMB: 1000,
         };
 
         //get code snippet to be run depending on the language
@@ -230,16 +238,16 @@ export class AssignmentService {
                 if(data === undefined){
                     throw new errors.ErrSubmissionNotFound;
                 }
-                submission.memoryUsedInKiloBytes = data.memoryUsed;
-                submission.timeTaken = data.timeTaken;
-                submission.resultStatus = data.resultStatus;
-                submission.resultMessage = data.resultMessage;
-                if(data.resultStatus===entity.ResultStatus.AC){
+                submission.memoryUsedInKiloBytes = data[0].memoryUsedKB;
+                submission.timeTaken = data[0].timeTakenMilliSeconds;
+                submission.resultStatus = data[0].resultStatus;
+                submission.resultMessage = data[0].resultMessage;
+                if(data[0].resultStatus===entity.ResultStatus.AC){
                     submission.points = assignmentDetails.assignment.points;
                 } else {
                     submission.points = 0;
                 }
-                await database.updateSubmissionResult(submission.id,data,submission.points);                
+                await database.updateSubmissionResult(submission.id,data[0],submission.points);                
             }
             
             //display resultStatus as Not Available for assignments where holdPoints is true

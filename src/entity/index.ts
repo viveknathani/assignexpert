@@ -186,3 +186,9 @@ export interface Email {
     subject: string,
     content: string
 }
+
+export interface StudentWithEmail {
+    id: string,
+    userId: string,
+    email: string
+}
