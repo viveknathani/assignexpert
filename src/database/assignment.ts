@@ -202,5 +202,5 @@ export async function getMarkedCompleteSubmissionForAssignmentForStudent(assignm
 }
 
 export async function updateSubmissionResult(submissionId: string,data: entity.CodeExecutionOutput, points: number) {
-    await execWithTransaction(statementUpdateSubmissionResult, data.memoryUsed, data.timeTaken, data.resultStatus, data.resultMessage, points, submissionId);
+    await execWithTransaction(statementUpdateSubmissionResult, data.memoryUsedKB, data.timeTakenMilliSeconds, data.resultStatus, data.resultMessage, points, submissionId);
 }
