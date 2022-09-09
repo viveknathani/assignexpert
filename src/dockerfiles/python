@@ -1,4 +1,7 @@
 FROM python:3.9-alpine
 ENV TIME_LIMIT 0
+ENV TC_COUNT 0
+COPY python.sh .
 RUN ["mkdir", "ae"]
-CMD ["/bin/sh", "-c", "touch /ae/compile.txt; timeout ${TIME_LIMIT} /usr/bin/time -f '%M-%e' -o /ae/stats.txt python /ae/submission.py < /ae/input.txt > /ae/submission.txt 2> /ae/runtime.txt; echo $? > /ae/timeout.txt"]
+RUN ["chmod", "+x", "python.sh"]
+CMD ["/bin/sh", "-c", "./python.sh ${TC_COUNT} ${TIME_LIMIT}"]

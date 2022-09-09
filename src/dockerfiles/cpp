@@ -1,6 +1,9 @@
 FROM alpine:latest
 ENV TIME_LIMIT 0
+ENV TC_COUNT 0
 # build-base is a package that will install gcc and its dependencies, amongst other things.
 RUN apk add build-base
+COPY python.sh .
 RUN ["mkdir", "ae"]
-CMD ["/bin/sh", "-c", "g++ /ae/submission.cpp -o /ae/submission 2> /ae/compile.txt; timeout ${TIME_LIMIT} /usr/bin/time -f '%M-%e' -o /ae/stats.txt /ae/submission < /ae/input.txt > /ae/submission.txt 2> /ae/runtime.txt; echo $? > /ae/timeout.txt"]
+RUN ["chmod", "+x", "cpp.sh"]
+CMD ["/bin/sh", "-c", "./cpp.sh ${TC_COUNT} ${TIME_LIMIT}"]
