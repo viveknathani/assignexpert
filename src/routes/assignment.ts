@@ -47,6 +47,11 @@ assignmentRouter.post('/', async (req: express.Request, res: express.Response) =
         await assignmentService.insertAssignment(req.body, isStudent, facultyId);
         res.status(201).json({messages: messages.MESSAGE_201});
     } catch (err) {
+        if (err instanceof errors.ErrInvalidFacultyOperation
+            || err instanceof errors.ErrInvalidStudentOperation) {
+            res.status(400).json({ message: err.message });
+            return;
+        }
         console.log(err);
         res.status(500).json({message: messages.MESSAGE_500});
     }
