@@ -107,7 +107,7 @@ export class CodeExecutionService {
 
     private async createContainer(data: entity.CodeExecutionInput, directoryPath: string, jobId: string) {
         try {
-            await exec(`docker create -m ${data.memoryLimitMB}m --memory-swap ${data.memoryLimitMB}m --network none -e TIME_LIMIT=${data.timeLimitSeconds} --name ${jobId} -v ${path.resolve(directoryPath)}:/ae assignexpert-${data.language}`);
+            await exec(`docker create -m ${data.memoryLimitMB}m --memory-swap ${data.memoryLimitMB}m --network none -e TIME_LIMIT=${data.timeLimitSeconds} -e TC_COUNT=${data.testCases.length} --name ${jobId} -v ${path.resolve(directoryPath)}:/ae assignexpert-${data.language}`);
         } catch (err) {
             console.log(err);
             throw errors.ErrNoContainerCreate;
@@ -135,7 +135,7 @@ export class CodeExecutionService {
             }
             if (data.executionType === 'judge') {
                 for (let i = 0; i < data.testCases.length; ++i) {
-                    const output = defaultOutput;
+                    const output = {...defaultOutput};
                     const runTimeFilePath = `${directoryPath}/runtime${i+1}.txt`;
                     const runTimeFileContent = await fs.promises.readFile(runTimeFilePath, {
                         encoding: 'utf-8'
@@ -156,7 +156,7 @@ export class CodeExecutionService {
                     const submissionOutput = await fs.promises.readFile(`${directoryPath}/submission${i+1}.txt`, {
                         encoding: 'utf-8'
                     });
-                    if (submissionOutput !== data.testCases[i].output) {
+                    if (submissionOutput !== (data.testCases[i].output + '\n')) {
                         output.resultStatus = entity.ResultStatus.WA;
                         output.resultMessage = "Wrong answer";
                     } else {
@@ -177,7 +177,7 @@ export class CodeExecutionService {
             if (this.isExecException(err)) {
                 const MLE_CODE = 137;
                 if (err.code === MLE_CODE) {
-                    const output = defaultOutput;
+                    const output = {...defaultOutput};
                     output.resultStatus = entity.ResultStatus.MLE;
                     output.resultMessage = "Memory limit exceeded."
                     outputs.push(output);
