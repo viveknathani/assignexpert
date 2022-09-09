@@ -167,3 +167,12 @@ export class ErrAssignmentAlreadyCompleted extends Error {
         Object.setPrototypeOf(this,ErrAssignmentAlreadyCompleted.prototype);
     }
 }
+
+export class ErrInvalidJobId extends Error {
+
+    constructor() {
+
+        super('Job id needs to have the prefix: job-');
+        Object.setPrototypeOf(this, ErrInvalidJobId.prototype);
+    }
+}

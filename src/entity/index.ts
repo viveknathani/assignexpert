@@ -40,20 +40,21 @@ export interface TestCase {
 }
 
 export interface CodeExecutionInput {
+    customJobId?: string
     executionType: 'judge' | 'run';
     code: string,
     language: string,
     inputForRun: string,
     testCases: TestCase[],
-    timeLimit: number,
-    memoryLimit: number
+    timeLimitSeconds: number,
+    memoryLimitMB: number
 }
 
 export interface CodeExecutionOutput {
     resultStatus: ResultStatus,
     resultMessage: string,
-    timeTaken: number,
-    memoryUsed: number
+    timeTakenMilliSeconds: number,
+    memoryUsedKB: number
 }
 
 export enum CodeExecutionProgress {

@@ -33,157 +33,197 @@ export class CodeExecutionService {
         return CodeExecutionService.instance;
     }
 
-    public runCode(codeExecutionInput: entity.CodeExecutionInput) {
-        try {
-            if (!this.supportedLanguages.has(codeExecutionInput.language)) {
-                throw new errors.ErrUnsupportedLanguage;
+    public runCode(codeExecutionInput: entity.CodeExecutionInput): string {
+
+        if (!this.supportedLanguages.has(codeExecutionInput.language)) {
+            throw new errors.ErrUnsupportedLanguage;
+        }
+
+        let jobId = ''; 
+        if (codeExecutionInput.customJobId) {
+            if (!codeExecutionInput.customJobId.startsWith("job-")) {
+                throw new errors.ErrInvalidJobId;
             }
-            // appending the "job-" prefix to the uuid can help
-            // in differentiating the uuid from our session-ids during debugging
-            const jobId = `job-${uuidv4()}`;
-            jobQueue.addExecutionJob(jobId, codeExecutionInput);
-            return jobId;
+            jobId = codeExecutionInput.customJobId;
+        } else {
+            jobId = `job-${uuidv4()}`;
+        }
+        
+        jobQueue.addExecutionJob(jobId, codeExecutionInput);
+        return jobId;
+    }
+
+    public job = async(job: Job) => {
+
+        try {
+            if (!job.id) {
+                throw new errors.ErrInvalidJobId;
+            }
+            const data: entity.CodeExecutionInput = job.data;
+            const executionAreaPath = `./execution-area`;
+            const directoryPath = `${executionAreaPath}/${job.id}`;
+            const submissionFilePath = `${directoryPath}/${this.getFileName(data.language)}`;
+            data.timeLimitSeconds = Math.min(data.timeLimitSeconds, 10); // 10 seconds
+            data.memoryLimitMB = Math.min(data.memoryLimitMB, 1024); // 1GB
+    
+            await this.setupDirectory(directoryPath, submissionFilePath, data);
+            await this.createContainer(data, directoryPath, job.id);
+            const outputs = await this.runContainer(data, directoryPath, job.id);
+            await this.setResultInCache(job.id, outputs);
+            await this.destoryEverything(job.id, directoryPath);
         } catch (err) {
             throw err;
         }
     }
 
-    public job = async(job: Job) => {
+    private async setupDirectory(directoryPath: string, submissionFilePath: string, 
+        data: entity.CodeExecutionInput) {
+            try {
+                await fs.promises.mkdir(directoryPath);
+                await fs.promises.writeFile(submissionFilePath, data.code, {
+                    encoding: 'utf-8'
+                });
+                if (data.executionType === 'judge') {
+                    let promises = [];
+                    for (let i = 0; i < data.testCases.length; ++i) {
+                        const inputFilePath = `${directoryPath}/input${i+1}.txt`;
+                        const promise = fs.promises.writeFile(inputFilePath, data.testCases[i].input + '\n', {
+                            encoding: 'utf-8'
+                        });
+                        promises.push(promise);
+                    }
+                    await Promise.all(promises);
+                } else {
+                    const inputFilePath = `${directoryPath}/input.txt`;
+                    await fs.promises.writeFile(inputFilePath, data.inputForRun, {
+                        encoding: 'utf-8'
+                    });
+                }
+            } catch (err) {
+                console.log(err);
+                throw errors.ErrJobMkdir;
+            } 
+    }
 
-        const data: entity.CodeExecutionInput = job.data;
-        const executionAreaPath = `./execution-area`;
-        const directoryPath = `${executionAreaPath}/${job.id}`;
-        const submissionFilePath = `${directoryPath}/${this.getFileName(data.language)}`;
-        const inputFilePath = `${directoryPath}/input.txt`;
-        const expectedOutputFilePath = `${directoryPath}/output.txt`;
-        const actualOutputFilePath = `${directoryPath}/submission.txt`;
-
-        // control time limit and memory limit
-        data.timeLimit = Math.min(data.timeLimit, 10); // 10 seconds
-        data.memoryLimit = Math.min(data.memoryLimit, 1024); // 1GB
-
-        // setup directory
+    private async createContainer(data: entity.CodeExecutionInput, directoryPath: string, jobId: string) {
         try {
-            await job.updateProgress(entity.CodeExecutionProgress.START)
-            await fs.promises.mkdir(directoryPath);
-            await fs.promises.writeFile(submissionFilePath, data.code, {
-                encoding: 'utf-8'
-            });
-            await fs.promises.writeFile(inputFilePath, 
-                (data.executionType === 'judge')
-                ? this.getFileContent(data.testCases, true)
-                : data.inputForRun, {
-                encoding: 'utf-8'
-            });
-            await fs.promises.writeFile(expectedOutputFilePath, this.getFileContent(data.testCases, false), {
-                encoding: 'utf-8'
-            });
-            await job.updateProgress(entity.CodeExecutionProgress.MKDIR);
-        } catch (err) {
-            console.log(err);
-            throw errors.ErrJobMkdir;
-        }
-
-        // create container with a mounted directory with memory limit, time limit and no network support
-        try {
-            await exec(`docker create -m ${data.memoryLimit}m --memory-swap ${data.memoryLimit}m --network none -e TIME_LIMIT=${data.timeLimit} --name ${job.id} -v ${path.resolve(directoryPath)}:/ae assignexpert-${data.language}`);
-            await job.updateProgress(entity.CodeExecutionProgress.DOCKER_CREATE)
+            await exec(`docker create -m ${data.memoryLimitMB}m --memory-swap ${data.memoryLimitMB}m --network none -e TIME_LIMIT=${data.timeLimitSeconds} --name ${jobId} -v ${path.resolve(directoryPath)}:/ae assignexpert-${data.language}`);
         } catch (err) {
             console.log(err);
             throw errors.ErrNoContainerCreate;
         }
+    }
 
-        const codeExecutionOutput: entity.CodeExecutionOutput = {
-            timeTaken: 0,
-            memoryUsed: 0,
-            resultStatus: entity.ResultStatus.CE,
+    private async runContainer(data: entity.CodeExecutionInput, directoryPath: string, jobId: string): Promise<entity.CodeExecutionOutput[]> {
+        const defaultOutput: entity.CodeExecutionOutput = {
+            timeTakenMilliSeconds: 0,
+            memoryUsedKB: 0,
+            resultStatus: entity.ResultStatus.NA,
             resultMessage: ''
         };
-
-        // run the container, check for {CE, RE, TLE, MLE, WA, AC}, 
-        // compute stats, store result in cache
+        const outputs = [];
         try {
-            await exec(`docker start -a ${job.id}`);
-            await job.updateProgress(entity.CodeExecutionProgress.DOCKER_START);
-
+            await exec(`docker start -a ${jobId}`);
             const compilationFileContent = await fs.promises.readFile(`${directoryPath}/compile.txt`, {
                 encoding: 'utf-8'
             });
             if (compilationFileContent !== "") {
-                codeExecutionOutput.resultStatus = entity.ResultStatus.CE;
-                codeExecutionOutput.resultMessage = compilationFileContent;
+                defaultOutput.resultStatus = entity.ResultStatus.CE;
+                defaultOutput.resultMessage = compilationFileContent;
+                outputs.push(defaultOutput);
                 throw errors.ErrCodeCompileError;
             }
-
-            const runtimeFileContent = await fs.promises.readFile(`${directoryPath}/runtime.txt`, {
-                encoding: 'utf-8'
-            });
-            if (runtimeFileContent !== "") {
-                codeExecutionOutput.resultStatus = entity.ResultStatus.RE;
-                codeExecutionOutput.resultMessage = runtimeFileContent;
-                throw errors.ErrRuntimeError;
-            }
-
-            const timeoutFileContent = await fs.promises.readFile(`${directoryPath}/timeout.txt`, {
-                encoding: 'utf-8'
-            });
-            if (timeoutFileContent !== "0\n") {
-                codeExecutionOutput.resultStatus = entity.ResultStatus.TLE;
-                codeExecutionOutput.resultMessage = "Time limit exceeded.";
-                throw errors.ErrTimeLimitExceeded;
-            }
-
             if (data.executionType === 'judge') {
-                const diff = await this.processOutputs(actualOutputFilePath, expectedOutputFilePath);
-                if (diff !== "") {
-                    codeExecutionOutput.resultStatus = entity.ResultStatus.WA;
-                    codeExecutionOutput.resultMessage = diff;
-                } else {
-                    codeExecutionOutput.resultStatus = entity.ResultStatus.AC;
-                    codeExecutionOutput.resultMessage = "";
+                for (let i = 0; i < data.testCases.length; ++i) {
+                    const output = defaultOutput;
+                    const runTimeFilePath = `${directoryPath}/runtime${i+1}.txt`;
+                    const runTimeFileContent = await fs.promises.readFile(runTimeFilePath, {
+                        encoding: 'utf-8'
+                    });
+                    if (runTimeFileContent !== "") {
+                        output.resultStatus = entity.ResultStatus.RE;
+                        output.resultMessage = runTimeFileContent;
+                        throw errors.ErrRuntimeError;
+                    }
+                    const timeoutFileContent = await fs.promises.readFile(`${directoryPath}/timeout${i+1}.txt`, {
+                        encoding: 'utf-8'
+                    });
+                    if (timeoutFileContent !== "0\n") {
+                        output.resultStatus = entity.ResultStatus.TLE;
+                        output.resultMessage = "Time limit exceeded.";
+                        throw errors.ErrTimeLimitExceeded;
+                    }
+                    const submissionOutput = await fs.promises.readFile(`${directoryPath}/submission${i+1}.txt`, {
+                        encoding: 'utf-8'
+                    });
+                    if (submissionOutput !== data.testCases[i].output) {
+                        output.resultStatus = entity.ResultStatus.WA;
+                        output.resultMessage = "Wrong answer";
+                    } else {
+                        output.resultStatus = entity.ResultStatus.AC;
+                        output.resultMessage = "";
+                    }
+                    const statsFileContent = await fs.promises.readFile(`${directoryPath}/stats${i+1}.txt`, {
+                        encoding: 'utf-8'
+                    });
+                    const stats = statsFileContent.split("-");
+                    output.memoryUsedKB = parseFloat(stats[0]);
+                    output.timeTakenMilliSeconds = parseFloat(stats[1]) * 1000.0;
+                    outputs.push(output);
                 }
-            } else {
-                const output = await fs.promises.readFile(actualOutputFilePath, {
-                    encoding: 'utf-8'
-                });
-                codeExecutionOutput.resultStatus = entity.ResultStatus.AC;
-                codeExecutionOutput.resultMessage = output;
             }
-
-            const statsFileContent = await fs.promises.readFile(`${directoryPath}/stats.txt`, {
-                encoding: 'utf-8'
-            });
-            const stats = statsFileContent.split("-");
-            codeExecutionOutput.memoryUsed = parseFloat(stats[0]);
-            codeExecutionOutput.timeTaken = parseFloat(stats[1]) * 1000.0;
-            await job.updateProgress(entity.CodeExecutionProgress.COMPUTE_RESULT);
         } catch (err) {
             console.log(err);
             if (this.isExecException(err)) {
                 const MLE_CODE = 137;
                 if (err.code === MLE_CODE) {
-                    codeExecutionOutput.resultStatus = entity.ResultStatus.MLE;
-                    codeExecutionOutput.resultMessage = "Memory limit exceeded."
+                    const output = defaultOutput;
+                    output.resultStatus = entity.ResultStatus.MLE;
+                    output.resultMessage = "Memory limit exceeded."
+                    outputs.push(output);
                 }
             }
-        } finally {
-            await this.setResultInCache(job.id || job.name, codeExecutionOutput);
         }
+        return outputs;
+    }
 
-        // destory the container and the directory
+    private async setResultInCache(jobId: string, data: entity.CodeExecutionOutput[]) {
         try {
-            await exec(`docker rm ${job.id}`);
-            await fs.promises.rm(directoryPath, {
-                recursive: true,
-                force: true
-            });
-            await job.updateProgress(entity.CodeExecutionProgress.CLEAN);
+            const cacheClient = getClient();
+            if (!cacheClient.isOpen) {
+                await cacheClient.connect();
+            }
+            await cacheClient.set(jobId, JSON.stringify(data));
         } catch (err) {
             throw err;
         }
     }
 
-    public async getJobResult(jobId: string): Promise<entity.CodeExecutionOutput | undefined> {
+    private async destoryEverything(jobId: string, directoryPath: string) {
+        await exec(`docker rm ${jobId}`);
+        await fs.promises.rm(directoryPath, {
+            recursive: true,
+            force: true
+        });
+    }
+
+    private getFileName(language: string): string {
+        if (language === "python") {
+            return "submission.py";
+        }
+        if (language === "java") {
+            return "Submission.java";
+        }
+        return `submission.${language}`;
+    }
+
+    private isExecException(object: unknown): object is ExecException {
+        return Object.prototype.hasOwnProperty.call(object, "code")
+        && Object.prototype.hasOwnProperty.call(object, "killed")
+        && Object.prototype.hasOwnProperty.call(object, "cmd")
+    }
+
+    public async getJobResult(jobId: string): Promise<entity.CodeExecutionOutput[] | undefined> {
         try {
             const cacheClient = getClient();
             if (!cacheClient.isOpen) {
@@ -199,52 +239,4 @@ export class CodeExecutionService {
         }
     }
 
-    private async setResultInCache(jobId: string, data: entity.CodeExecutionOutput) {
-        try {
-            const cacheClient = getClient();
-            if (!cacheClient.isOpen) {
-                await cacheClient.connect();
-            }
-            await cacheClient.set(jobId, JSON.stringify(data));
-        } catch (err) {
-            throw err;
-        }
-    }
-    
-    private getFileName(language: string): string {
-        if (language === "python") {
-            return "submission.py";
-        }
-        if (language === "java") {
-            return "Submission.java";
-        }
-        return `submission.${language}`;
-    }
-
-    private getFileContent(testCases: entity.TestCase[], writeInput: boolean): string {
-        let result = (writeInput) ? `${testCases.length}\n` : "";
-        for (let i = 0; i < testCases.length; ++i) {
-            result += (writeInput) ? `${testCases[i].input}\n` : `${testCases[i].output}\n`;
-        }
-        return result;
-    }
-
-    private async processOutputs(actualOutputFile: string, expectedOutputFile: string): Promise<string> {
-        try {
-            const { stdout } = await exec(`diff ${actualOutputFile} ${expectedOutputFile} 2>&1`);
-            return stdout;
-        } catch (err) {
-            if (this.isExecException(err)) {
-                return err.message;
-            }
-            return "";
-        }
-        
-    }
-
-    private isExecException(object: unknown): object is ExecException {
-        return Object.prototype.hasOwnProperty.call(object, "code")
-        && Object.prototype.hasOwnProperty.call(object, "killed")
-        && Object.prototype.hasOwnProperty.call(object, "cmd")
-    }
 }
