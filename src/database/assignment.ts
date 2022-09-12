@@ -5,8 +5,8 @@ import { execWithTransaction, queryWithTransaction } from '.';
 
 const statementInsertAssignment = `insert into assignments (id, "classId", title,
     description, "sampleInput", "sampleOutput", constraints, points, 
-    "hasTemplate", "acceptedLanguages", "holdPoints", deadline, "difficultyLevel") 
-    values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13);`
+    "hasTemplate", "acceptedLanguages", "holdPoints", deadline, "difficultyLevel", "timeLimitSeconds", "memoryLimitMB") 
+    values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15);`
 const statementDeleteAssignment = "delete from assignments where id = $1;"
 const statementSelectAssignment = `select * from assignments where id=$1;`
 const statementSelectAssignmentSummariesForClass = `select id, title, "difficultyLevel" from assignments where assignments."classId" = $1;`
@@ -27,7 +27,7 @@ const statementSelectSubmissionSummariesByAssignmentId = `select "rollNumber" as
     from submissions, students where "assignmentId" = $1 and students.id = submissions."studentId";`
 const statementSelectSubmissionSummariesByAssignmentIdForStudent = `select "rollNumber" as "studentRollNumber", "resultStatus", points, "timeTaken", "memoryUsedInKiloBytes", "submittedAt"
 from submissions, students where "assignmentId" = $1 and students.id = submissions."studentId" and students.id = $2;`
-const statementGetMarkedCompleteSubmissionForAssignmentForStudent = `select * from submissions where "assignmentId" = $1, "studentId" = $2 and "markCompleted"=true;`
+const statementGetMarkedCompleteSubmissionForAssignmentForStudent = `select * from submissions where "assignmentId" = $1 and "studentId" = $2 and "markCompleted"=true;`
 const statementUpdateSubmissionResult = `update submissions set "memoryUsedInKiloBytes" = $1, "timeTaken" = $2, "resultStatus" = $3, "resultMessage" = $4, points = $5 where id = $6;`
 
 
@@ -38,7 +38,8 @@ export async function insertAssignment(assignmentDetails: entity.AssignmentDetai
     assignmentDetails.assignment.id = uuidv4();
     await execWithTransaction(statementInsertAssignment, assignmentDetails.assignment.id, assignmentDetails.assignment.classId, assignmentDetails.assignment.title,
         assignmentDetails.assignment.description, assignmentDetails.assignment.sampleInput, assignmentDetails.assignment.sampleOutput, assignmentDetails.assignment.constraints,
-        assignmentDetails.assignment.points, assignmentDetails.assignment.hasTemplate, assignmentDetails.assignment.acceptedLanguages, assignmentDetails.assignment.holdPoints, assignmentDetails.assignment.deadline, assignmentDetails.assignment.difficultyLevel);
+        assignmentDetails.assignment.points, assignmentDetails.assignment.hasTemplate, assignmentDetails.assignment.acceptedLanguages, assignmentDetails.assignment.holdPoints, assignmentDetails.assignment.deadline, assignmentDetails.assignment.difficultyLevel,
+        assignmentDetails.assignment.timeLimitSeconds, assignmentDetails.assignment.memoryLimitMB);
     if(assignmentDetails.templates) {
         for(let i = 0; i<assignmentDetails.templates.length; i++) {
             assignmentDetails.templates[i].id = uuidv4();
@@ -91,7 +92,8 @@ export async function getAssignmentDetails(id: string): Promise<entity.Assignmen
     let assignment: entity.Assignment = {
         id: '', classId: '', title: '', description: '', sampleInput: '', sampleOutput: '',
         constraints: '', points: 0, hasTemplate: false, acceptedLanguages: [],holdPoints: true, 
-        deadline: new Date(), difficultyLevel: entity.DifficultyLevel.EASY
+        deadline: new Date(), difficultyLevel: entity.DifficultyLevel.EASY,
+        timeLimitSeconds: 0, memoryLimitMB: 0
     };
     await queryWithTransaction(statementSelectAssignment, function scanRows(result: QueryResult<any>): Error | undefined {        
         assignment = result.rows[0];
@@ -136,6 +138,8 @@ export async function getAssignmentSummariesForClass( id: string): Promise <enti
 // take a submission and insert it into the database.
 // uuid will be created and assigned before inserting.
 export async function insertSubmission(submission: entity.Submission): Promise<string> {
+    
+    submission.id = uuidv4();
     await execWithTransaction(statementInsertSubmission, submission.id, submission.assignmentId, submission.studentId,
         submission.code, submission.lang, submission.resultStatus, submission.resultMessage, submission.timeTaken, submission.memoryUsedInKiloBytes,
         submission.points, submission.submittedAt, submission.markCompleted);

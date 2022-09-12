@@ -70,7 +70,9 @@ const assignment: entity.Assignment = {
     acceptedLanguages: [entity.Language.c,entity.Language.python],
     holdPoints: true,
     deadline: new Date(),
-    difficultyLevel: entity.DifficultyLevel.EASY
+    difficultyLevel: entity.DifficultyLevel.EASY,
+    timeLimitSeconds: 0,
+    memoryLimitMB: 0
 }
 
 const template1: entity.Template = {

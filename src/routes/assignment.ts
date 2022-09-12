@@ -1,6 +1,7 @@
 import * as express from 'express';
 import { AssignmentService, errors } from '../service';
 import * as messages from './http_messages';
+import * as entity from '../entity';
 
 const assignmentRouter: express.Router = express.Router();
 const assignmentService: AssignmentService = AssignmentService.getInstance();
@@ -18,6 +19,8 @@ const assignmentService: AssignmentService = AssignmentService.getInstance();
  * @apiBody {string} assignment.sampleInput Mandatory
  * @apiBody {string} assignment.sampleOutput Mandatory
  * @apiBody {string} assignment.constraints Mandatory
+ * @apiBody {number} assignment.timeLimitSeconds Mandatory
+ * @apiBody {number} assignment.memoryLimitMB Mandatory
  * @apiBody {number} assignment.points Mandatory
  * @apiBody {boolean} assignment.hasTemplate Mandatory
  * @apiBody {[]string} assignment.acceptedLanguages Mandatory, each element has to be one of {c, cpp, java, python} 
@@ -135,6 +138,46 @@ assignmentRouter.get('/all', async (req: express.Request, res: express.Response)
         if (err instanceof errors.ErrInvalidFacultyOperation
             || err instanceof errors.ErrInvalidStudentOperation
             || err instanceof errors.ErrAssignmentNotFound) {
+            res.status(400).json({ message: err.message });
+            return;
+        }
+        console.log(err);
+        res.status(500).json({message: messages.MESSAGE_500})
+    }
+});
+
+/**
+ * @api {post} /api/assignment/submission Make a submission
+ * @apiGroup Assignment
+ * @apiName Make a submission
+ * @apiBody {string} assignmentId Mandatory
+ * @apiBody {string} code Mandatory
+ * @apiBody {string} lang Mandatory
+ * @apiError (ClientError) {json} 400 AssignmentAlreadyCompleted
+ * @apiError (ServerError) {json} 500 Need to check server logs
+ * @apiVersion 0.1.0
+ * @apiDescription User needs to be authenticated befor this step.
+ */
+assignmentRouter.post('/submission', async (req: express.Request, res: express.Response) => {
+    try {
+        const { assignmentId, code, lang } = req.body;
+        const jobId = await assignmentService.makeSubmission({
+            id: '',
+            studentId: req.body.studentId,
+            assignmentId: assignmentId,
+            code: code,
+            lang: lang,
+            markCompleted: false,
+            resultStatus: entity.ResultStatus.NA,
+            resultMessage: '',
+            timeTaken: 0,
+            memoryUsedInKiloBytes: 0,
+            points: 0,
+            submittedAt: new Date(),
+        });
+        res.status(201).json({jobId});
+    } catch (err) {
+        if (err instanceof errors.ErrAssignmentAlreadyCompleted) {
             res.status(400).json({ message: err.message });
             return;
         }

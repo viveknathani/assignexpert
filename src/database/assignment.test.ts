@@ -77,7 +77,9 @@ test('insert/get/update/delete assignment and submission', async () => {
         acceptedLanguages: [entity.Language['cpp']],
         holdPoints: true,
         deadline: new Date(),
-        difficultyLevel: entity.DifficultyLevel['EASY']
+        difficultyLevel: entity.DifficultyLevel['EASY'],
+        timeLimitSeconds: 0,
+        memoryLimitMB: 0
     }
     const template: entity.Template = {
         id: '1',

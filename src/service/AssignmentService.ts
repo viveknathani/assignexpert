@@ -123,88 +123,40 @@ export class AssignmentService {
     }
 
     public async makeSubmission(submission: entity.Submission): Promise<string> {
+
         const codeExecutionService: CodeExecutionService = CodeExecutionService.getInstance();
         const assignmentDetails: entity.AssignmentDetails = await database.getAssignmentDetails(submission.assignmentId);
         const completeSubmission = await database.getMarkedCompleteSubmissionForAssignmentForStudent(submission.assignmentId,submission.studentId);
-        if(completeSubmission === undefined || completeSubmission.id === ''|| completeSubmission.id === undefined){
+        if(completeSubmission !== undefined && completeSubmission.id !== ''){
             throw new errors.ErrAssignmentAlreadyCompleted;
         }
         
         let codeExecutionInput: entity.CodeExecutionInput = {
             executionType: 'judge',
-            code: '',
-            language: '',
+            code: submission.code,
+            language: submission.lang,
             inputForRun: '',
-            testCases: [],
-            timeLimitSeconds: 10,
-            memoryLimitMB: 1000,
+            testCases: assignmentDetails.testCases || [],
+            timeLimitSeconds: assignmentDetails.assignment.timeLimitSeconds,
+            memoryLimitMB: assignmentDetails.assignment.memoryLimitMB,
         };
 
-        //get code snippet to be run depending on the language
-        if(submission.lang===entity.Language['c']){
-            codeExecutionInput.language = "c";
-            if(assignmentDetails.templates){
-                for(let i =0; i<assignmentDetails.templates.length; i++){
-                    if(assignmentDetails.templates[i].lang===entity.Language['c']){
-                        codeExecutionInput.code = assignmentDetails.templates[i].preSnippet + submission.code + assignmentDetails.templates[i].postSnippet;
-                    }
+        if (assignmentDetails.assignment.hasTemplate && assignmentDetails.templates) {
+            assignmentDetails.templates.forEach((template) => {
+                if (codeExecutionInput.language === template.lang) {
+                    const pre = template.preSnippet;
+                    const post = template.postSnippet;
+                    const code = submission.code;
+                    codeExecutionInput.code = `${pre}${code}${post}`;
                 }
-            }
-            if(codeExecutionInput.code===''){
-                codeExecutionInput.code = submission.code;
-            }
-        } else if(submission.lang===entity.Language['cpp']){
-            codeExecutionInput.language = "cpp";
-            if(assignmentDetails.templates){
-                for(let i =0; i<assignmentDetails.templates.length; i++){
-                    if(assignmentDetails.templates[i].lang===entity.Language['cpp']){
-                        codeExecutionInput.code = assignmentDetails.templates[i].preSnippet + submission.code + assignmentDetails.templates[i].postSnippet;
-                    }
-                }
-            }
-            if(codeExecutionInput.code===''){
-                codeExecutionInput.code = submission.code;
-            }
-        }else if(submission.lang===entity.Language['python']){
-            codeExecutionInput.language = "python";
-            if(assignmentDetails.templates){
-                for(let i =0; i<assignmentDetails.templates.length; i++){
-                    if(assignmentDetails.templates[i].lang===entity.Language['python']){
-                        codeExecutionInput.code = assignmentDetails.templates[i].preSnippet + submission.code + assignmentDetails.templates[i].postSnippet;
-                    }
-                }
-            }
-            if(codeExecutionInput.code===''){
-                codeExecutionInput.code = submission.code;
-            }
-        }else if(submission.lang===entity.Language['java']){
-            codeExecutionInput.language = "java";
-            if(assignmentDetails.templates){
-                for(let i =0; i<assignmentDetails.templates.length; i++){
-                    if(assignmentDetails.templates[i].lang===entity.Language['java']){
-                        codeExecutionInput.code = assignmentDetails.templates[i].preSnippet + submission.code + assignmentDetails.templates[i].postSnippet;
-                    }
-                }
-            }
-            if(codeExecutionInput.code===''){
-                codeExecutionInput.code = submission.code;
-            }
-        } else {
-            codeExecutionInput.code = submission.code;
-            codeExecutionInput.language = "other";
+            });
         }
 
-        //get testcases in the form of entity TestCase as required by the code execution service
-        if(assignmentDetails.testCases){
-            for(let i = 0; i<assignmentDetails.testCases.length;i++){
-                codeExecutionInput.testCases[i] = assignmentDetails.testCases[i];
-            }
-        }
-
-        const jobId = codeExecutionService.runCode(codeExecutionInput); 
-        submission.id = jobId.substring(4);
-        const id = await database.insertSubmission(submission);
-        return id;
+        const submissionId = await database.insertSubmission(submission);
+        const jobId = `job-${submissionId}`;
+        codeExecutionInput.customJobId = jobId;
+        codeExecutionService.runCode(codeExecutionInput);
+        return jobId;
     }
 
     public async markSubmissionAsComplete(studentId: string, submissionId: string){

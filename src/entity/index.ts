@@ -111,6 +111,8 @@ export interface Assignment {
     sampleInput: string,
     sampleOutput: string,
     constraints: string,
+    timeLimitSeconds: number,
+    memoryLimitMB: number,
     points: number,
     hasTemplate: boolean,
     acceptedLanguages: Language[],
