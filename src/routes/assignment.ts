@@ -153,7 +153,7 @@ assignmentRouter.get('/all', async (req: express.Request, res: express.Response)
  * @apiBody {string} assignmentId Mandatory
  * @apiBody {string} code Mandatory
  * @apiBody {string} lang Mandatory
- * @apiError (ClientError) {json} 400 AssignmentAlreadyCompleted
+ * @apiError (ClientError) {json} 400 InvalidStudentOperation
  * @apiError (ServerError) {json} 500 Need to check server logs
  * @apiVersion 0.1.0
  * @apiDescription User needs to be authenticated befor this step.
@@ -178,6 +178,32 @@ assignmentRouter.post('/submission', async (req: express.Request, res: express.R
         res.status(201).json({jobId});
     } catch (err) {
         if (err instanceof errors.ErrAssignmentAlreadyCompleted) {
+            res.status(400).json({ message: err.message });
+            return;
+        }
+        console.log(err);
+        res.status(500).json({message: messages.MESSAGE_500})
+    }
+});
+
+/**
+ * @api {put} /api/assignment/submission Mark submission complete
+ * @apiGroup Assignment
+ * @apiName Make submission complete
+ * @apiBody {string} submissionId Mandatory
+ * @apiError (ClientError) {json} 400 AssignmentAlreadyCompleted
+ * @apiError (ServerError) {json} 500 Need to check server logs
+ * @apiVersion 0.1.0
+ * @apiDescription User needs to be authenticated befor this step.
+ */
+
+assignmentRouter.put('/submission/complete', async (req: express.Request, res: express.Response) => {
+    try {
+        const { studentId, submissionId } = req.body;
+        await assignmentService.markSubmissionAsComplete(studentId, submissionId);
+        res.status(204).json({ message: messages.MESSAGE_204 });
+    } catch (err) {
+        if (err instanceof errors.ErrInvalidStudentOperation) {
             res.status(400).json({ message: err.message });
             return;
         }
