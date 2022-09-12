@@ -179,7 +179,7 @@ test('get assignment, insert/update/get submission for student', async () => {
         submission.studentId = decoded.studentId;
         const submissionId = await assignmentService.makeSubmission(submission);
 
-        const submissionEntry = await assignmentService.getSubmission(decoded.studentId,submissionId);
+        const submissionEntry = await assignmentService.getSubmission(submissionId);
         expect(submissionEntry.assignmentId).toEqual(assignmentdetails.assignment.id);
 
         await assignmentService.markSubmissionAsComplete(decoded.studentId, submissionId);

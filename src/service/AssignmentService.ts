@@ -171,12 +171,9 @@ export class AssignmentService {
         }
     }
     
-    public async getSubmission(studentId: string, submissionId: string): Promise<entity.Submission>{
+    public async getSubmission(submissionId: string): Promise<entity.Submission>{
         try{
             let submission = await database.getSubmission(submissionId);
-            if(submission.studentId!=studentId) {
-                throw new errors.ErrInvalidStudentOperation;
-            }
             const assignmentDetails = await database.getAssignmentDetails(submission.assignmentId);
 
             //update the result in the database
@@ -186,16 +183,26 @@ export class AssignmentService {
                 if(data === undefined){
                     throw new errors.ErrSubmissionNotFound;
                 }
-                submission.memoryUsedInKiloBytes = data[0].memoryUsedKB;
-                submission.timeTaken = data[0].timeTakenMilliSeconds;
-                submission.resultStatus = data[0].resultStatus;
-                submission.resultMessage = data[0].resultMessage;
-                if(data[0].resultStatus===entity.ResultStatus.AC){
+                for (const output of data) {
+                    submission.resultStatus = output.resultStatus;
+                    submission.resultMessage = output.resultMessage;
+                    submission.timeTaken = Math.max(submission.timeTaken, output.timeTakenMilliSeconds);
+                    submission.memoryUsedInKiloBytes = Math.max(submission.memoryUsedInKiloBytes, output.memoryUsedKB);
+                    if (output.resultStatus !== entity.ResultStatus.AC) {
+                        break;
+                    }
+                };
+                if(data[0].resultStatus === entity.ResultStatus.AC){
                     submission.points = assignmentDetails.assignment.points;
                 } else {
                     submission.points = 0;
                 }
-                await database.updateSubmissionResult(submission.id,data[0],submission.points);                
+                await database.updateSubmissionResult(submission.id, {
+                    timeTakenMilliSeconds: submission.timeTaken,
+                    memoryUsedKB: submission.memoryUsedInKiloBytes,
+                    resultStatus: submission.resultStatus,
+                    resultMessage: submission.resultMessage
+                },submission.points);                
             }
             
             //display resultStatus as Not Available for assignments where holdPoints is true

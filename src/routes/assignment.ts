@@ -212,4 +212,48 @@ assignmentRouter.put('/submission/complete', async (req: express.Request, res: e
     }
 });
 
+/**
+ * @api {get} /api/assignment Get a submission
+ * @apiGroup Assignment
+ * @apiName Get a submission
+ * @apiQuery {string} submissionId, Mandatory
+ * @apiError (ClientError) {json} 400 InvalidStudentOperation
+ * @apiError (ClientError) {json} 400 InvalidFacultyOperation
+ * @apiError (ServerError) {json} 500 Need to check server logs
+ * @apiVersion 0.1.0
+ */
+assignmentRouter.get('/submission', async (req: express.Request, res: express.Response) => {
+    try {
+        const submissionId = req.query['submissionId'] as string;
+        const data = await assignmentService.getSubmission(submissionId);
+        res.status(200).json(data);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({message: messages.MESSAGE_500})
+    }
+});
+
+/**
+ * @api {get} /api/assignment Get all submission
+ * @apiGroup Assignment
+ * @apiName Get all submissions
+ * @apiQuery {string} assignmentId, Mandatory
+ * @apiError (ClientError) {json} 400 InvalidStudentOperation
+ * @apiError (ClientError) {json} 400 InvalidFacultyOperation
+ * @apiError (ServerError) {json} 500 Need to check server logs
+ * @apiVersion 0.1.0
+ */
+ assignmentRouter.get('/submissions', async (req: express.Request, res: express.Response) => {
+    try {
+        const { isStudent } = req.body;
+        const entityId = (isStudent) ? req.body.studentId : req.body.facultyId;
+        const assignmentId = req.query['assignmentId'] as string;
+        const data = await assignmentService.getAllSubmissionsForAssignment(assignmentId, entityId, isStudent);
+        res.status(200).json(data);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({message: messages.MESSAGE_500})
+    }
+});
+
 export default assignmentRouter;
