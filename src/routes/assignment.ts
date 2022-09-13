@@ -213,7 +213,7 @@ assignmentRouter.put('/submission/complete', async (req: express.Request, res: e
 });
 
 /**
- * @api {get} /api/assignment Get a submission
+ * @api {get} /api/assignment/submission Get a submission
  * @apiGroup Assignment
  * @apiName Get a submission
  * @apiQuery {string} submissionId, Mandatory
@@ -234,7 +234,7 @@ assignmentRouter.get('/submission', async (req: express.Request, res: express.Re
 });
 
 /**
- * @api {get} /api/assignment Get all submission
+ * @api {get} /api/assignment/submissions Get all submissions
  * @apiGroup Assignment
  * @apiName Get all submissions
  * @apiQuery {string} assignmentId, Mandatory
