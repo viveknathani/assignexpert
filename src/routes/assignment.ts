@@ -256,4 +256,35 @@ assignmentRouter.get('/submission', async (req: express.Request, res: express.Re
     }
 });
 
+/**
+ * @api {put} /api/assignment Update assignment
+ * @apiGroup Assignment
+ * @apiName Update assignment
+ * @apiBody {string} id, Mandatory
+ * @apiBody {string} text, Optional
+ * @apiBody {string} description, Optional
+ * @apiBody {string} sampleInput, Optional
+ * @apiBody {string} sampleOutput, Optional
+ * @apiBody {string} constraints, Optional
+ * @apiBody {number} timeLimitSeconds, Optional
+ * @apiBody {number} memoryLimitMB, Optional
+ * @apiBody {number} points, Optional
+ * @apiBody {string} deadline, Optional
+ * @apiBody {string} difficultyLevel, Optional
+ * @apiError (ClientError) {json} 400 InvalidStudentOperation
+ * @apiError (ClientError) {json} 400 InvalidFacultyOperation
+ * @apiError (ServerError) {json} 500 Need to check server logs
+ * @apiVersion 0.1.0
+ */
+assignmentRouter.put('/', async (req: express.Request, res: express.Response) => {
+    try {
+        const { isStudent, facultyId } = req.body;
+        await assignmentService.updateAssignment(req.body, isStudent, facultyId);
+        res.status(204).json({message: messages.MESSAGE_204});
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({message: messages.MESSAGE_500});
+    }
+});
+
 export default assignmentRouter;

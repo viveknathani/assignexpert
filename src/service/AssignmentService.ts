@@ -60,9 +60,31 @@ export class AssignmentService {
         }
     }
 
-    public async updateAssignment() {
-        try{
+    private updateFromPartial<T>(obj: T, updates: Partial<T>): T {
+        return {...obj, ...updates};
+    }
 
+    public async updateAssignment(partialAssignment: Partial<entity.Assignment>, isStudent: boolean, facultyId: string) {
+        try{
+            if(isStudent) {
+                throw new errors.ErrInvalidStudentOperation;
+            }
+            if (!partialAssignment.id) {
+                throw errors.ErrAssignmentNotFound;
+            }
+            const assignmentDetails = await database.getAssignmentDetails(partialAssignment.id);
+            if(assignmentDetails === undefined || assignmentDetails.assignment.id === ''|| assignmentDetails.assignment.id === undefined) {
+                throw new errors.ErrAssignmentNotFound;
+            }
+            const classEntry = await database.getClass(assignmentDetails.assignment.classId);
+            if(classEntry.facultyId != facultyId){
+                throw new errors.ErrInvalidFacultyOperation;
+            }
+            const original = assignmentDetails.assignment;
+            const assignment = this.updateFromPartial<entity.Assignment>(original, partialAssignment);
+            const toUpdate = assignmentDetails;
+            toUpdate.assignment = assignment;
+            await database.updateAssignment(toUpdate);
         } catch (err) {
             throw err;
         }
