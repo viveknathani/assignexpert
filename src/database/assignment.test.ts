@@ -64,7 +64,7 @@ test('insert/get/update/delete assignment and submission', async () => {
         classId: class1.id
     });
 
-    let assignment: entity.Assignment = {
+    const assignment: entity.Assignment = {
         id: '1',
         classId: class1.id,
         title: 'assignment 1',
@@ -100,7 +100,7 @@ test('insert/get/update/delete assignment and submission', async () => {
     }
     const testCases: entity.AssignmentTestCase[] = [];
     testCases.push(testcase);
-    let assignmentDetails: entity.AssignmentDetails = {
+    const assignmentDetails: entity.AssignmentDetails = {
         assignment: assignment,
         templates: templates,
         testCases: testCases

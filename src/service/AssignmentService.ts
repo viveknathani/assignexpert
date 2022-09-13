@@ -122,7 +122,7 @@ export class AssignmentService {
 
     public async getAssignment(assignmentId: string, isStudent: boolean, entityId: string): Promise<entity.AssignmentDetails> {
         try {
-            let assignmentDetails: entity.AssignmentDetails =  await database.getAssignmentDetails(assignmentId);
+            const assignmentDetails: entity.AssignmentDetails =  await database.getAssignmentDetails(assignmentId);
             if(assignmentDetails === undefined || assignmentDetails.assignment.id === undefined || assignmentDetails.assignment.id ===''){
                 throw new errors.ErrAssignmentNotFound;
             }
@@ -153,7 +153,7 @@ export class AssignmentService {
             throw new errors.ErrAssignmentAlreadyCompleted;
         }
         
-        let codeExecutionInput: entity.CodeExecutionInput = {
+        const codeExecutionInput: entity.CodeExecutionInput = {
             executionType: 'judge',
             code: submission.code,
             language: submission.lang,
@@ -195,7 +195,7 @@ export class AssignmentService {
     
     public async getSubmission(submissionId: string): Promise<entity.Submission>{
         try{
-            let submission = await database.getSubmission(submissionId);
+            const submission = await database.getSubmission(submissionId);
             const assignmentDetails = await database.getAssignmentDetails(submission.assignmentId);
 
             //update the result in the database
@@ -213,7 +213,7 @@ export class AssignmentService {
                     if (output.resultStatus !== entity.ResultStatus.AC) {
                         break;
                     }
-                };
+                }
                 if(data[0].resultStatus === entity.ResultStatus.AC){
                     submission.points = assignmentDetails.assignment.points;
                 } else {
@@ -244,7 +244,7 @@ export class AssignmentService {
     public async getAllSubmissionsForAssignment(assignmentId: string, entityId: string, isStudent: boolean): Promise<entity.SubmissionSummary[]> {
         try{
             if(isStudent) {
-                let submissionSummaries = await database.getSubmissionSummariesForStudent(assignmentId,entityId);
+                const submissionSummaries = await database.getSubmissionSummariesForStudent(assignmentId,entityId);
                 const assignmentDetails = await database.getAssignmentDetails(assignmentId);
                 if(assignmentDetails.assignment.holdPoints){
                     for(let i = 0; i<submissionSummaries.length; i++){

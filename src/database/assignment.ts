@@ -100,7 +100,7 @@ export async function getAssignmentDetails(id: string): Promise<entity.Assignmen
         return undefined;             
     }, id);
 
-    let testCases: entity.AssignmentTestCase[] = [];
+    const testCases: entity.AssignmentTestCase[] = [];
     await queryWithTransaction(statementSelectTestCases, function scanRows(result: QueryResult<any>):Error |undefined {
         for (let i = 0; i<result.rows.length; i++) {
             testCases.push(result.rows[i]);
@@ -108,7 +108,7 @@ export async function getAssignmentDetails(id: string): Promise<entity.Assignmen
         return undefined;
     },assignment.id);
     
-    let templates: entity.Template[] = [];
+    const templates: entity.Template[] = [];
     if(assignment.hasTemplate) {
         await queryWithTransaction(statementSelectTemplates, function scanRows(result: QueryResult<any>):Error |undefined {
             for (let i = 0; i<result.rows.length; i++) {

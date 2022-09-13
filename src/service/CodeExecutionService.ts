@@ -84,7 +84,7 @@ export class CodeExecutionService {
                     encoding: 'utf-8'
                 });
                 if (data.executionType === 'judge') {
-                    let promises = [];
+                    const promises = [];
                     for (let i = 0; i < data.testCases.length; ++i) {
                         const inputFilePath = `${directoryPath}/input${i+1}.txt`;
                         const promise = fs.promises.writeFile(inputFilePath, data.testCases[i].input + '\n', {

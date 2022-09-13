@@ -123,21 +123,6 @@ const assignmentDetails: entity.AssignmentDetails = {
     testCases: testCases
 }
 
-const submission: entity.Submission = {
-    id: '',
-    assignmentId: assignmentDetails.assignment.id,
-    studentId: student.id,
-    code: '',
-    lang: entity.Language.c,
-    resultStatus: entity.ResultStatus.NA,
-    resultMessage: '',
-    timeTaken: 0,
-    memoryUsedInKiloBytes: 0,
-    points: 0,
-    submittedAt: new Date(),
-    markCompleted: false
-}
-
 test('insert/get assignment for faculty', async () => {
     await userService.signupFaculty(user2, faculty);
     await userService.signupStudent(user1, student);    
@@ -147,7 +132,7 @@ test('insert/get assignment for faculty', async () => {
     if (decoded === undefined) {
         throw new Error('Could not get any data.');
     }
-    const decodedStudent = await userService.getSessionInfo(sessionId);
+    const decodedStudent = await userService.getSessionInfo(sessionIdStudent);
     if (decodedStudent === undefined) {
         throw new Error('Could not get any data.');
     }
@@ -155,7 +140,7 @@ test('insert/get assignment for faculty', async () => {
     const classId = await classService.insertClass(class1,decoded.isStudent);
     await classService.joinClass(user1.id, classId, true);
     assignmentDetails.assignment.classId = classId;
-    let assignmentId = await assignmentService.insertAssignment(assignmentDetails, decoded.isStudent,class1.facultyId);
+    const assignmentId = await assignmentService.insertAssignment(assignmentDetails, decoded.isStudent,class1.facultyId);
 
     const assignmentdetails = await assignmentService.getAssignment(assignmentId, decoded.isStudent, class1.facultyId);
     expect(assignmentdetails.assignment.classId).toEqual(class1.id);
