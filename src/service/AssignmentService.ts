@@ -217,19 +217,18 @@ export class AssignmentService {
                 if(data === undefined){
                     throw new errors.ErrSubmissionNotFound;
                 }
-                for (const output of data) {
-                    submission.resultStatus = output.resultStatus;
-                    submission.resultMessage = output.resultMessage;
-                    submission.timeTaken = Math.max(submission.timeTaken, output.timeTakenMilliSeconds);
-                    submission.memoryUsedInKiloBytes = Math.max(submission.memoryUsedInKiloBytes, output.memoryUsedKB);
-                    if (output.resultStatus !== entity.ResultStatus.AC) {
+                submission.points=0;
+                for (let i = 0; i < data.length; i++) {
+                    submission.resultStatus = data[i].resultStatus;
+                    submission.resultMessage = data[i].resultMessage;
+                    submission.timeTaken = Math.max(submission.timeTaken, data[i].timeTakenMilliSeconds);
+                    submission.memoryUsedInKiloBytes = Math.max(submission.memoryUsedInKiloBytes, data[i].memoryUsedKB);
+                    if (data[i].resultStatus !== entity.ResultStatus.AC) {
                         break;
                     }
-                }
-                if(data[0].resultStatus === entity.ResultStatus.AC){
-                    submission.points = assignmentDetails.assignment.points;
-                } else {
-                    submission.points = 0;
+                    if(assignmentDetails.testCases){
+                        submission.points += assignmentDetails.testCases[i].points;
+                    }
                 }
                 await database.updateSubmissionResult(submission.id, {
                     timeTakenMilliSeconds: submission.timeTaken,
