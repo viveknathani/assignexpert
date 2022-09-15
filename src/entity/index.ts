@@ -1,5 +1,4 @@
 export interface User {
-
     id: string,
     email: string,
     firstName: string,
@@ -23,7 +22,6 @@ export interface Faculty {
 }
 
 export interface SessionInfo {
-    
     userId: string,
     isStudent: boolean,
     facultyId?: string,
@@ -31,35 +29,32 @@ export interface SessionInfo {
 }
 
 export interface Preferences {
-
     uiTheme?: string,
     editorTheme?: string,
     wantsEmailNotifications?: boolean
 }
 
 export interface TestCase {
-
     input: string,
     output: string
 }
 
 export interface CodeExecutionInput {
-
+    customJobId?: string
     executionType: 'judge' | 'run';
     code: string,
     language: string,
     inputForRun: string,
     testCases: TestCase[],
-    timeLimit: number,
-    memoryLimit: number
+    timeLimitSeconds: number,
+    memoryLimitMB: number
 }
 
 export interface CodeExecutionOutput {
-
     resultStatus: ResultStatus,
     resultMessage: string,
-    timeTaken: number,
-    memoryUsed: number
+    timeTakenMilliSeconds: number,
+    memoryUsedKB: number
 }
 
 export enum CodeExecutionProgress {
@@ -95,7 +90,7 @@ export interface Member {
     studentId: string
 }
 
-export enum language {
+export enum Language {
     c = 'c',
     cpp = 'cpp',
     python = 'python',
@@ -116,9 +111,11 @@ export interface Assignment {
     sampleInput: string,
     sampleOutput: string,
     constraints: string,
+    timeLimitSeconds: number,
+    memoryLimitMB: number,
     points: number,
     hasTemplate: boolean,
-    acceptedLanguages: language[],
+    acceptedLanguages: Language[],
     holdPoints: boolean,
     deadline: Date,
     difficultyLevel: DifficultyLevel,    
@@ -127,7 +124,7 @@ export interface Assignment {
 export interface Template {
     id: string,
     assignmentId: string,
-    lang: language,
+    lang: Language,
     snippet: string,
     preSnippet: string,
     postSnippet: string
@@ -159,7 +156,7 @@ export interface Submission {
     assignmentId: string,
     studentId: string,
     code: string,
-    lang: language,
+    lang: Language,
     resultStatus: ResultStatus,
     resultMessage: string,
     timeTaken: number,
@@ -190,4 +187,10 @@ export interface Email {
     to: string[],
     subject: string,
     content: string
+}
+
+export interface StudentWithEmail {
+    id: string,
+    userId: string,
+    email: string
 }

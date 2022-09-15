@@ -9,7 +9,7 @@
     "clean": "npx rimraf build/",
     "copy-files": "npx copyfiles -u 1 \"src/web/**/*\" build/",
     "build": "npm run clean && npx tsc && npm run copy-files",
-    "test": "export NODE_ENV=test && npx jest --coverage --passWithNoTests",
+    "test": "export NODE_ENV=test && npx jest --coverage --passWithNoTests --forceExit",
     "pretty": "npx prettier --write .",
     "lint": "npx eslint . --fix",
     "quality": "npm run lint && npm run pretty",

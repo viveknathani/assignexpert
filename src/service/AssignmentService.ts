@@ -1,7 +1,7 @@
 import * as entity from '../entity';
 import * as database from '../database';
 import * as errors from './errors';
-import { CodeExecutionService } from './CodeExecutionService';
+import { CodeExecutionService, EmailService } from './index';
 
 export class AssignmentService {
     private static instance: AssignmentService;
@@ -27,6 +27,14 @@ export class AssignmentService {
                 throw new errors.ErrInvalidFacultyOperation;
             }
             const id = await database.insertAssignment(assignmentDetails);
+            const emailService: EmailService = EmailService.getInstance();
+            const students = await database.getStudentsWithEmail(assignmentDetails.assignment.classId);
+            const emails = students.map(student => student.email)
+            emailService.sendEmail({
+                to: emails,
+                subject: "New assignment",
+                content: `You have a new assignment - ${assignmentDetails.assignment.title}`
+            });
             return id;
         } catch (err) {
             throw err;
@@ -52,9 +60,31 @@ export class AssignmentService {
         }
     }
 
-    public async updateAssignment() {
-        try{
+    private updateFromPartial<T>(obj: T, updates: Partial<T>): T {
+        return {...obj, ...updates};
+    }
 
+    public async updateAssignment(partialAssignment: Partial<entity.Assignment>, isStudent: boolean, facultyId: string) {
+        try{
+            if(isStudent) {
+                throw new errors.ErrInvalidStudentOperation;
+            }
+            if (!partialAssignment.id) {
+                throw errors.ErrAssignmentNotFound;
+            }
+            const assignmentDetails = await database.getAssignmentDetails(partialAssignment.id);
+            if(assignmentDetails === undefined || assignmentDetails.assignment.id === ''|| assignmentDetails.assignment.id === undefined) {
+                throw new errors.ErrAssignmentNotFound;
+            }
+            const classEntry = await database.getClass(assignmentDetails.assignment.classId);
+            if(classEntry.facultyId != facultyId){
+                throw new errors.ErrInvalidFacultyOperation;
+            }
+            const original = assignmentDetails.assignment;
+            const assignment = this.updateFromPartial<entity.Assignment>(original, partialAssignment);
+            const toUpdate = assignmentDetails;
+            toUpdate.assignment = assignment;
+            await database.updateAssignment(toUpdate);
         } catch (err) {
             throw err;
         }
@@ -92,115 +122,63 @@ export class AssignmentService {
 
     public async getAssignment(assignmentId: string, isStudent: boolean, entityId: string): Promise<entity.AssignmentDetails> {
         try {
-            let assignmentdetails: entity.AssignmentDetails =  await database.getAssignmentDetails(assignmentId);
-            if(assignmentdetails === undefined || assignmentdetails.assignment.id === undefined || assignmentdetails.assignment.id ===''){
+            const assignmentDetails: entity.AssignmentDetails =  await database.getAssignmentDetails(assignmentId);
+            if(assignmentDetails === undefined || assignmentDetails.assignment.id === undefined || assignmentDetails.assignment.id ===''){
                 throw new errors.ErrAssignmentNotFound;
             }
             if(!isStudent) {
-                const classEntry = await database.getClass(assignmentdetails.assignment.classId);
+                const classEntry = await database.getClass(assignmentDetails.assignment.classId);
                 if(classEntry.facultyId!=entityId){
                     throw new errors.ErrInvalidFacultyOperation;
                 }
-                return assignmentdetails;
             } else {
-                const isMember = await database.isMember(assignmentdetails.assignment.classId,entityId);
+                const isMember = await database.isMember(assignmentDetails.assignment.classId,entityId);
                 if(!isMember){
                     throw new errors.ErrInvalidStudentOperation;
                 }
-                const assignmentDetails: entity.AssignmentDetails = {
-                    assignment: assignmentdetails.assignment,
-                    templates: assignmentdetails.templates,
-                }
-                return assignmentdetails;
+                assignmentDetails.testCases = [];
             }
+            return assignmentDetails;
         } catch (err) {
             throw err;
         }
     }
 
     public async makeSubmission(submission: entity.Submission): Promise<string> {
+
         const codeExecutionService: CodeExecutionService = CodeExecutionService.getInstance();
         const assignmentDetails: entity.AssignmentDetails = await database.getAssignmentDetails(submission.assignmentId);
         const completeSubmission = await database.getMarkedCompleteSubmissionForAssignmentForStudent(submission.assignmentId,submission.studentId);
-        if(completeSubmission === undefined || completeSubmission.id === ''|| completeSubmission.id === undefined){
+        if(completeSubmission !== undefined && completeSubmission.id !== ''){
             throw new errors.ErrAssignmentAlreadyCompleted;
         }
         
-        let codeExecutionInput: entity.CodeExecutionInput = {
+        const codeExecutionInput: entity.CodeExecutionInput = {
             executionType: 'judge',
-            code: '',
-            language: '',
+            code: submission.code,
+            language: submission.lang,
             inputForRun: '',
-            testCases: [],
-            timeLimit: 10,
-            memoryLimit: 1000,
+            testCases: assignmentDetails.testCases || [],
+            timeLimitSeconds: assignmentDetails.assignment.timeLimitSeconds,
+            memoryLimitMB: assignmentDetails.assignment.memoryLimitMB,
         };
 
-        //get code snippet to be run depending on the language
-        if(submission.lang===entity.language['c']){
-            codeExecutionInput.language = "c";
-            if(assignmentDetails.templates){
-                for(let i =0; i<assignmentDetails.templates.length; i++){
-                    if(assignmentDetails.templates[i].lang===entity.language['c']){
-                        codeExecutionInput.code = assignmentDetails.templates[i].preSnippet + submission.code + assignmentDetails.templates[i].postSnippet;
-                    }
+        if (assignmentDetails.assignment.hasTemplate && assignmentDetails.templates) {
+            assignmentDetails.templates.forEach((template) => {
+                if (codeExecutionInput.language === template.lang) {
+                    const pre = template.preSnippet;
+                    const post = template.postSnippet;
+                    const code = submission.code;
+                    codeExecutionInput.code = `${pre}${code}${post}`;
                 }
-            }
-            if(codeExecutionInput.code===''){
-                codeExecutionInput.code = submission.code;
-            }
-        } else if(submission.lang===entity.language['cpp']){
-            codeExecutionInput.language = "cpp";
-            if(assignmentDetails.templates){
-                for(let i =0; i<assignmentDetails.templates.length; i++){
-                    if(assignmentDetails.templates[i].lang===entity.language['cpp']){
-                        codeExecutionInput.code = assignmentDetails.templates[i].preSnippet + submission.code + assignmentDetails.templates[i].postSnippet;
-                    }
-                }
-            }
-            if(codeExecutionInput.code===''){
-                codeExecutionInput.code = submission.code;
-            }
-        }else if(submission.lang===entity.language['python']){
-            codeExecutionInput.language = "python";
-            if(assignmentDetails.templates){
-                for(let i =0; i<assignmentDetails.templates.length; i++){
-                    if(assignmentDetails.templates[i].lang===entity.language['python']){
-                        codeExecutionInput.code = assignmentDetails.templates[i].preSnippet + submission.code + assignmentDetails.templates[i].postSnippet;
-                    }
-                }
-            }
-            if(codeExecutionInput.code===''){
-                codeExecutionInput.code = submission.code;
-            }
-        }else if(submission.lang===entity.language['java']){
-            codeExecutionInput.language = "java";
-            if(assignmentDetails.templates){
-                for(let i =0; i<assignmentDetails.templates.length; i++){
-                    if(assignmentDetails.templates[i].lang===entity.language['java']){
-                        codeExecutionInput.code = assignmentDetails.templates[i].preSnippet + submission.code + assignmentDetails.templates[i].postSnippet;
-                    }
-                }
-            }
-            if(codeExecutionInput.code===''){
-                codeExecutionInput.code = submission.code;
-            }
-        } else {
-            codeExecutionInput.code = submission.code;
-            codeExecutionInput.language = "other";
+            });
         }
 
-        //get testcases in the form of entity TestCase as required by the code execution service
-        if(assignmentDetails.testCases){
-            for(let i = 0; i<assignmentDetails.testCases.length;i++){
-                codeExecutionInput.testCases[i] = assignmentDetails.testCases[i];
-            }
-        }
-
-        const jobId = codeExecutionService.runCode(codeExecutionInput); 
-        submission.id = jobId.substring(4);
-        const id = await database.insertSubmission(submission);
-        return id;
+        const submissionId = await database.insertSubmission(submission);
+        const jobId = `job-${submissionId}`;
+        codeExecutionInput.customJobId = jobId;
+        codeExecutionService.runCode(codeExecutionInput);
+        return jobId;
     }
 
     public async markSubmissionAsComplete(studentId: string, submissionId: string){
@@ -215,12 +193,9 @@ export class AssignmentService {
         }
     }
     
-    public async getSubmission(studentId: string, submissionId: string): Promise<entity.Submission>{
+    public async getSubmission(submissionId: string): Promise<entity.Submission>{
         try{
-            let submission = await database.getSubmission(submissionId);
-            if(submission.studentId!=studentId) {
-                throw new errors.ErrInvalidStudentOperation;
-            }
+            const submission = await database.getSubmission(submissionId);
             const assignmentDetails = await database.getAssignmentDetails(submission.assignmentId);
 
             //update the result in the database
@@ -230,16 +205,26 @@ export class AssignmentService {
                 if(data === undefined){
                     throw new errors.ErrSubmissionNotFound;
                 }
-                submission.memoryUsedInKiloBytes = data.memoryUsed;
-                submission.timeTaken = data.timeTaken;
-                submission.resultStatus = data.resultStatus;
-                submission.resultMessage = data.resultMessage;
-                if(data.resultStatus===entity.ResultStatus.AC){
+                for (const output of data) {
+                    submission.resultStatus = output.resultStatus;
+                    submission.resultMessage = output.resultMessage;
+                    submission.timeTaken = Math.max(submission.timeTaken, output.timeTakenMilliSeconds);
+                    submission.memoryUsedInKiloBytes = Math.max(submission.memoryUsedInKiloBytes, output.memoryUsedKB);
+                    if (output.resultStatus !== entity.ResultStatus.AC) {
+                        break;
+                    }
+                }
+                if(data[0].resultStatus === entity.ResultStatus.AC){
                     submission.points = assignmentDetails.assignment.points;
                 } else {
                     submission.points = 0;
                 }
-                await database.updateSubmissionResult(submission.id,data,submission.points);                
+                await database.updateSubmissionResult(submission.id, {
+                    timeTakenMilliSeconds: submission.timeTaken,
+                    memoryUsedKB: submission.memoryUsedInKiloBytes,
+                    resultStatus: submission.resultStatus,
+                    resultMessage: submission.resultMessage
+                },submission.points);                
             }
             
             //display resultStatus as Not Available for assignments where holdPoints is true
@@ -259,7 +244,7 @@ export class AssignmentService {
     public async getAllSubmissionsForAssignment(assignmentId: string, entityId: string, isStudent: boolean): Promise<entity.SubmissionSummary[]> {
         try{
             if(isStudent) {
-                let submissionSummaries = await database.getSubmissionSummariesForStudent(assignmentId,entityId);
+                const submissionSummaries = await database.getSubmissionSummariesForStudent(assignmentId,entityId);
                 const assignmentDetails = await database.getAssignmentDetails(assignmentId);
                 if(assignmentDetails.assignment.holdPoints){
                     for(let i = 0; i<submissionSummaries.length; i++){

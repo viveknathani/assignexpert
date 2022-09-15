@@ -20,7 +20,7 @@ const user1: entity.User = {
     id: '1',
     firstName: 'Naman',
     lastName: 'Bansal',
-    email: 'naman.bansal.binny@gmail.com',
+    email: 'naman.bansal.binny.test@gmail.com',
     password: 'Namanpassword191@',
     uiTheme: 'light',
     editorTheme: 'light',
@@ -37,7 +37,7 @@ const user2: entity.User = {
     id: '2',
     firstName: 'Aman',
     lastName: 'Mittal',
-    email: 'aman.mit.binny@me.com',
+    email: 'aman.mit.binn.test@me.com',
     password: 'Amanpassword191@',
     uiTheme: 'light',
     editorTheme: 'light',
@@ -67,16 +67,18 @@ const assignment: entity.Assignment = {
     constraints: '',
     points: 10,
     hasTemplate: true,
-    acceptedLanguages: [entity.language.c,entity.language.python],
+    acceptedLanguages: [entity.Language.c,entity.Language.python],
     holdPoints: true,
     deadline: new Date(),
-    difficultyLevel: entity.DifficultyLevel.EASY
+    difficultyLevel: entity.DifficultyLevel.EASY,
+    timeLimitSeconds: 0,
+    memoryLimitMB: 0
 }
 
 const template1: entity.Template = {
     id: '',
     assignmentId: assignment.id,
-    lang: entity.language.c,
+    lang: entity.Language.c,
     snippet: '',
     preSnippet: '',
     postSnippet: ''
@@ -85,7 +87,7 @@ const template1: entity.Template = {
 const template2: entity.Template = {
     id: '',
     assignmentId: assignment.id,
-    lang: entity.language.python,
+    lang: entity.Language.python,
     snippet: '',
     preSnippet: '',
     postSnippet: ''
@@ -121,32 +123,24 @@ const assignmentDetails: entity.AssignmentDetails = {
     testCases: testCases
 }
 
-const submission: entity.Submission = {
-    id: '',
-    assignmentId: assignmentDetails.assignment.id,
-    studentId: student.id,
-    code: '',
-    lang: entity.language.c,
-    resultStatus: entity.ResultStatus.NA,
-    resultMessage: '',
-    timeTaken: 0,
-    memoryUsedInKiloBytes: 0,
-    points: 0,
-    submittedAt: new Date(),
-    markCompleted: false
-}
-
 test('insert/get assignment for faculty', async () => {
-    await userService.signupFaculty(user2, faculty);    
+    await userService.signupFaculty(user2, faculty);
+    await userService.signupStudent(user1, student);    
     const { sessionId } = await userService.login(user2.email, unhashedUser2Password);
+    const { sessionIdStudent } = await userService.login(user1.email, unhashedUser1Password);
     const decoded = await userService.getSessionInfo(sessionId);
     if (decoded === undefined) {
         throw new Error('Could not get any data.');
     }
+    const decodedStudent = await userService.getSessionInfo(sessionIdStudent);
+    if (decodedStudent === undefined) {
+        throw new Error('Could not get any data.');
+    }
     class1.facultyId = faculty.id;
     const classId = await classService.insertClass(class1,decoded.isStudent);
+    await classService.joinClass(user1.id, classId, true);
     assignmentDetails.assignment.classId = classId;
-    let assignmentId = await assignmentService.insertAssignment(assignmentDetails, decoded.isStudent,class1.facultyId);
+    const assignmentId = await assignmentService.insertAssignment(assignmentDetails, decoded.isStudent,class1.facultyId);
 
     const assignmentdetails = await assignmentService.getAssignment(assignmentId, decoded.isStudent, class1.facultyId);
     expect(assignmentdetails.assignment.classId).toEqual(class1.id);
@@ -155,56 +149,4 @@ test('insert/get assignment for faculty', async () => {
     expect(assignmentSummaries[0].title).toEqual(assignmentDetails.assignment.title);
 
     await userService.logout(sessionId);
-});
-
-test('get assignment, insert/update/get submission for student', async () => {
-    await userService.signupStudent(user1, student);
-    const { sessionId } = await userService.login(user1.email, unhashedUser1Password);
-    const decoded = await userService.getSessionInfo(sessionId);
-    if (decoded === undefined) {
-        throw new Error('Could not get any data.');
-    }
-    await classService.joinClass(user1.id, class1.code, decoded.isStudent); 
-
-    if(decoded.studentId){
-        const assignmentdetails: entity.AssignmentDetails = await assignmentService.getAssignment(assignmentDetails.assignment.id, decoded.isStudent, decoded.studentId);
-        expect(assignmentdetails.assignment.title).toEqual(assignmentDetails.assignment.title);
-        
-        const assignmentSummaries: entity.AssignmentSummary[] = await assignmentService.getAllAssignments(class1.id, decoded.isStudent, decoded.studentId);
-        expect(assignmentSummaries[0].title).toEqual(assignmentDetails.assignment.title);
-
-        submission.assignmentId = assignmentdetails.assignment.id;
-        submission.studentId = decoded.studentId;
-        const submissionId = await assignmentService.makeSubmission(submission);
-
-        const submissionEntry = await assignmentService.getSubmission(decoded.studentId,submissionId);
-        expect(submissionEntry.assignmentId).toEqual(assignmentdetails.assignment.id);
-
-        await assignmentService.markSubmissionAsComplete(decoded.studentId, submissionId);
-
-        const submissionSummaries = await assignmentService.getAllSubmissionsForAssignment(assignmentdetails.assignment.id,decoded.studentId,decoded.isStudent);
-        expect(submissionSummaries[0].studentRollNumber).toEqual(student.rollNumber);
-
-        await userService.logout(sessionId);     
-    }
-});
-
-test('get submissions, delete assignment for faculty', async () => {
-    const { sessionId } = await userService.login(user2.email, unhashedUser2Password);
-    const decoded = await userService.getSessionInfo(sessionId);
-    if (decoded === undefined) {
-        throw new Error('Could not get any data.');
-    }
-    const classes = await classService.getAllClasses(faculty.id, decoded.isStudent);
-    if(classes){
-        const assignments = await assignmentService.getAllAssignments(classes[0].id, decoded.isStudent,faculty.id);
-        const submissions = await assignmentService.getAllSubmissionsForAssignment(assignments[0].id, faculty.id, decoded.isStudent);
-        expect(submissions[0].studentRollNumber).toEqual(student.rollNumber);
-
-        await assignmentService.deleteAssignment(assignments[0].id, faculty.id, decoded.isStudent);        
-        await database.deleteClass(classes[0].id);
-    }
-    await userService.logout(sessionId);
-    await userService.deleteUser(user1.id);
-    await userService.deleteUser(user2.id);
 });

@@ -12,7 +12,8 @@ create type "result_status" as enum (
     'MLE', --- memory limit exceeded
     'CE', --- compiler error
     'RE', --- runtime error
-    'PR' --- partially right
+    'PR', --- partially right
+    'NA' --- not available
 );
 
 create type "difficulty_level" as enum (
@@ -65,6 +66,8 @@ create table if not exists assignments (
     "sampleInput" text,
     "sampleOutput" text,
     constraints text,
+    "timeLimitSeconds" integer,
+    "memoryLimitMB" integer, 
     points real,
     "hasTemplate" boolean,
     "acceptedLanguages" language[],
