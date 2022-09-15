@@ -34,7 +34,7 @@ const assignmentService: AssignmentService = AssignmentService.getInstance();
  * @apiBody {string} template.snippet Mandatory
  * @apiBody {string} template.preSnippet Mandatory
  * @apiBody {string} template.postSnippet Mandatory
- * @apiBody {AssignmentTestCase} testCases Mandatory
+ * @apiBody {[]AssignmentTestCase} testCases Mandatory
  * @apiBody {string} testCase.id Mandatory, leave ""
  * @apiBody {string} testCase.assignmentId Mandatory, leave ""
  * @apiBody {number} testCase.points Mandatory
@@ -42,6 +42,8 @@ const assignmentService: AssignmentService = AssignmentService.getInstance();
  * @apiBody {string} testCase.output Mandatory
  * @apiError (ClientError) {json} 400 InvalidStudentOperation
  * @apiError (ClientError) {json} 400 InvalidFacultyOperation
+ * @apiError (ClientError) {json} 400 NonPositivePointsForTestCase
+ * @apiError (ClientError) {json} 400 TotalPointsNotEqualAssignmentPoints
  * @apiError (ServerError) {json} 500 Need to check server logs
  * @apiVersion 0.1.0
  * @apiDescription User needs to be authenticated befor this step.
@@ -53,7 +55,8 @@ assignmentRouter.post('/', async (req: express.Request, res: express.Response) =
         res.status(201).json({messages: messages.MESSAGE_201});
     } catch (err) {
         if (err instanceof errors.ErrInvalidFacultyOperation
-            || err instanceof errors.ErrInvalidStudentOperation) {
+            || err instanceof errors.ErrInvalidStudentOperation || err instanceof errors.ErrNonPositivePointsForTestcase
+            || err instanceof errors.ErrTotalPointsNotEqualAssignmentPoints) {
             res.status(400).json({ message: err.message });
             return;
         }

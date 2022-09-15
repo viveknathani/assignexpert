@@ -26,6 +26,18 @@ export class AssignmentService {
             if(classEntry.facultyId != facultyId){
                 throw new errors.ErrInvalidFacultyOperation;
             }
+            if(assignmentDetails.testCases) {
+                let sum = 0;
+                for(let i = 0; i < assignmentDetails.testCases.length; i++){
+                    if(assignmentDetails.testCases[i].points<=0){
+                        throw new errors.ErrNonPositivePointsForTestcase;
+                    }
+                    sum += assignmentDetails.testCases[i].points;
+                }
+                if(sum != assignmentDetails.assignment.points){
+                    throw new errors.ErrTotalPointsNotEqualAssignmentPoints;
+                }
+            }
             const id = await database.insertAssignment(assignmentDetails);
             const emailService: EmailService = EmailService.getInstance();
             const students = await database.getStudentsWithEmail(assignmentDetails.assignment.classId);

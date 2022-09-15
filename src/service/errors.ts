@@ -176,3 +176,21 @@ export class ErrInvalidJobId extends Error {
         Object.setPrototypeOf(this, ErrInvalidJobId.prototype);
     }
 }
+
+export class ErrNonPositivePointsForTestcase extends Error {
+
+    constructor() {
+        
+        super('Points for a testcase should not be negative or zero.');
+        Object.setPrototypeOf(this,ErrNonPositivePointsForTestcase.prototype);
+    }
+}
+
+export class ErrTotalPointsNotEqualAssignmentPoints extends Error {
+
+    constructor() {
+        
+        super('Total points of all testcases not equal to assignment points.');
+        Object.setPrototypeOf(this,ErrTotalPointsNotEqualAssignmentPoints.prototype);
+    }
+}
