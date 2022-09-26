@@ -279,4 +279,32 @@ export class AssignmentService {
             throw err;
         }
     }
+
+    public async getResult(assignmentId: string, entityId: string, isStudent: boolean): Promise<entity.SubmissionSummary[]> {
+        try{
+            if(isStudent){
+                throw new errors.ErrInvalidStudentOperation;
+            } else {
+                const assignmentDetails = await database.getAssignmentDetails(assignmentId);
+                const classEntry = await database.getClass(assignmentDetails.assignment.classId);
+                if(classEntry.facultyId!=entityId) {
+                    throw new errors.ErrInvalidFacultyOperation;
+                }
+                const members = await database.getStudentsForClass(classEntry.id);
+                const finalSubmissionSummariesForAllStudents : entity.SubmissionSummary[] = [];
+                for( let i = 0; i < members.length; i++) {
+                    finalSubmissionSummariesForAllStudents[i].studentRollNumber = members[i].rollNumber;
+                    const submission: entity.Submission = await database.getMarkedCompleteSubmissionForAssignmentForStudent(assignmentId,members[i].id);
+                    finalSubmissionSummariesForAllStudents[i].memoryUsed = submission.memoryUsedInKiloBytes || 0;
+                    finalSubmissionSummariesForAllStudents[i].timeTaken = submission.timeTaken || 0;
+                    finalSubmissionSummariesForAllStudents[i].resultStatus = submission.resultStatus || entity.ResultStatus.NA;
+                    finalSubmissionSummariesForAllStudents[i].points = submission.points || 0;
+                    finalSubmissionSummariesForAllStudents[i].submittedAt = submission.submittedAt || new Date();
+                }
+                return finalSubmissionSummariesForAllStudents;
+            }
+        } catch (err) {
+            throw err;
+        }
+    }
 }

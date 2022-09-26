@@ -2,6 +2,7 @@ import * as express from 'express';
 import { AssignmentService, errors } from '../service';
 import * as messages from './http_messages';
 import * as entity from '../entity';
+import {Workbook, Row, Cell} from 'exceljs';
 
 const assignmentRouter: express.Router = express.Router();
 const assignmentService: AssignmentService = AssignmentService.getInstance();
