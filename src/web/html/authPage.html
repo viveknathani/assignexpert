@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <script src="https://kit.fontawesome.com/2965379893.js" crossorigin="anonymous"></script>
+   <title>Authentication Page</title>
+   <link rel="stylesheet" type="text/css" href="../../web/css/auth.css" />
+   <script defer src="../../web/javascript/signUp.js"></script>
+   <script defer src="../../web/javascript/signIn.js"></script>
+</head>
+<body>
+   <div class="container">
+      <div style="justify-self: flex-end; text-align: center;">
+         <div class="message" id="message"></div><br>
+         <div class="signUpContainer">
+            <h1 class="title">Sign Up</h1>
+            <div class="firstPage">
+               <div id="firstPageFields">
+                  <input type="text" id="firstName" name="firstName" class="inputs" autocomplete="off" placeholder="first name" required><br>
+                  <input type="text" id="lastName" name="lastName" class="inputs" autocomplete="off" placeholder="last name" required>
+               </div><br>
+               <button type="submit" class="button" onclick="next(0)">Continue&nbsp;&nbsp;<i class="fa-solid fa-arrow-right"></i></button><br>
+            </div>
+            <div class="secondPage">
+               <div id="secondPageFields">
+                  <h2 class="question">You are a: </h2>
+                  <div class="radio">
+                     <input type="radio" id="student" name="position" autocomplete="off" value="student" style="margin-bottom: 1.2vh; outline: none;"> Student<br>
+                     <input type="radio" id="faculty" name="position" autocomplete="off" value="faculty" style="outline: none;"> Faculty<br>
+                  </div>
+               </div><br>
+               <button class="button" onclick="next(1)" style="margin-top: 8.4vh;">Continue&nbsp;&nbsp;<i class="fa-solid fa-arrow-right"></i></button><br>
+            </div>
+            <div class="thirdPage">
+               <div id="thirdPageFields">
+                  <input type="email" id="email" name="email" class="inputs" autocomplete="off" placeholder="email" style="margin-top: 0.5vh;"><br>
+                  <input type="password" id="password" name="password" class="inputs" autocomplete="off" placeholder="password (min. 8 char, at least 1 num, 1 lowercase, uppercase, special char)" style="margin-top: 3.3vh;"><br>
+                  <input type="text" id="rollNumber" name="rollNumber" class="inputs" autocomplete="off" placeholder="roll number" style="margin-top: 3.3vh;">
+                  <input type="text" id="employeeNumber" name="employeeNumber" class="inputs" autocomplete="off" placeholder="employee number" style="margin-top: 3.3vh; display: none;">
+               </div><br>
+               <button class="button" style="margin-top: 4.6vh;" onclick="signUp()"><i class="fa-solid fa-user-plus"></i>&nbsp;&nbsp;Sign Up</button><br>
+            </div>
+            <div class="indicators greenIndicator" id="dot1"></div>
+            <div class="indicators" id="dot2"></div>
+            <div class="indicators" id="dot3"></div>
+         </div>
+      </div>
+      <div class="verticalLine"></div>
+      <div style="justify-self: flex-start; text-align: center;">
+         <div class="message" id="signInmessage"></div><br>
+         <div class="signInContainer">
+            <h1 class="title">Sign In</h1>
+            <div class="thirdPage" style="display: inline-block;">
+               <div id="thirdPageFields"><br>
+                  <input type="email" id="signInEmail" name="email" class="inputs" autocomplete="off" placeholder="email" style="margin-top: 0.5vh;"><br><br>
+                  <input type="password" id="signInPassword" name="password" class="inputs" autocomplete="off" placeholder="password" style="margin-top: 3.3vh;"><br><br><br>
+               </div><br>
+               <button class="button" style="margin-top: 3.6vh;" onclick="signIn()">Log In&nbsp;&nbsp;<i class="fa-solid fa-right-to-bracket"></i></button><br>
+            </div>
+         </div>
+      </div>
+   </div>
+</body>
+</html>
