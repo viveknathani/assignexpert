@@ -11,7 +11,7 @@ export class ErrInvalidPasswordFormat extends Error {
 
     constructor() {
 
-        super('Password format: Min. 8 chars, atleast 1 number' +
+        super('Password format: Min. 8 chars, atleast 1 number, ' +
 		'1 lowercase char, 1 uppercase char, 1 special char');
         Object.setPrototypeOf(this,ErrInvalidPasswordFormat.prototype);
     }
