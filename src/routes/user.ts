@@ -30,6 +30,10 @@ async function injectSessionInfoMiddleWare(req: express.Request, res: express.Re
             const sessionId = req.cookies['session'];
             const sessionInfo = await userService.getSessionInfo(sessionId);
             if (sessionInfo === undefined) {
+                if (!req.path.startsWith('/api') && req.path !== '/') {
+                    res.redirect('/auth');
+                    return;
+                }
                 res.status(400).json({ message: 'you need to authenticate' });
                 return;
             }

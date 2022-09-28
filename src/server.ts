@@ -25,8 +25,8 @@ async function main() {
     app.use(express.json());
     app.use(cookieParser());
     app.use('/web', express.static(path.join(__dirname, './web')))
-    app.use(pageRouter);
     app.use('/api', api);
+    app.use(pageRouter);
     app.listen(process.env.PORT, () => console.log('server is up!'));
 }
 

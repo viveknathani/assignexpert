@@ -1,5 +1,7 @@
 import * as express from 'express';
+import { injectSessionInfoMiddleWare } from './user';
 import path from 'path';
+
 const pageRouter: express.Router = express.Router();
 
 type ExpressFunction = 
@@ -19,5 +21,6 @@ function directoryHandler(webPagePath: string): ExpressFunction {
 pageRouter.get('/', directoryHandler('../web/html/index.html'));
 pageRouter.get('/run', directoryHandler('../web/html/run.html'));
 pageRouter.get('/auth', directoryHandler('../web/html/authPage.html'));
+pageRouter.use(injectSessionInfoMiddleWare);
 pageRouter.get('/home', directoryHandler('../web/html/home.html'));
 export default pageRouter;
