@@ -19,4 +19,5 @@ function directoryHandler(webPagePath: string): ExpressFunction {
 pageRouter.get('/', directoryHandler('../web/html/index.html'));
 pageRouter.get('/run', directoryHandler('../web/html/run.html'));
 pageRouter.get('/auth', directoryHandler('../web/html/authPage.html'));
+pageRouter.get('/home', directoryHandler('../web/html/home.html'));
 export default pageRouter;
