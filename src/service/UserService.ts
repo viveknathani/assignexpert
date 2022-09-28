@@ -100,7 +100,8 @@ export class UserService {
                 sessionId,
                 uiTheme: user.uiTheme,
                 editorTheme: user.editorTheme,
-                wantsEmailNotifications: user.wantsEmailNotifications
+                wantsEmailNotifications: user.wantsEmailNotifications,
+                isStudent: sessionInfo.isStudent
             }
         } catch (err) {
 

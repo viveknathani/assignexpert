@@ -30,6 +30,10 @@ async function injectSessionInfoMiddleWare(req: express.Request, res: express.Re
             const sessionId = req.cookies['session'];
             const sessionInfo = await userService.getSessionInfo(sessionId);
             if (sessionInfo === undefined) {
+                if (!req.path.startsWith('/api') && req.path !== '/') {
+                    res.redirect('/auth');
+                    return;
+                }
                 res.status(400).json({ message: 'you need to authenticate' });
                 return;
             }
@@ -110,7 +114,8 @@ userRouter.post('/login', async (req: express.Request, res: express.Response) =>
             lastName: response.lastName,
             uiTheme: response.uiTheme,
             editorTheme: response.editorTheme,
-            wantsEmailNotifications: response.wantsEmailNotifications
+            wantsEmailNotifications: response.wantsEmailNotifications,
+            isStudent: response.isStudent
         });
     } catch (err) {
         if (err instanceof errors.ErrInvalidEmailPassword) {
