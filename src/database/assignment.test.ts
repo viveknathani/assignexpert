@@ -143,10 +143,10 @@ test('insert/get/update/delete assignment and submission', async () => {
     expect(s.assignmentId).toEqual(submission.assignmentId);
 
     const ss: entity.SubmissionSummary[] = await getSubmissionSummaries(assignmentDetails.assignment.id);
-    expect(parseInt(ss[0].studentRollNumber)).toEqual(student1.rollNumber);
+    expect(ss[0].studentRollNumber).toEqual(student1.rollNumber);
 
     const sss: entity.SubmissionSummary[] = await getSubmissionSummariesForStudent(assignmentDetails.assignment.id, student1.id);
-    expect(parseInt(sss[0].studentRollNumber)).toEqual(student1.rollNumber);
+    expect(sss[0].studentRollNumber).toEqual(student1.rollNumber);
 
     await deleteAssignment(assignmentDetails.assignment.id);
     await deleteMember(class1.id, student1.id);
