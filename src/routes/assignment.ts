@@ -2,7 +2,7 @@ import * as express from 'express';
 import { AssignmentService, errors } from '../service';
 import * as messages from './http_messages';
 import * as entity from '../entity';
-import {Workbook, Row, Cell} from 'exceljs';
+import * as path from 'path';
 
 const assignmentRouter: express.Router = express.Router();
 const assignmentService: AssignmentService = AssignmentService.getInstance();
@@ -288,6 +288,31 @@ assignmentRouter.put('/', async (req: express.Request, res: express.Response) =>
     } catch (err) {
         console.log(err);
         res.status(500).json({message: messages.MESSAGE_500});
+    }
+});
+
+
+/**
+ * @api {get} /api/assignment/download Get excel file with points
+ * @apiGroup Assignment
+ * @apiName Get excel file with points
+ * @apiQuery {string} assignmentId, Mandatory
+ * @apiError (ClientError) {json} 400 InvalidStudentOperation
+ * @apiError (ClientError) {json} 400 InvalidFacultyOperation
+ * @apiError (ServerError) {json} 500 Need to check server logs
+ * @apiVersion 0.1.0
+ */
+ assignmentRouter.get('/download', async (req: express.Request, res: express.Response) => {
+    try {
+        const { isStudent } = req.body;
+        const entityId = (isStudent) ? req.body.studentId : req.body.facultyId;
+        const assignmentId = req.query['assignmentId'] as string;
+        const fileName = await assignmentService.getResult(assignmentId, entityId, isStudent);
+        res.download(path.resolve(__dirname, fileName));
+        res.status(200).json('');
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({message: messages.MESSAGE_500})
     }
 });
 

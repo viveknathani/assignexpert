@@ -2,6 +2,7 @@ import * as entity from '../entity';
 import * as database from '../database';
 import * as errors from './errors';
 import { CodeExecutionService, EmailService } from './index';
+import {Workbook, Row, Cell} from 'exceljs';
 
 export class AssignmentService {
     private static instance: AssignmentService;
@@ -280,7 +281,7 @@ export class AssignmentService {
         }
     }
 
-    public async getResult(assignmentId: string, entityId: string, isStudent: boolean): Promise<entity.SubmissionSummary[]> {
+    public async getResult(assignmentId: string, entityId: string, isStudent: boolean): Promise<string>{
         try{
             if(isStudent){
                 throw new errors.ErrInvalidStudentOperation;
@@ -301,7 +302,23 @@ export class AssignmentService {
                     finalSubmissionSummariesForAllStudents[i].points = submission.points || 0;
                     finalSubmissionSummariesForAllStudents[i].submittedAt = submission.submittedAt || new Date();
                 }
-                return finalSubmissionSummariesForAllStudents;
+                const fileName = `../temp/${assignmentDetails.assignment.title}${Date.now()}`
+                const workbook = new Workbook();
+                const worksheet = workbook.addWorksheet(assignmentDetails.assignment.title);
+                const headers = [
+                    { header: 'RollNumber', key: 'rollNumber', width: 15 },
+                    { header: 'ResultStatus', key: 'resultStatus', width: 15 },
+                    { header: 'Points', key: 'point', width: 15 },
+                    { header: 'TimeTaken', key: 'timeTaken', width: 15 },
+                    { header: 'MemoryUsed', key: 'memoryUSed', width: 15 },
+                    { header: 'SubmittedAt', key: 'submittedAt', width: 15 },
+                ]
+                worksheet.columns = headers;
+                for(let i = 0; i<finalSubmissionSummariesForAllStudents.length; i++){
+                    worksheet.addRow(finalSubmissionSummariesForAllStudents[i]);
+                }
+                await workbook.xlsx.writeFile(fileName);
+                return fileName;
             }
         } catch (err) {
             throw err;

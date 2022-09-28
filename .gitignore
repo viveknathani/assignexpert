@@ -15,3 +15,6 @@ build
 
 # ignore the area used by containers for code execution
 execution-area/
+
+# ignore the area used to create excel files for submission points
+temp
