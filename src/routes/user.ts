@@ -110,7 +110,8 @@ userRouter.post('/login', async (req: express.Request, res: express.Response) =>
             lastName: response.lastName,
             uiTheme: response.uiTheme,
             editorTheme: response.editorTheme,
-            wantsEmailNotifications: response.wantsEmailNotifications
+            wantsEmailNotifications: response.wantsEmailNotifications,
+            isStudent: response.isStudent
         });
     } catch (err) {
         if (err instanceof errors.ErrInvalidEmailPassword) {
