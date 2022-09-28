@@ -192,7 +192,7 @@
                             const resultArea = document.getElementById("result");
                             const stats = document.createElement('p');
                             stats.id = 'stats';
-                            stats.innerText = `memory used = ${data[0].memoryUsedKB}KB, time taken = ${data[0].timeTakenMilliSeconds}s`;
+                            stats.innerText = `memory used = ${data[0].memoryUsedKB}KB, time taken = ${data[0].timeTakenMilliSeconds}ms`;
                             const textarea = document.createElement('textarea');
                             textarea.innerText = data[0].resultMessage;
                             textarea.diabled = true;
