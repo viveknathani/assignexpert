@@ -194,3 +194,12 @@ export class ErrTotalPointsNotEqualAssignmentPoints extends Error {
         Object.setPrototypeOf(this,ErrTotalPointsNotEqualAssignmentPoints.prototype);
     }
 }
+
+export class ErrLateSubmissionNotAllowed extends Error {
+
+    constructor() {
+        
+        super('The deadline for the assignment has already passed.');
+        Object.setPrototypeOf(this,ErrLateSubmissionNotAllowed.prototype);
+    }
+}

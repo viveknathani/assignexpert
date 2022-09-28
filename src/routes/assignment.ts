@@ -157,7 +157,8 @@ assignmentRouter.get('/all', async (req: express.Request, res: express.Response)
  * @apiBody {string} assignmentId Mandatory
  * @apiBody {string} code Mandatory
  * @apiBody {string} lang Mandatory
- * @apiError (ClientError) {json} 400 InvalidStudentOperation
+ * @apiError (ClientError) {json} 400 LateSubmissionNotAllowed
+ * @apiError (ClientError) {json} 400 AssigmentAlreadyCompleted
  * @apiError (ServerError) {json} 500 Need to check server logs
  * @apiVersion 0.1.0
  * @apiDescription User needs to be authenticated befor this step.
@@ -181,7 +182,7 @@ assignmentRouter.post('/submission', async (req: express.Request, res: express.R
         });
         res.status(201).json({jobId});
     } catch (err) {
-        if (err instanceof errors.ErrAssignmentAlreadyCompleted) {
+        if (err instanceof errors.ErrAssignmentAlreadyCompleted || err instanceof errors.ErrLateSubmissionNotAllowed) {
             res.status(400).json({ message: err.message });
             return;
         }
@@ -196,6 +197,8 @@ assignmentRouter.post('/submission', async (req: express.Request, res: express.R
  * @apiName Make submission complete
  * @apiBody {string} submissionId Mandatory
  * @apiError (ClientError) {json} 400 AssignmentAlreadyCompleted
+ * @apiError (ClientError) {json} 400 LateSubmissionNotAllowed
+ * @apiError (ClientError) {json} 400 InvalidStudentOperation
  * @apiError (ServerError) {json} 500 Need to check server logs
  * @apiVersion 0.1.0
  * @apiDescription User needs to be authenticated befor this step.

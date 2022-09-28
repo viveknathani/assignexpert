@@ -165,7 +165,9 @@ export class AssignmentService {
         if(completeSubmission !== undefined && completeSubmission.id !== ''){
             throw new errors.ErrAssignmentAlreadyCompleted;
         }
-        
+        if(submission.submittedAt > assignmentDetails.assignment.deadline) {
+            throw new errors.ErrLateSubmissionNotAllowed;
+        }
         const codeExecutionInput: entity.CodeExecutionInput = {
             executionType: 'judge',
             code: submission.code,
@@ -199,6 +201,14 @@ export class AssignmentService {
             const submission = await database.getSubmission(submissionId);
             if(submission.studentId != studentId || submission.id==='' || submission.id===undefined || submission === undefined){
                 throw new errors.ErrInvalidStudentOperation;
+            }
+            const assignmentDetails: entity.AssignmentDetails = await database.getAssignmentDetails(submission.assignmentId);
+            const completeSubmission = await database.getMarkedCompleteSubmissionForAssignmentForStudent(submission.assignmentId,submission.studentId);
+            if(completeSubmission !== undefined && completeSubmission.id !== ''){
+                throw new errors.ErrAssignmentAlreadyCompleted;
+            }
+            if(submission.submittedAt > assignmentDetails.assignment.deadline) {
+                throw new errors.ErrLateSubmissionNotAllowed;
             }
             await database.updateSubmission(submissionId);
         } catch (err) {
