@@ -27,6 +27,7 @@ function signIn() {
       console.log(res);
       if(res!=null){
          if(res.firstName != null){
+            localStorage.setItem("user", JSON.stringify(res));
             window.location.href = "http://localhost:8080/home";
          }
          else {
