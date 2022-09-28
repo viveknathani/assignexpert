@@ -24,7 +24,7 @@ const statementInsertSubmission = `insert into submissions (id, "assignmentId",
 const statementUpdateSubmission = `update submissions set "markCompleted" =  true where id = $1;`
 const statementSelectSubmission = `select * from submissions where id = $1;`
 const statementSelectSubmissionSummariesByAssignmentId = `select "rollNumber" as "studentRollNumber", "resultStatus", points, "timeTaken", "memoryUsedInKiloBytes", "submittedAt"
-    from submissions, students where "assignmentId" = $1 and students.id = submissions."studentId";`
+    from submissions, students where "assignmentId" = $1 and students.id = submissions."studentId" and submissions."markCompleted" = true;`
 const statementSelectSubmissionSummariesByAssignmentIdForStudent = `select "rollNumber" as "studentRollNumber", "resultStatus", points, "timeTaken", "memoryUsedInKiloBytes", "submittedAt"
 from submissions, students where "assignmentId" = $1 and students.id = submissions."studentId" and students.id = $2;`
 const statementGetMarkedCompleteSubmissionForAssignmentForStudent = `select * from submissions where "assignmentId" = $1 and "studentId" = $2 and "markCompleted"=true;`

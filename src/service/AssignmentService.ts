@@ -2,6 +2,7 @@ import * as entity from '../entity';
 import * as database from '../database';
 import * as errors from './errors';
 import { CodeExecutionService, EmailService } from './index';
+import {Workbook, Row, Cell} from 'exceljs';
 
 export class AssignmentService {
     private static instance: AssignmentService;
@@ -25,6 +26,18 @@ export class AssignmentService {
             const classEntry = await database.getClass(assignmentDetails.assignment.classId);
             if(classEntry.facultyId != facultyId){
                 throw new errors.ErrInvalidFacultyOperation;
+            }
+            if(assignmentDetails.testCases) {
+                let sum = 0;
+                for(let i = 0; i < assignmentDetails.testCases.length; i++){
+                    if(assignmentDetails.testCases[i].points<=0){
+                        throw new errors.ErrNonPositivePointsForTestcase;
+                    }
+                    sum += assignmentDetails.testCases[i].points;
+                }
+                if(sum != assignmentDetails.assignment.points){
+                    throw new errors.ErrTotalPointsNotEqualAssignmentPoints;
+                }
             }
             const id = await database.insertAssignment(assignmentDetails);
             const emailService: EmailService = EmailService.getInstance();
@@ -152,7 +165,9 @@ export class AssignmentService {
         if(completeSubmission !== undefined && completeSubmission.id !== ''){
             throw new errors.ErrAssignmentAlreadyCompleted;
         }
-        
+        if(submission.submittedAt > assignmentDetails.assignment.deadline) {
+            throw new errors.ErrLateSubmissionNotAllowed;
+        }
         const codeExecutionInput: entity.CodeExecutionInput = {
             executionType: 'judge',
             code: submission.code,
@@ -187,6 +202,14 @@ export class AssignmentService {
             if(submission.studentId != studentId || submission.id==='' || submission.id===undefined || submission === undefined){
                 throw new errors.ErrInvalidStudentOperation;
             }
+            const assignmentDetails: entity.AssignmentDetails = await database.getAssignmentDetails(submission.assignmentId);
+            const completeSubmission = await database.getMarkedCompleteSubmissionForAssignmentForStudent(submission.assignmentId,submission.studentId);
+            if(completeSubmission !== undefined && completeSubmission.id !== ''){
+                throw new errors.ErrAssignmentAlreadyCompleted;
+            }
+            if(submission.submittedAt > assignmentDetails.assignment.deadline) {
+                throw new errors.ErrLateSubmissionNotAllowed;
+            }
             await database.updateSubmission(submissionId);
         } catch (err) {
             throw err;
@@ -205,19 +228,18 @@ export class AssignmentService {
                 if(data === undefined){
                     throw new errors.ErrSubmissionNotFound;
                 }
-                for (const output of data) {
-                    submission.resultStatus = output.resultStatus;
-                    submission.resultMessage = output.resultMessage;
-                    submission.timeTaken = Math.max(submission.timeTaken, output.timeTakenMilliSeconds);
-                    submission.memoryUsedInKiloBytes = Math.max(submission.memoryUsedInKiloBytes, output.memoryUsedKB);
-                    if (output.resultStatus !== entity.ResultStatus.AC) {
+                submission.points=0;
+                for (let i = 0; i < data.length; i++) {
+                    submission.resultStatus = data[i].resultStatus;
+                    submission.resultMessage = data[i].resultMessage;
+                    submission.timeTaken = Math.max(submission.timeTaken, data[i].timeTakenMilliSeconds);
+                    submission.memoryUsedInKiloBytes = Math.max(submission.memoryUsedInKiloBytes, data[i].memoryUsedKB);
+                    if (data[i].resultStatus !== entity.ResultStatus.AC) {
                         break;
                     }
-                }
-                if(data[0].resultStatus === entity.ResultStatus.AC){
-                    submission.points = assignmentDetails.assignment.points;
-                } else {
-                    submission.points = 0;
+                    if(assignmentDetails.testCases){
+                        submission.points += assignmentDetails.testCases[i].points;
+                    }
                 }
                 await database.updateSubmissionResult(submission.id, {
                     timeTakenMilliSeconds: submission.timeTaken,
@@ -263,6 +285,50 @@ export class AssignmentService {
                 }
                 const submissionSummaries = await database.getSubmissionSummaries(assignmentId);
                 return submissionSummaries;
+            }
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    public async getResult(assignmentId: string, entityId: string, isStudent: boolean): Promise<string>{
+        try{
+            if(isStudent){
+                throw new errors.ErrInvalidStudentOperation;
+            } else {
+                const assignmentDetails = await database.getAssignmentDetails(assignmentId);
+                const classEntry = await database.getClass(assignmentDetails.assignment.classId);
+                if(classEntry.facultyId!=entityId) {
+                    throw new errors.ErrInvalidFacultyOperation;
+                }
+                const members = await database.getStudentsForClass(classEntry.id);
+                const finalSubmissionSummariesForAllStudents : entity.SubmissionSummary[] = [];
+                for( let i = 0; i < members.length; i++) {
+                    finalSubmissionSummariesForAllStudents[i].studentRollNumber = members[i].rollNumber;
+                    const submission: entity.Submission = await database.getMarkedCompleteSubmissionForAssignmentForStudent(assignmentId,members[i].id);
+                    finalSubmissionSummariesForAllStudents[i].memoryUsed = submission.memoryUsedInKiloBytes || 0;
+                    finalSubmissionSummariesForAllStudents[i].timeTaken = submission.timeTaken || 0;
+                    finalSubmissionSummariesForAllStudents[i].resultStatus = submission.resultStatus || entity.ResultStatus.NA;
+                    finalSubmissionSummariesForAllStudents[i].points = submission.points || 0;
+                    finalSubmissionSummariesForAllStudents[i].submittedAt = submission.submittedAt || new Date();
+                }
+                const fileName = `../temp/${assignmentDetails.assignment.title}${Date.now()}`
+                const workbook = new Workbook();
+                const worksheet = workbook.addWorksheet(assignmentDetails.assignment.title);
+                const headers = [
+                    { header: 'RollNumber', key: 'rollNumber', width: 15 },
+                    { header: 'ResultStatus', key: 'resultStatus', width: 15 },
+                    { header: 'Points', key: 'point', width: 15 },
+                    { header: 'TimeTaken', key: 'timeTaken', width: 15 },
+                    { header: 'MemoryUsed', key: 'memoryUSed', width: 15 },
+                    { header: 'SubmittedAt', key: 'submittedAt', width: 15 },
+                ]
+                worksheet.columns = headers;
+                for(let i = 0; i<finalSubmissionSummariesForAllStudents.length; i++){
+                    worksheet.addRow(finalSubmissionSummariesForAllStudents[i]);
+                }
+                await workbook.xlsx.writeFile(fileName);
+                return fileName;
             }
         } catch (err) {
             throw err;

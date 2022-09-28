@@ -2,6 +2,7 @@ import * as express from 'express';
 import { AssignmentService, errors } from '../service';
 import * as messages from './http_messages';
 import * as entity from '../entity';
+import * as path from 'path';
 
 const assignmentRouter: express.Router = express.Router();
 const assignmentService: AssignmentService = AssignmentService.getInstance();
@@ -34,7 +35,7 @@ const assignmentService: AssignmentService = AssignmentService.getInstance();
  * @apiBody {string} template.snippet Mandatory
  * @apiBody {string} template.preSnippet Mandatory
  * @apiBody {string} template.postSnippet Mandatory
- * @apiBody {AssignmentTestCase} testCases Mandatory
+ * @apiBody {[]AssignmentTestCase} testCases Mandatory
  * @apiBody {string} testCase.id Mandatory, leave ""
  * @apiBody {string} testCase.assignmentId Mandatory, leave ""
  * @apiBody {number} testCase.points Mandatory
@@ -42,6 +43,8 @@ const assignmentService: AssignmentService = AssignmentService.getInstance();
  * @apiBody {string} testCase.output Mandatory
  * @apiError (ClientError) {json} 400 InvalidStudentOperation
  * @apiError (ClientError) {json} 400 InvalidFacultyOperation
+ * @apiError (ClientError) {json} 400 NonPositivePointsForTestCase
+ * @apiError (ClientError) {json} 400 TotalPointsNotEqualAssignmentPoints
  * @apiError (ServerError) {json} 500 Need to check server logs
  * @apiVersion 0.1.0
  * @apiDescription User needs to be authenticated befor this step.
@@ -53,7 +56,8 @@ assignmentRouter.post('/', async (req: express.Request, res: express.Response) =
         res.status(201).json({messages: messages.MESSAGE_201});
     } catch (err) {
         if (err instanceof errors.ErrInvalidFacultyOperation
-            || err instanceof errors.ErrInvalidStudentOperation) {
+            || err instanceof errors.ErrInvalidStudentOperation || err instanceof errors.ErrNonPositivePointsForTestcase
+            || err instanceof errors.ErrTotalPointsNotEqualAssignmentPoints) {
             res.status(400).json({ message: err.message });
             return;
         }
@@ -153,7 +157,8 @@ assignmentRouter.get('/all', async (req: express.Request, res: express.Response)
  * @apiBody {string} assignmentId Mandatory
  * @apiBody {string} code Mandatory
  * @apiBody {string} lang Mandatory
- * @apiError (ClientError) {json} 400 InvalidStudentOperation
+ * @apiError (ClientError) {json} 400 LateSubmissionNotAllowed
+ * @apiError (ClientError) {json} 400 AssigmentAlreadyCompleted
  * @apiError (ServerError) {json} 500 Need to check server logs
  * @apiVersion 0.1.0
  * @apiDescription User needs to be authenticated befor this step.
@@ -177,7 +182,7 @@ assignmentRouter.post('/submission', async (req: express.Request, res: express.R
         });
         res.status(201).json({jobId});
     } catch (err) {
-        if (err instanceof errors.ErrAssignmentAlreadyCompleted) {
+        if (err instanceof errors.ErrAssignmentAlreadyCompleted || err instanceof errors.ErrLateSubmissionNotAllowed) {
             res.status(400).json({ message: err.message });
             return;
         }
@@ -192,6 +197,8 @@ assignmentRouter.post('/submission', async (req: express.Request, res: express.R
  * @apiName Make submission complete
  * @apiBody {string} submissionId Mandatory
  * @apiError (ClientError) {json} 400 AssignmentAlreadyCompleted
+ * @apiError (ClientError) {json} 400 LateSubmissionNotAllowed
+ * @apiError (ClientError) {json} 400 InvalidStudentOperation
  * @apiError (ServerError) {json} 500 Need to check server logs
  * @apiVersion 0.1.0
  * @apiDescription User needs to be authenticated befor this step.
@@ -284,6 +291,31 @@ assignmentRouter.put('/', async (req: express.Request, res: express.Response) =>
     } catch (err) {
         console.log(err);
         res.status(500).json({message: messages.MESSAGE_500});
+    }
+});
+
+
+/**
+ * @api {get} /api/assignment/download Get excel file with points
+ * @apiGroup Assignment
+ * @apiName Get excel file with points
+ * @apiQuery {string} assignmentId, Mandatory
+ * @apiError (ClientError) {json} 400 InvalidStudentOperation
+ * @apiError (ClientError) {json} 400 InvalidFacultyOperation
+ * @apiError (ServerError) {json} 500 Need to check server logs
+ * @apiVersion 0.1.0
+ */
+ assignmentRouter.get('/download', async (req: express.Request, res: express.Response) => {
+    try {
+        const { isStudent } = req.body;
+        const entityId = (isStudent) ? req.body.studentId : req.body.facultyId;
+        const assignmentId = req.query['assignmentId'] as string;
+        const fileName = await assignmentService.getResult(assignmentId, entityId, isStudent);
+        res.download(path.resolve(__dirname, fileName));
+        res.status(200).json('');
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({message: messages.MESSAGE_500})
     }
 });
 
