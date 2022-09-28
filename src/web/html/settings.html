@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://kit.fontawesome.com/2965379893.js" crossorigin="anonymous"></script>
+    <title>Settings</title>
+    <link rel="stylesheet" href="../../web/css/settings.css" type="text/css">
+</head>
+<body>
+    <div class="navBar">
+        <div class="title">AssignExpert</div>
+        <div class="navButtons"><i class="fa-solid fa-gear settingsIcon"></i></div>
+        <div class="navButtons"><i class="fa-solid fa-right-from-bracket settingsIcon" id="logoutIcon"></i></div>
+    </div>
+    <div class="line"></div>
+
+    <div class="setting">
+        <p class="setting-title">First name</p>
+        <input type="text" id="setting-first-name">
+    </div>
+
+    <div class="setting">
+        <p class="setting-title">Last name</p>
+        <input type="text" id="setting-last-name">
+    </div>
+
+    <div class="setting">
+        <p class="setting-title">Password</p>
+        <input type="password" id="setting-old-password" placeholder="current password">
+        <input type="password" id="setting-new-password" placeholder="new password">
+    </div>
+
+
+    <div class="setting">
+        <p class="setting-title">UI theme</p>
+        <select name="ui-theme" id="setting-ui-theme">
+            <option value="none">no selection</option>
+            <option value="light">light</option>
+            <option value="dark">dark</option>
+        </select>
+    </div>
+
+    <div class="setting">
+        <p class="setting-title">Editor theme</p>
+        <select name="editor-theme" id="setting-editor-theme">
+            <option value="none">no selection</option>
+            <option value="monokai">monokai</option>
+            <option value="chrome">chrome</option>
+            <option value="github">github</option>
+            <option value="textmate">textmate</option>
+            <option value="xcode">xcode</option>
+            <option value="dracula">dracula</option>
+            <option value="solarized_dark">solarized_dark</option>
+            <option value="twilight">twilight</option>
+        </select>
+    </div>
+
+    <div class="setting">
+        <p class="setting-title">Email notifications</p>
+        <input type="radio" id="email-notif-yes" name="email-notif" value="true">
+        <label for="email-notif-yes">on</label><br>
+        <input type="radio" id="email-notif-no" name="email-notif" value="false">
+        <label for="email-notif-no">off</label><br>
+    </div>
+    
+    <button type="button" onclick="saveSettings()">save</button>
+    <p id="message"></p>
+    <script>
+        function setMessage(text, color) {
+            const message = document.getElementById("message");
+            message.innerText = text;
+            message.style.color = color;
+        }
+
+        function clearMessage() {
+            const message = document.getElementById("message");
+            message.innerText = '';
+        }
+
+        function saveSettings() {
+            const firstName = document.getElementById("setting-first-name").value;
+            const lastName = document.getElementById("setting-last-name").value;
+            const oldPassword = document.getElementById("setting-old-password").value;
+            const newPassword = document.getElementById("setting-new-password").value;
+            const uiThemeMenu = document.getElementById("setting-ui-theme");
+            const uiTheme = uiThemeMenu.options[uiThemeMenu.selectedIndex].value;
+            const editorThemeMenu = document.getElementById("setting-editor-theme");
+            const editorTheme = editorThemeMenu.options[editorThemeMenu.selectedIndex].value;
+            const wantsEmailNotifications = document.querySelector('input[name="email-notif"]:checked')?.value;
+            const fieldsToUpdate = {};
+            if (firstName !== '') {
+                fieldsToUpdate.firstName = firstName;
+            }
+            if (lastName !== '') {
+                fieldsToUpdate.lastName = lastName;
+            }
+            if (oldPassword !== '' && newPassword !== '') {
+                fieldsToUpdate.oldPassword = oldPassword;
+                fieldsToUpdate.newPassword = newPassword;
+            }
+            fieldsToUpdate.preferences = {}
+            if (uiTheme !== "none") {
+                fieldsToUpdate.preferences.uiTheme = uiTheme;
+            }
+            if (editorTheme !== "none") {
+                fieldsToUpdate.preferences.editorTheme = editorTheme;
+            }
+            if (wantsEmailNotifications !== undefined) {
+                fieldsToUpdate.preferences.wantsEmailNotifications = (wantsEmailNotifications === "true");
+            }
+            fetch('/api/user/', {
+                method: 'PUT',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(fieldsToUpdate)
+            })
+            .then((res) => {
+                console.log(res);
+                setMessage("Update successful", "green");
+            })
+            .catch((err) => {
+                console.log(err);
+                setMessage(`Update failed ${err?.message}`, "red");
+            }).finally(() => {
+                setTimeout(clearMessage, 10000);
+            });
+        }
+    </script>
+</body>
+</html>

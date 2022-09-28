@@ -23,4 +23,6 @@ pageRouter.get('/run', directoryHandler('../web/html/run.html'));
 pageRouter.get('/auth', directoryHandler('../web/html/authPage.html'));
 pageRouter.use(injectSessionInfoMiddleWare);
 pageRouter.get('/home', directoryHandler('../web/html/home.html'));
+pageRouter.get('/settings', directoryHandler('../web/html/settings.html'));
+
 export default pageRouter;
