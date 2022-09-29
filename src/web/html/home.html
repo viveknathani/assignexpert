@@ -6,7 +6,8 @@
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <script src="https://kit.fontawesome.com/2965379893.js" crossorigin="anonymous"></script>
    <title>Home</title>
-   <link rel="stylesheet" type="text/css" href="../css/home.css" />
+   <link rel="stylesheet" type="text/css" href="../../web/css/home.css" />
+   <script defer src="../../web/javascript/home.js"></script>
 </head>
 <body>
    <div class="navBar">
@@ -15,7 +16,7 @@
       <div class="navButtons"><i class="fa-solid fa-right-from-bracket settingsIcon" id="logoutIcon"></i></div>
    </div>
    <div class="line"></div>
-   <div class="classContainer">
+   <div class="classContainer" id="classContainer">
       <div class="classes"></div>
       <div class="classes"></div>
       <div class="classes"></div>
@@ -23,9 +24,26 @@
       <div class="classes"></div>
       <div class="classes"></div>
       <div class="classes"></div>
-      <div class="classes" id="addClass">
-         <div class="plusV"></div>
-         <div class="plusH"></div>
+      <div class="classes" id="addClass" style="text-align: center;">
+         <div id="plus" onclick="displayPopUp()">
+            <div class="plusV"></div>
+            <div class="plusH"></div>
+         </div>
+         <div id="student" style="display: none; overflow: hidden;">
+            <h1 class="popUpTitle">Join class</h1>
+            <input type="text" id="classCode" name="classCode" class="inputs" autocomplete="off" placeholder="class code"><br>
+            <button class="button" onclick="joinClass()">Join now</button><br>
+         </div>
+         <div id="faculty" style="display: none; overflow: hidden;">
+            <h1 class="popUpTitle">Create Class</h1>
+            <input type="text" id="className" name="className" class="inputs" autocomplete="off" placeholder="class name"><br>
+            <button class="button" onclick="createClass()">Create</button><br>
+         </div>
+         <div id="displayCode" style="display: none; overflow: hidden;">
+            <h1 class="popUpTitle" style="margin-top: 3.1vh;">Class Code: </h1>
+            <div id="code"></div><br>
+            <button class="button" style="margin-top: 4.5vh;" onclick="closePopUp()">Close</button>
+         </div>
       </div>
    </div>
 </body>
