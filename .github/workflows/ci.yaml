@@ -17,9 +17,28 @@ jobs:
           package-manager: npm
           command: build
   test:
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_DB: assignexpert
+          POSTGRES_USER: viveknathani
+          POSTGRES_PASSWORD: root
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      redis:
     name: test
     runs-on: ubuntu-latest
     steps:
+      - name: Start Redis
+        uses: supercharge/redis-github-action@1.4.0
+        with:
+        redis-version: 7.0.4
       - uses: actions/checkout@v2
       - uses: Adzz/jest_test_action@v1.0.0
         with:
