@@ -32,3 +32,26 @@ function showCompleted() {
       arrowC.classList.add("turn90Degreesacw");
    }
 }
+
+const data = JSON.parse(localStorage.getItem("user"));
+if (!data.isStudent) {
+   const updateSection = document.getElementById("updateSection");
+   updateSection.style.display = 'grid';
+}
+
+function updateName() {
+   const newName = document.getElementById("updateInput").value;
+   const classId = (new URLSearchParams(window.location.search)).get("classId");
+   fetch('/api/class/name', {
+      method: 'PUT',
+      headers: {
+         Accept: 'application/json',
+      },
+      body: JSON.stringify({
+         classId,
+         newName
+      })
+   })
+   .then((res) => console.log(res))
+   .catch((err) => console.log(err))
+}
