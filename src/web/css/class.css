@@ -66,15 +66,20 @@
    margin-right: 0.5vw;
 }
 
+.heading {
+   justify-self: flex-start;
+   font-size: 3vh;
+   font-weight: 600;
+   color: var(--primary);
+   padding-left: 4vw;
+   margin-top: 2vh;
+}
+
 .assignedContainer {
-   display: none;
+   display: grid;
    margin-top: 4vh;
    grid-template-columns: 1fr;
    row-gap: 2vh;
-}
-
-.assignedContainer.show{
-   display: grid;
 }
 
 .assignments {
@@ -102,6 +107,12 @@
    margin-right: 1.5vw;
    font-size: 2.3vh;
    color: var(--black);
+}
+
+.membersList {
+   justify-self: flex-start;
+   color: var(--black);
+   padding-left: 8vw;
 }
 
 /*Animations*/
@@ -138,4 +149,36 @@
    to {
       transform: rotate(0);
    }
+}
+
+#updateSection {
+   display: none;
+   justify-self: flex-start;
+   font-size: 3vh;
+   font-weight: 600;
+   color: var(--primary);
+   padding-left: 4vw;
+   margin-top: 2vh;
+   width: 20%;
+}
+
+button {
+   font-size: 2.5vh;
+   font-weight: 600;
+   width: 8vw;
+   height: 5vh;
+   padding: 0.6vh 1vw;
+   margin-top: 4.6vh;
+   color: var(--black);
+   background-color: var(--white);
+   border: 0.15vw solid var(--primary);
+   border-radius: 6px;
+   outline: none;
+   overflow: hidden;
+   white-space: nowrap;
+}
+
+button:hover {
+   transform: scale(1.06);
+   cursor: pointer;
 }

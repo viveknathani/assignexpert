@@ -98,4 +98,16 @@ export class ClassService {
             throw err;
         }
     }
+
+    public async getClass(id: string): Promise<entity.Class | undefined> {
+        try {
+            const oneClass = await database.getClass(id);
+            if (oneClass === undefined || oneClass.id === '') {
+                throw new errors.ErrClassNotFound;
+            }
+            return oneClass;
+        } catch (err) {
+            throw err;
+        }
+    }
 }
