@@ -16,18 +16,3 @@ jobs:
         with:
           package-manager: npm
           command: build
-  test:
-    services:
-      postgres:
-        image: postgres:13
-        env:
-          POSTGRES_DB: assignexpert
-          POSTGRES_USER: viveknathani
-          POSTGRES_PASSWORD: root
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
