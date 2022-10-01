@@ -19,6 +19,10 @@ function displayClasses() {
          for(i=0; i<res.length; i++) { 
             classes = document.createElement("div");
             classes.innerText = res[i].name;
+            const id = res[i].id;
+            classes.onclick = function () {
+               location.href = `/class?classId=${id}`
+            } 
             classes.classList.add("classes");
             container.insertBefore(classes, addClass);
          }
