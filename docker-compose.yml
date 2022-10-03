@@ -5,7 +5,10 @@ services:
     ports:
       - "8080:8080"
     networks:
-      - webnet    
+      - webnet  
+    depends_on:
+      - postgres
+      - redis
   redis:
     image: redis
     ports:
@@ -15,9 +18,10 @@ services:
   postgres:
     image: postgres
     environment:
-      POSTGRES_USER: viveknathani
-      POSTGRES_PASSWORD: root
-      POSTGRES_DB: assignexpert
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+    volumes:
+      - ./src/scripts/schema.sql:/docker-entrypoint-initdb.d/schema.sql
     ports:
       - "5432:5432"
     networks:
