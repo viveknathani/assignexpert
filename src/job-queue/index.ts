@@ -2,7 +2,14 @@ import { Queue, Worker, Job } from 'bullmq';
 import IORedis from 'ioredis';
 import * as entity from '../entity';
 
-const redisConnection = new IORedis(process.env.REDIS_URL || "", {
+let redisURL = '';
+if (process.env.NODE_ENV === 'development') {
+    redisURL = process.env.REDIS_URL_DEV || ''
+} else {
+    redisURL = process.env.REDIS_URL_PROD || ''
+}
+
+const redisConnection = new IORedis(redisURL, {
     maxRetriesPerRequest: null
 });
 

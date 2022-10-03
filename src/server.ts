@@ -11,13 +11,20 @@ import { api, pageRouter } from './routes';
 
 async function main() {
 
-    setupDatabase(process.env.DATABASE_URL || '')
+    let databaseURL = '', redisURL = '';
+    if (process.env.NODE_ENV === 'development') {
+        databaseURL = process.env.DATABASE_URL_DEV || ''
+        redisURL = process.env.REDIS_URL_DEV || ''
+    } else {
+        databaseURL = process.env.DATABASE_URL_PROD || ''
+        redisURL = process.env.REDIS_URL_PROD || ''
+    }
+    setupDatabase(databaseURL)
     await queryWithTransaction("select 1+1 as result", function scanRows(result: QueryResult<any>): Error | undefined {            
         console.log(result.rows[0]);
         return undefined;             
     });
-
-    setupCache(process.env.REDIS_URL || '', '', '')
+    setupCache(redisURL, '', '')
     const client = getClient();
     await client.connect();
 
