@@ -1,3 +1,6 @@
+create database assignexpert;
+\c assignexpert;
+
 create type "language" as enum (
     'c',
     'cpp',
