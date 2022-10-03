@@ -1,4 +1,5 @@
-import { Pool, QueryResult } from 'pg';
+import { Pool, PoolClient, QueryResult } from 'pg';
+import { setTimeout } from 'timers/promises'
 
 let pool: Pool;
 
@@ -26,7 +27,7 @@ export async function terminatePool() {
 // Ideal for INSERT/UPDATE/DELETE statements.
 export async function execWithTransaction(prepared: string, ...args: any[]) {
     
-    const client = await pool.connect();
+    const client = await getClient();
 
     try {
 
@@ -48,7 +49,7 @@ export async function execWithTransaction(prepared: string, ...args: any[]) {
 export async function queryWithTransaction(prepared: string, 
     scanRows: (rows: QueryResult<any>) => Error | undefined,  ...args: any[]) {
     
-    const client = await pool.connect();
+    const client = await getClient();
 
     try {
 
@@ -66,6 +67,17 @@ export async function queryWithTransaction(prepared: string,
     } finally {
 
         client.release();
+    }
+}
+
+async function getClient(): Promise<PoolClient> {
+    try {
+        const client = await pool.connect();
+        return client;
+    } catch (err) {
+        console.log('trying to reconnect to postgres (make sure it is available)')
+        await setTimeout(1000);
+        return getClient();
     }
 }
 
