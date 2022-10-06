@@ -134,6 +134,23 @@ classRouter.get('/students',async (req: express.Request, res: express.Response) 
     }
 });
 
+/**
+ * @api {get} /api/class/code Get class code
+ * @apiGroup Class
+ * @apiName Get class code
+ * @apiQuery {string} classId, class id
+ * @apiError (ServerError) {json} 500 Need to check server logs
+ * @apiVersion 0.1.0
+ */
+classRouter.get('/code',async (req: express.Request, res: express.Response) => {
+    try {
+        const classId = req.query['classId'] as string;
+        res.status(200).json({code: classId})
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({message: messages.MESSAGE_500 });
+    }    
+})
 export {
     classRouter
 };
