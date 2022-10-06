@@ -13,7 +13,7 @@ const statementSelectAssignmentSummariesForClass = `select id, title, "difficult
 const statementUpdateAssignment = `update assignments set title = $2, description = $3, "sampleInput" = $4, "sampleOutput"= $5,
     constraints = $6, points = $7, "hasTemplate" = $8, "acceptedLanguages" = $9, "holdPoints" = $10, deadline = $11, "difficultyLevel" = $12 where id = $1;`
 const statementInsertTemplate = `insert into templates (id, "assignmentId", lang, snippet, "preSnippet", "postSnippet") values ($1, $2, $3, $4, $5, $6);`
-const statementUpdateTemplate = `update templates set snippet = $1, "preSnippet" = $2, "postSnippet" = $3 where id = $4;`
+const statementUpdateTemplate = `update templates set snippet = $1, "preSnippet" = $2, "postSnippet" = $3 lang = $4 where id = $5;`
 const statementSelectTemplates = `select * from templates where "assignmentId" = $1;`
 const statementInsertTestCase = `insert into "testCases" (id, "assignmentId", points, input, output) values ($1, $2, $3, $4, $5);`
 const statementUpdateTestCase = `update "testCases" set points = $1, input = $2, output = $3 where id = $4;`
@@ -68,7 +68,7 @@ export async function updateAssignment(assignmentDetails: entity.AssignmentDetai
         assignmentDetails.assignment.points, assignmentDetails.assignment.hasTemplate, assignmentDetails.assignment.acceptedLanguages, assignmentDetails.assignment.holdPoints, assignmentDetails.assignment.deadline, assignmentDetails.assignment.difficultyLevel);
     if(assignmentDetails.templates) {
         for(let i = 0; i<assignmentDetails.templates.length; i++) {
-            await execWithTransaction(statementUpdateTemplate, assignmentDetails.templates[i].snippet, assignmentDetails.templates[i].preSnippet, assignmentDetails.templates[i].postSnippet,
+            await execWithTransaction(statementUpdateTemplate, assignmentDetails.templates[i].snippet, assignmentDetails.templates[i].preSnippet, assignmentDetails.templates[i].postSnippet, assignmentDetails.templates[i].lang,
                 assignmentDetails.templates[i].id);
         }
     }

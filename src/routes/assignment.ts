@@ -278,6 +278,12 @@ assignmentRouter.get('/submission', async (req: express.Request, res: express.Re
  * @apiBody {number} points, Optional
  * @apiBody {string} deadline, Optional
  * @apiBody {string} difficultyLevel, Optional
+ * @apiBody {[]Template} templates, Optional
+ * @apiBody {string} template.id, Mandatory
+ * @apiBody {string} template.lang Optional, has to be one of: {c, cpp, java, python}
+ * @apiBody {string} template.snippet Optional
+ * @apiBody {string} template.preSnippet Optional
+ * @apiBody {string} template.postSnippet Optional
  * @apiError (ClientError) {json} 400 InvalidStudentOperation
  * @apiError (ClientError) {json} 400 InvalidFacultyOperation
  * @apiError (ServerError) {json} 500 Need to check server logs
@@ -285,8 +291,8 @@ assignmentRouter.get('/submission', async (req: express.Request, res: express.Re
  */
 assignmentRouter.put('/', async (req: express.Request, res: express.Response) => {
     try {
-        const { isStudent, facultyId } = req.body;
-        await assignmentService.updateAssignment(req.body, isStudent, facultyId);
+        const { isStudent, facultyId, templates } = req.body;
+        await assignmentService.updateAssignment(req.body, req.body?.templates || [], isStudent, facultyId);
         res.status(204).json({message: messages.MESSAGE_204});
     } catch (err) {
         console.log(err);

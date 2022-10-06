@@ -77,7 +77,7 @@ export class AssignmentService {
         return {...obj, ...updates};
     }
 
-    public async updateAssignment(partialAssignment: Partial<entity.Assignment>, isStudent: boolean, facultyId: string) {
+    public async updateAssignment(partialAssignment: Partial<entity.Assignment>, partialTemplates: Partial<entity.Template>[], isStudent: boolean, facultyId: string) {
         try{
             if(isStudent) {
                 throw new errors.ErrInvalidStudentOperation;
@@ -93,10 +93,28 @@ export class AssignmentService {
             if(classEntry.facultyId != facultyId){
                 throw new errors.ErrInvalidFacultyOperation;
             }
-            const original = assignmentDetails.assignment;
-            const assignment = this.updateFromPartial<entity.Assignment>(original, partialAssignment);
             const toUpdate = assignmentDetails;
+            const assignment = this.updateFromPartial<entity.Assignment>(assignmentDetails.assignment, partialAssignment);
+            let templates: entity.Template[] = [];
+            let testCases: entity.AssignmentTestCase[] = [];
+            let originalTemplates = new Map<string, entity.Template>();
+            if (assignmentDetails.templates && partialTemplates.length !== 0) {
+                for (const template of assignmentDetails.templates) {
+                    originalTemplates.set(template.id, template);
+                }
+                for (const partialTemplate of partialTemplates) {
+                    if (!partialTemplate.id) {
+                        throw new errors.ErrTemplateNoId;
+                    }
+                    const originalTemplate = originalTemplates.get(partialTemplate.id);
+                    if (originalTemplate) {
+                        templates.push(this.updateFromPartial<entity.Template>(originalTemplate, partialTemplate));
+                    }
+                }
+            }
             toUpdate.assignment = assignment;
+            toUpdate.templates = templates;
+            toUpdate.testCases = testCases;
             await database.updateAssignment(toUpdate);
         } catch (err) {
             throw err;
