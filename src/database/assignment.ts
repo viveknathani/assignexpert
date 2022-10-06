@@ -23,9 +23,9 @@ const statementInsertSubmission = `insert into submissions (id, "assignmentId",
     "submittedAt", "markCompleted") values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12);`
 const statementUpdateSubmission = `update submissions set "markCompleted" =  true where id = $1;`
 const statementSelectSubmission = `select * from submissions where id = $1;`
-const statementSelectSubmissionSummariesByAssignmentId = `select "rollNumber" as "studentRollNumber", "resultStatus", points, "timeTaken", "memoryUsedInKiloBytes", "submittedAt"
+const statementSelectSubmissionSummariesByAssignmentId = `select submissions.id as "submissionId", "rollNumber" as "studentRollNumber", "resultStatus", points, "timeTaken", "memoryUsedInKiloBytes", "submittedAt"
     from submissions, students where "assignmentId" = $1 and students.id = submissions."studentId" and submissions."markCompleted" = true;`
-const statementSelectSubmissionSummariesByAssignmentIdForStudent = `select "rollNumber" as "studentRollNumber", "resultStatus", points, "timeTaken", "memoryUsedInKiloBytes", "submittedAt"
+const statementSelectSubmissionSummariesByAssignmentIdForStudent = `select submissions.id as "submissionId", "rollNumber" as "studentRollNumber", "resultStatus", points, "timeTaken", "memoryUsedInKiloBytes", "submittedAt"
 from submissions, students where "assignmentId" = $1 and students.id = submissions."studentId" and students.id = $2;`
 const statementGetMarkedCompleteSubmissionForAssignmentForStudent = `select * from submissions where "assignmentId" = $1 and "studentId" = $2 and "markCompleted"=true;`
 const statementUpdateSubmissionResult = `update submissions set "memoryUsedInKiloBytes" = $1, "timeTaken" = $2, "resultStatus" = $3, "resultMessage" = $4, points = $5 where id = $6;`
