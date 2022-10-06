@@ -167,6 +167,7 @@ export interface Submission {
 }
 
 export interface SubmissionSummary {
+    submissionId: string
     studentRollNumber: number,
     resultStatus: ResultStatus,
     points: number,
