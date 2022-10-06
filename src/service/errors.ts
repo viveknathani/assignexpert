@@ -203,3 +203,12 @@ export class ErrLateSubmissionNotAllowed extends Error {
         Object.setPrototypeOf(this,ErrLateSubmissionNotAllowed.prototype);
     }
 }
+
+export class ErrTemplateNoId extends Error {
+
+    constructor() {
+        
+        super('Need template id for updating.');
+        Object.setPrototypeOf(this,ErrTemplateNoId.prototype);
+    }
+}
