@@ -19,6 +19,7 @@
 .titleAndSubmissions {
    display: grid;
    margin-top: 6vh;
+   margin-bottom: 7vh;
    height: 8.4vh;
    grid-template-columns: 1fr 1fr;
 }
@@ -53,15 +54,15 @@
 }
 
 .miniHeadings {
-   margin-top: 3.5vh;
+   margin-top: 5.5vh;
    font-size: 2.6vh;
    font-weight: 600;
    color: var(--black);
    margin-left: 5.1vw;
 }
 
-#testCaseHeading {
-   margin-top: 5.5vh;
+#problemStatementHeading {
+   margin-top: 3.5vh;
 }
 
 .writeProblem {
@@ -73,6 +74,90 @@
    height: 35vh;
    background-color: var(--secondary);
    color: var(--black);
+}
+
+.smallTextAreaInputs {
+   margin-top: 3.5vh;
+   margin-left: 5.3vw;
+   padding: 1.6vh 1.5vw;
+   font-size: 2.4vh;
+   width: 15vw;
+   height: 6vh;
+   background-color: var(--secondary);
+   color: var(--black);
+}
+
+.smallInput {
+   margin-top: 3.5vh;
+   margin-left: 5.3vw;
+   padding: 1.6vh 1.5vw;
+   padding-right: 0.5vw;
+   font-size: 2.2vh;
+   width: 8vw;
+   background-color: var(--secondary);
+   color: var(--black);
+   overflow: hidden;
+   border: none;
+   outline: none;
+}
+
+#assignmentName {
+   display: inline-block;
+   min-width: 14vw;
+   margin-left: 4.6vw;
+   margin-top: 11vh;
+   margin-bottom: 4vh;
+   padding: 0.5vh 0.8vw;
+   font-size: 3.5vh;
+   background-color: var(--white);
+   color: var(--primary);
+   font-weight: bold;
+   overflow: hidden;
+   border: 0.3vh solid var(--black);
+   border-radius: 4px;
+   outline: none;
+}
+
+.dropDown {
+   margin-top: 3.5vh;
+   margin-left: 5.3vw;
+   padding: 0vh 1.5vw;
+   font-size: 2.2vh;
+   width: 10vw;
+   height: 5vh;
+   background-color: var(--secondary);
+   color: var(--black);
+   overflow: hidden;
+   border: none;
+   border-radius: 0;
+   outline: none;
+}
+
+.dropDownItem {
+   margin-top: 3.5vh;
+   margin-left: 5.3vw;
+   padding: 0vh 1.5vw;
+   font-size: 2.2vh;
+   width: 10vw;
+   height: 5vh;
+   background-color: var(--secondary);
+   color: var(--black);
+   overflow: hidden;
+   border: none;
+   outline: none;
+   border-radius: 0;
+}
+
+.radioButtons {
+   display: inline-block;
+   margin-top: 3vh;
+   margin-left: 5.3vw;
+   font-size: 2.3vh;
+   background-color: var(--white);
+   color: var(--black);
+   border: none;
+   border-radius: 0;
+   outline: none;
 }
 
 .testCaseContainer {
@@ -123,4 +208,98 @@
 .minusIcon:hover {
    scale: 1.2;
    cursor: pointer;
+}
+
+#templates {
+   display: none;
+}
+
+.template {
+   display: none;
+}
+
+.horizontalLine {
+   display: block;
+   width: 90vw;
+   height: 0.4vh;
+   background-color: var(--primary);
+   margin-left: 5vw;
+   margin-top: 5.5vh;
+}
+
+
+.submitButton {
+   font-size: 3vh;
+   font-weight: 600;
+   width: 11vw;
+   height: 6.3vh;
+   padding: 0.6vh 1vw;
+   margin-left: 43vw;
+   margin-bottom: 8vh;
+   color: var(--black);
+   background-color: var(--white);
+   border: 0.2vw solid var(--primary);
+   border-radius: 6px;
+   outline: none;
+   overflow: hidden;
+   white-space: nowrap;
+}
+
+.submitButton:hover {
+   transform: scale(1.06);
+   cursor: pointer;
+}
+
+
+
+
+
+
+/* ////////////  View Assignment Page CSS  /////////////// */
+
+.assignmentTitle {
+   display: inline-block;
+   min-width: 14vw;
+   margin-left: 4.4vw;
+   margin-top: 11vh;
+   margin-bottom: 0vh;
+   padding: 0.5vh 0.8vw;
+   font-size: 4vh;
+   background-color: var(--white);
+   color: var(--primary);
+   font-weight: 700;
+   border: none;
+   outline: none;
+}
+
+#score {
+   font-size: 2.5vh;
+   margin-left: 86vw;
+   margin-top: -3vh;
+   margin-bottom: 8vh;
+   font-weight: bold;
+}
+
+#problemHeading {
+   font-size: 3.2vh;
+}
+
+.problem {
+   margin-top: 3.5vh;
+   margin-left: 5.3vw;
+   padding: 5vh 2.5vw;
+   width: 65vw;
+   min-height: 45vh;
+   background-color: var(--secondary);
+   color: var(--black);
+}
+
+.problemData {
+   width: 60vw;
+   margin-left: 0vw;
+   text-align: justify;
+   line-height: 3.5vh;
+   background-color: var(--secondary);
+   color: var(--black);
+   font-size: 2.2vh;
 }

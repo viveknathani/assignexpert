@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <script src="https://kit.fontawesome.com/2965379893.js" crossorigin="anonymous"></script>
+   <title>Assignment</title>
+   <link rel="stylesheet" type="text/css" href="../css/assignment.css" />
+   <link rel="stylesheet" type="text/css" href="../css/home.css" />
+   <script defer src="../javascript/upsertFaculty.js"></script>
+</head>
+<body>
+   <div class="navBar">
+      <div class="title">AssignExpert</div>
+      <div class="navButtons"><i class="fa-solid fa-gear settingsIcon"></i></div>
+      <div class="navButtons"><i class="fa-solid fa-right-from-bracket settingsIcon" id="logoutIcon"></i></div>
+   </div>
+
+   <div class="line"></div>
+
+   <input class="smallInput" type="text" id="assignmentName" autocomplete="off" placeholder="Give it a Title">
+
+   <h3 class="miniHeadings" id="problemStatementHeading">Problem Statement <span style="color: red;">*</span></h3>
+   <textarea class="writeProblem" id="problemStatement" placeholder="Write the problem"></textarea>
+
+   <h3 class="miniHeadings">Sample Input <span style="color: red;">*</span></h3>
+   <textarea id="sampleInput" class="smallTextAreaInputs" placeholder="Enter sample input"></textarea>
+
+   <h3 class="miniHeadings">Sample Output <span style="color: red;">*</span></h3>
+   <textarea id="sampleOutput" class="smallTextAreaInputs" placeholder="Enter sample output"></textarea>
+
+   <h3 class="miniHeadings">Constraints <span style="color: red;">*</span></h3>
+   <textarea id="constraints" class="smallTextAreaInputs" placeholder="Enter constraints"></textarea>
+
+   <h3 class="miniHeadings">Time Limit (in seconds, min. 1, max. 10) <span style="color: red;">*</span></h3>
+   <input id="timeLimit" class="smallInput" type="number" min="1" max="10" id="timeLimit" autocomplete="off" placeholder="1">
+
+   <h3 class="miniHeadings">Memory Limit <span style="color: red;">*</span></h3>
+   <select name="memoryLimit" class="dropDown" id="memoryLimit" autocomplete="off" required>
+      <option class="dropDownItem" value="512">512 MB</option>
+      <option class="dropDownItem" value="1024">1024 MB</option>
+      <option class="dropDownItem" value="2048">2048 MB</option>
+   </select>
+
+   <h3 class="miniHeadings">Points assigned to the assignment <span style="color: red;">*</span></h3>
+   <input class="smallInput" style="width: 10vw;" type="text" id="points" autocomplete="off" placeholder="Enter Points">
+
+   <h3 class="miniHeadings">Deadline for the submission <span style="color: red;">*</span></h3>
+   <input class="smallInput" style="width: 10.5vw;" type="date" id="Deadline" autocomplete="off">
+
+   <h3 class="miniHeadings">Difficulty Level <span style="color: red;">*</span></h3>
+   <select name="difficulty" class="dropDown" id="memoryLimit" autocomplete="off" required>
+      <option class="dropDownItem" value="EASY">Easy</option>
+      <option class="dropDownItem" value="MEDIUM">Medium</option>
+      <option class="dropDownItem" value="DIFFICULT">Difficult</option>
+   </select>
+
+   <h3 class="miniHeadings">Show points to students? (Can be updated later) <span style="color: red;">*</span></h3>
+   <div class="radioButtons">
+      <input type="radio" id="yes" name="showPoints" autocomplete="off" value="yes" style="margin-bottom: 1.5vh;"> Yes<br>
+      <input type="radio" id="no" name="showPoints" autocomplete="off" value="no"> No
+   </div>
+
+   <h3 class="miniHeadings">Accepted Languages <span style="color: red;">*</span></h3>
+   <div class="radioButtons">
+      <input type="checkbox" id="c" name="languages" autocomplete="off" value="c" style="margin-bottom: 1.5vh;" onchange="languageChange(0)"> C<br>
+      <input type="checkbox" id="cpp" name="languages" autocomplete="off" value="cpp" style="margin-bottom: 1.5vh;" onchange="languageChange(1)"> C++<br>
+      <input type="checkbox" id="java" name="languages" autocomplete="off" value="java" style="margin-bottom: 1.5vh;" onchange="languageChange(2)"> Java<br>
+      <input type="checkbox" id="python" name="languages" autocomplete="off" value="python" onchange="languageChange(3)"> Python
+   </div><br><br>
+
+   <div class="horizontalLine"></div><br>
+
+   <!-- ///////// Templates Fields //////// -->
+
+
+   <h3 class="miniHeadings">Use templates <span style="color: red;">*</span></h3>
+   <div class="radioButtons">
+      <input type="radio" id="yes" name="template" autocomplete="off" value="yes" style="margin-bottom: 1.5vh;" onchange="showTemplates(true)"> Yes<br>
+      <input type="radio" id="no" name="template" autocomplete="off" value="no" onchange="showTemplates(false)"> No
+   </div>
+
+   <div id="templates">
+      <div class="template" id="cTemplate">
+         <h3 class="miniHeadings">C Template</h3>
+         <div class="testCasesContainer">
+            <div class="testCaseContainer">
+               <br><h4>Pre-Snippet <span style="color: red;">*</span></h4>
+               <textarea class="inputOutput" id="cPreSnippet"></textarea>
+               <br><br>
+               <h4>Snippet <span style="color: red;">*</span></h4>
+               <textarea class="inputOutput" id="cSnippet"></textarea>
+               <br><br>
+               <h4>Post-Snippet <span style="color: red;">*</span></h4>
+               <textarea class="inputOutput" id="cPostSnippet"></textarea><br><br>
+            </div>
+         </div>
+      </div><br>
+
+      <div class="template" id="cppTemplate">
+         <h3 class="miniHeadings">C++ Template</h3>
+         <div class="testCasesContainer">
+            <div class="testCaseContainer">
+               <br><h4>Pre-Snippet <span style="color: red;">*</span></h4>
+               <textarea class="inputOutput" id="cppPreSnippet"></textarea>
+               <br><br>
+               <h4>Snippet <span style="color: red;">*</span></h4>
+               <textarea class="inputOutput" id="cppSnippet"></textarea>
+               <br><br>
+               <h4>Post-Snippet <span style="color: red;">*</span></h4>
+               <textarea class="inputOutput" id="cppPostSnippet"></textarea><br><br>
+            </div>
+         </div>
+      </div><br>
+
+      <div class="template" id="javaTemplate">
+         <h3 class="miniHeadings">Java Template</h3>
+         <div class="testCasesContainer">
+            <div class="testCaseContainer">
+               <br><h4>Pre-Snippet <span style="color: red;">*</span></h4>
+               <textarea class="inputOutput" id="javaPreSnippet"></textarea>
+               <br><br>
+               <h4>Snippet <span style="color: red;">*</span></h4>
+               <textarea class="inputOutput" id="javaSnippet"></textarea>
+               <br><br>
+               <h4>Post-Snippet <span style="color: red;">*</span></h4>
+               <textarea class="inputOutput" id="javaPostSnippet"></textarea><br><br>
+            </div>
+         </div>
+      </div><br>
+
+      <div class="template" id="pythonTemplate">   
+         <h3 class="miniHeadings">Python Template</h3>
+         <div class="testCasesContainer">
+            <div class="testCaseContainer">
+               <br><h4>Pre-Snippet <span style="color: red;">*</span></h4>
+               <textarea class="inputOutput" id="pythonPreSnippet"></textarea>
+               <br><br>
+               <h4>Snippet <span style="color: red;">*</span></h4>
+               <textarea class="inputOutput" id="pythonSnippet"></textarea>
+               <br><br>
+               <h4>Post-Snippet <span style="color: red;">*</span></h4>
+               <textarea class="inputOutput" id="pythonPostSnippet"></textarea><br><br>
+            </div>
+         </div>
+      </div>
+   </div><br>
+
+   <div class="horizontalLine"></div><br>
+
+
+   <!-- ///////  Test Cases Section  /////// -->
+
+
+   <h3 class="miniHeadings">Test Cases <span style="color: red;">*</span></h3>
+   <div class="testCasesContainer" id="testCasesContainer">
+      <div class="testCaseContainer" id="firstContainer">
+         <h4>Input: </h4>
+         <textarea class="inputOutput"></textarea>
+         <br><br>
+         <h4>Output: </h4>
+         <textarea class="inputOutput"></textarea>
+         <br>
+         <h4 style="display: inline-block;">Points: </h4>
+         <input class="smallInput" style="width: 9vw; margin-left: 1vw;" type="text" autocomplete="off" placeholder="Enter Points">
+      </div>
+   </div>
+   <div class="addCaseContainer">
+      <i class="fa-solid fa-circle-plus addCaseIcon" onclick="addNewCase()"></i>&nbsp;&nbsp;&nbsp;&nbsp;
+      <i class="fa-solid fa-circle-minus addCaseIcon" onclick="removeCase()"></i>
+   </div><br><br><br>
+
+   <button class="submitButton" onclick="createAssignment()"><i class="fa-solid fa-file-circle-plus"></i>&nbsp;&nbsp;Create</button>
+</body>
+</html>
