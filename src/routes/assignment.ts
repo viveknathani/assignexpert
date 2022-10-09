@@ -95,7 +95,7 @@ assignmentRouter.delete('/', async (req: express.Request, res: express.Response)
 
 
 /**
- * @api {get} /api/assignment Get an assignment
+ * @api {get} /api/assignment/:assignmentId Get an assignment
  * @apiGroup Assignment
  * @apiName Get an assignment
  * @apiParam {string} assignmentId, Mandatory
