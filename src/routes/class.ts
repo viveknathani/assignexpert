@@ -1,9 +1,10 @@
 import * as express from 'express';
-import { ClassService, errors } from '../service';
+import { ClassService, AssignmentService, errors } from '../service';
 import * as messages from './http_messages';
 
 const classRouter: express.Router = express.Router();
 const classService: ClassService = ClassService.getInstance();
+const assignmentService: AssignmentService = AssignmentService.getInstance();
 
 /**
  * @api {post} /api/class/ Insert class
@@ -151,6 +152,35 @@ classRouter.get('/:classId/code',async (req: express.Request, res: express.Respo
         res.status(500).json({message: messages.MESSAGE_500 });
     }    
 })
+
+/**
+ * @api {get} /api/class/:classId/assignments Get all assignments
+ * @apiGroup Class
+ * @apiName Get all assignments
+ * @apiParam {string} classId, Mandatory
+ * @apiError (ClientError) {json} 400 InvalidStudentOperation
+ * @apiError (ClientError) {json} 400 InvalidFacultyOperation
+ * @apiError (ServerError) {json} 500 Need to check server logs
+ * @apiVersion 0.1.0
+ */
+ classRouter.get('/:classId/assignments', async (req: express.Request, res: express.Response) => {
+    try {
+        const classId = req.params.classId;
+        const { isStudent } = req.body;
+        const entityId = (isStudent) ? req.body.studentId : req.body.facultyId;
+        const assignments = await assignmentService.getAllAssignments(classId, isStudent, entityId);
+        res.status(200).json(assignments);
+    } catch (err) {
+        if (err instanceof errors.ErrInvalidFacultyOperation
+            || err instanceof errors.ErrInvalidStudentOperation) {
+            res.status(400).json({ message: err.message });
+            return;
+        }
+        console.log(err);
+        res.status(500).json({message: messages.MESSAGE_500})
+    }
+});
+
 export {
     classRouter
 };
