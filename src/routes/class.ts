@@ -92,17 +92,17 @@ classRouter.put('/name', async (req: express.Request, res: express.Response) => 
 
 
 /**
- * @api {get} /api/class/students Get all students
+ * @api {get} /api/class/:classId/students Get all students
  * @apiGroup Class
  * @apiName Get all students
- * @apiQuery {string} classId, class id
+ * @apiParam {string} classId, class id
  * @apiError (ClientError) {json} 400 ErrClassNotFound
  * @apiError (ServerError) {json} 500 Need to check server logs
  * @apiVersion 0.1.0
  */
-classRouter.get('/students',async (req: express.Request, res: express.Response) => {
+classRouter.get('/:classId/students',async (req: express.Request, res: express.Response) => {
     try{
-        const classId = req.query['classId'] as string;
+        const classId = req.params.classId
         const students = await classService.getAllStudents(classId);
         res.status(200).json(students);
     }catch (err) {
@@ -135,16 +135,16 @@ classRouter.get('/students',async (req: express.Request, res: express.Response) 
 });
 
 /**
- * @api {get} /api/class/code Get class code
+ * @api {get} /api/class/:classId/code Get class code
  * @apiGroup Class
  * @apiName Get class code
- * @apiQuery {string} classId, class id
+ * @apiParam {string} classId, class id
  * @apiError (ServerError) {json} 500 Need to check server logs
  * @apiVersion 0.1.0
  */
-classRouter.get('/code',async (req: express.Request, res: express.Response) => {
+classRouter.get('/:classId/code',async (req: express.Request, res: express.Response) => {
     try {
-        const classId = req.query['classId'] as string;
+        const classId = req.params.classId;
         res.status(200).json({code: classId})
     } catch (err) {
         console.log(err);
