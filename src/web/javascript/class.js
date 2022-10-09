@@ -41,17 +41,20 @@ if (!data.isStudent) {
 
 function updateName() {
    const newName = document.getElementById("updateInput").value;
-   const classId = (new URLSearchParams(window.location.search)).get("classId");
+   const classId = window.location.pathname.substring('/class/'.length);
    fetch('/api/class/name', {
       method: 'PUT',
       headers: {
          Accept: 'application/json',
+         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
          classId,
          newName
       })
    })
-   .then((res) => console.log(res))
+   .then((res) => {
+      window.location.reload();
+   })
    .catch((err) => console.log(err))
 }

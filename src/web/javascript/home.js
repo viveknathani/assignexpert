@@ -21,7 +21,7 @@ function displayClasses() {
             classes.innerText = res[i].name;
             const id = res[i].id;
             classes.onclick = function () {
-               location.href = `/class?classId=${id}`
+               location.href = `/class/${id}`
             } 
             classes.classList.add("classes");
             container.insertBefore(classes, addClass);

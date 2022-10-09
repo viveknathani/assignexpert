@@ -93,47 +93,20 @@ assignmentRouter.delete('/', async (req: express.Request, res: express.Response)
     }
 });
 
-/**
- * @api {get} /api/assignment/all Get all assignments
- * @apiGroup Assignment
- * @apiName Get all assignments
- * @apiQuery {string} classId, Mandatory
- * @apiError (ClientError) {json} 400 InvalidStudentOperation
- * @apiError (ClientError) {json} 400 InvalidFacultyOperation
- * @apiError (ServerError) {json} 500 Need to check server logs
- * @apiVersion 0.1.0
- */
-assignmentRouter.get('/all', async (req: express.Request, res: express.Response) => {
-    try {
-        const classId = req.query['classId'] as string;
-        const { isStudent } = req.body;
-        const entityId = (isStudent) ? req.body.studentId : req.body.facultyId;
-        const assignments = await assignmentService.getAllAssignments(classId, isStudent, entityId);
-        res.status(200).json(assignments);
-    } catch (err) {
-        if (err instanceof errors.ErrInvalidFacultyOperation
-            || err instanceof errors.ErrInvalidStudentOperation) {
-            res.status(400).json({ message: err.message });
-            return;
-        }
-        console.log(err);
-        res.status(500).json({message: messages.MESSAGE_500})
-    }
-});
 
 /**
- * @api {get} /api/assignment Get an assignment
+ * @api {get} /api/assignment/:assignmentId Get an assignment
  * @apiGroup Assignment
  * @apiName Get an assignment
- * @apiQuery {string} assignmentId, Mandatory
+ * @apiParam {string} assignmentId, Mandatory
  * @apiError (ClientError) {json} 400 InvalidStudentOperation
  * @apiError (ClientError) {json} 400 InvalidFacultyOperation
  * @apiError (ServerError) {json} 500 Need to check server logs
  * @apiVersion 0.1.0
  */
- assignmentRouter.get('/', async (req: express.Request, res: express.Response) => {
+ assignmentRouter.get('/:assignmentId', async (req: express.Request, res: express.Response) => {
     try {
-        const assignmentId = req.query['assignmentId'] as string;
+        const assignmentId = req.params.assignmentId;
         const { isStudent } = req.body;
         const entityId = (isStudent) ? req.body.studentId : req.body.facultyId;
         const assignment = await assignmentService.getAssignment(assignmentId, isStudent, entityId);
@@ -151,110 +124,20 @@ assignmentRouter.get('/all', async (req: express.Request, res: express.Response)
 });
 
 /**
- * @api {post} /api/assignment/submission Make a submission
- * @apiGroup Assignment
- * @apiName Make a submission
- * @apiBody {string} assignmentId Mandatory
- * @apiBody {string} code Mandatory
- * @apiBody {string} lang Mandatory
- * @apiError (ClientError) {json} 400 LateSubmissionNotAllowed
- * @apiError (ClientError) {json} 400 AssigmentAlreadyCompleted
- * @apiError (ServerError) {json} 500 Need to check server logs
- * @apiVersion 0.1.0
- * @apiDescription User needs to be authenticated befor this step.
- */
-assignmentRouter.post('/submission', async (req: express.Request, res: express.Response) => {
-    try {
-        const { assignmentId, code, lang } = req.body;
-        const jobId = await assignmentService.makeSubmission({
-            id: '',
-            studentId: req.body.studentId,
-            assignmentId: assignmentId,
-            code: code,
-            lang: lang,
-            markCompleted: false,
-            resultStatus: entity.ResultStatus.NA,
-            resultMessage: '',
-            timeTaken: 0,
-            memoryUsedInKiloBytes: 0,
-            points: 0,
-            submittedAt: new Date(),
-        });
-        res.status(201).json({jobId});
-    } catch (err) {
-        if (err instanceof errors.ErrAssignmentAlreadyCompleted || err instanceof errors.ErrLateSubmissionNotAllowed) {
-            res.status(400).json({ message: err.message });
-            return;
-        }
-        console.log(err);
-        res.status(500).json({message: messages.MESSAGE_500})
-    }
-});
-
-/**
- * @api {put} /api/assignment/submission Mark submission complete
- * @apiGroup Assignment
- * @apiName Make submission complete
- * @apiBody {string} submissionId Mandatory
- * @apiError (ClientError) {json} 400 AssignmentAlreadyCompleted
- * @apiError (ClientError) {json} 400 LateSubmissionNotAllowed
- * @apiError (ClientError) {json} 400 InvalidStudentOperation
- * @apiError (ServerError) {json} 500 Need to check server logs
- * @apiVersion 0.1.0
- * @apiDescription User needs to be authenticated befor this step.
- */
-
-assignmentRouter.put('/submission/complete', async (req: express.Request, res: express.Response) => {
-    try {
-        const { studentId, submissionId } = req.body;
-        await assignmentService.markSubmissionAsComplete(studentId, submissionId);
-        res.status(204).json({ message: messages.MESSAGE_204 });
-    } catch (err) {
-        if (err instanceof errors.ErrInvalidStudentOperation) {
-            res.status(400).json({ message: err.message });
-            return;
-        }
-        console.log(err);
-        res.status(500).json({message: messages.MESSAGE_500})
-    }
-});
-
-/**
- * @api {get} /api/assignment/submission Get a submission
- * @apiGroup Assignment
- * @apiName Get a submission
- * @apiQuery {string} submissionId, Mandatory
- * @apiError (ClientError) {json} 400 InvalidStudentOperation
- * @apiError (ClientError) {json} 400 InvalidFacultyOperation
- * @apiError (ServerError) {json} 500 Need to check server logs
- * @apiVersion 0.1.0
- */
-assignmentRouter.get('/submission', async (req: express.Request, res: express.Response) => {
-    try {
-        const submissionId = req.query['submissionId'] as string;
-        const data = await assignmentService.getSubmission(submissionId);
-        res.status(200).json(data);
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({message: messages.MESSAGE_500})
-    }
-});
-
-/**
- * @api {get} /api/assignment/submissions Get all submissions
+ * @api {get} /api/assignment/:assignmentId/submissions Get all submissions
  * @apiGroup Assignment
  * @apiName Get all submissions
- * @apiQuery {string} assignmentId, Mandatory
+ * @apiParam {string} assignmentId, Mandatory
  * @apiError (ClientError) {json} 400 InvalidStudentOperation
  * @apiError (ClientError) {json} 400 InvalidFacultyOperation
  * @apiError (ServerError) {json} 500 Need to check server logs
  * @apiVersion 0.1.0
  */
- assignmentRouter.get('/submissions', async (req: express.Request, res: express.Response) => {
+ assignmentRouter.get('/:assignmentId/submissions', async (req: express.Request, res: express.Response) => {
     try {
         const { isStudent } = req.body;
         const entityId = (isStudent) ? req.body.studentId : req.body.facultyId;
-        const assignmentId = req.query['assignmentId'] as string;
+        const assignmentId = req.params.assignmentId;
         const data = await assignmentService.getAllSubmissionsForAssignment(assignmentId, entityId, isStudent);
         res.status(200).json(data);
     } catch (err) {
@@ -292,7 +175,7 @@ assignmentRouter.get('/submission', async (req: express.Request, res: express.Re
 assignmentRouter.put('/', async (req: express.Request, res: express.Response) => {
     try {
         const { isStudent, facultyId, templates } = req.body;
-        await assignmentService.updateAssignment(req.body, req.body?.templates || [], isStudent, facultyId);
+        await assignmentService.updateAssignment(req.body.assignment, req.body?.templates || [], isStudent, facultyId);
         res.status(204).json({message: messages.MESSAGE_204});
     } catch (err) {
         console.log(err);
@@ -302,20 +185,20 @@ assignmentRouter.put('/', async (req: express.Request, res: express.Response) =>
 
 
 /**
- * @api {get} /api/assignment/download Get excel file with points
+ * @api {get} /api/assignment/:assignmentId/download Get excel file with points
  * @apiGroup Assignment
  * @apiName Get excel file with points
- * @apiQuery {string} assignmentId, Mandatory
+ * @apiParam {string} assignmentId, Mandatory
  * @apiError (ClientError) {json} 400 InvalidStudentOperation
  * @apiError (ClientError) {json} 400 InvalidFacultyOperation
  * @apiError (ServerError) {json} 500 Need to check server logs
  * @apiVersion 0.1.0
  */
- assignmentRouter.get('/download', async (req: express.Request, res: express.Response) => {
+ assignmentRouter.get('/:assignmentId/download', async (req: express.Request, res: express.Response) => {
     try {
         const { isStudent } = req.body;
         const entityId = (isStudent) ? req.body.studentId : req.body.facultyId;
-        const assignmentId = req.query['assignmentId'] as string;
+        const assignmentId = req.params.assignmentId;
         const fileName = await assignmentService.getResult(assignmentId, entityId, isStudent);
         res.download(path.resolve(__dirname, fileName));
         res.status(200).json('');

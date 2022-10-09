@@ -23,29 +23,26 @@ function directoryHandler(webPagePath: string): ExpressFunction {
 
 pageRouter.get('/', directoryHandler('../web/html/index.html'));
 pageRouter.get('/run', directoryHandler('../web/html/run.html'));
-pageRouter.get('/auth', directoryHandler('../web/html/authPage.html'));
+pageRouter.get('/auth', directoryHandler('../web/html/auth.html'));
 pageRouter.use(injectSessionInfoMiddleWare);
 pageRouter.get('/home', directoryHandler('../web/html/home.html'));
 pageRouter.get('/settings', directoryHandler('../web/html/settings.html'));
-pageRouter.get('/class', async (req: express.Request, res: express.Response) => {
+pageRouter.get('/class/:classId', async (req: express.Request, res: express.Response) => {
     try {
-        const classId = req.query['classId'] as string;
+        const classId = req.params.classId;
         const { isStudent } = req.body;
         const entityId = (isStudent) ? req.body.studentId : req.body.facultyId;
         const classService = ClassService.getInstance();
         const assignmentService = AssignmentService.getInstance();
         const oneClass = await classService.getClass(classId);
-        const members = await classService.getAllStudents(classId);
+        const students = await classService.getAllStudents(classId);
+        const members = students?.map((student) => student.rollNumber);
         const assignments = await assignmentService.getAllAssignments(classId, isStudent, entityId);
         const filePath = path.resolve(__dirname, '../web/html/class.html')
         const html = await ejs.renderFile(filePath, {
-            oneClass: { name: "DSA" },
-            assignments: [
-                {title: "one", difficultyLevel: "EASY"}, 
-                {title: "two", difficultyLevel: "MEDIUM"},
-                {title: "three", difficultyLevel: "HARD"},
-            ],
-            members: [19070124042, 19070124043, 19070124043]    
+            oneClass: oneClass,
+            assignments: assignments,
+            members: members
         });
         res.send(html);
     } catch (err) {
@@ -57,5 +54,8 @@ pageRouter.get('/class', async (req: express.Request, res: express.Response) => 
         res.status(500).json({message: messages.MESSAGE_500 });
     }
 });
+pageRouter.get('/assignment/:assignmentId/view/', directoryHandler('../web/html/viewAssignment.html'));
+pageRouter.get('/assignment/:classId/create', directoryHandler('../web/html/insertAssignment.html'))
+pageRouter.get('/assignment/:assignmentId/edit', directoryHandler('../web/html/updateAssignment.html'));
 
 export default pageRouter;

@@ -3,8 +3,10 @@ document.addEventListener("DOMContentLoaded", getAssignment());
 let assignmentData;
 
 function getAssignment() {
-   let assignmentId;
-   fetch("/api/assignment?assignmentId=" + assignmentId, {
+   let assignmentId = window.location.pathname.substring('/assignment/'.length);
+   assignmentId = assignmentId.substring(0, assignmentId.indexOf('/edit'));
+
+   fetch(`/api/assignment/${assignmentId}`, {
       method: 'GET',
       headers: {
          Accept: 'application/json',
@@ -27,18 +29,24 @@ function setFields() {
    document.getElementById("constraints").value = assignmentData.assignment.constraints;
    document.getElementById("timeLimit").value = assignmentData.assignment.timeLimitSeconds;
    document.getElementById("points").value = assignmentData.assignment.points;
-   document.getElementById("Deadline").value = assignmentData.assignment.deadline;
-   for(i=0; i<assignmentData.assignment.acceptedLanguages.length; i++){
-      if(assignmentData.assignment.acceptedLanguages[i]=="c"){
+   let deadline = assignmentData.assignment.deadline;
+   deadline = deadline.substring(0, "yyyy-mm-dd".length);
+   document.getElementById("Deadline").value = deadline;
+   let acceptedLanguages = assignmentData.assignment.acceptedLanguages;
+   acceptedLanguages = acceptedLanguages.substring(1);
+   acceptedLanguages = acceptedLanguages.substring(0, acceptedLanguages.indexOf("}"));
+   acceptedLanguages = acceptedLanguages.split(",")
+   for(i=0; i<acceptedLanguages.length; i++){
+      if(acceptedLanguages[i]=="c"){
          document.getElementsByName("languages")[0].checked = true;
       }
-     else if(assignmentData.assignment.acceptedLanguages[i]=="cpp"){
+     else if(acceptedLanguages[i]=="cpp"){
          document.getElementsByName("languages")[1].checked = true;
       }
-      else if(assignmentData.assignment.acceptedLanguages[i]=="java"){
+      else if(acceptedLanguages[i]=="java"){
          document.getElementsByName("languages")[2].checked = true;
       }
-      else if(assignmentData.assignment.acceptedLanguages[i]=="python"){
+      else if(acceptedLanguages[i]=="python"){
          document.getElementsByName("languages")[3].checked = true;
       }
    }
@@ -85,22 +93,16 @@ function setTemplates() {
    }
 }
 
-
-
-
-
-
-
-
-
-
 function updateAssignment() {
    gatherData();
 }
 
 function gatherData() {
 
-   assignmentData.assignment.id = "";
+   let assignmentId = window.location.pathname.substring('/assignment/'.length);
+   assignmentId = assignmentId.substring(0, assignmentId.indexOf('/edit'));
+
+   assignmentData.assignment.id = assignmentId;
 
    assignmentData.assignment.title = document.getElementById("assignmentName").value;
 
