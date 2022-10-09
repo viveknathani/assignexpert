@@ -27,9 +27,9 @@ pageRouter.get('/auth', directoryHandler('../web/html/auth.html'));
 pageRouter.use(injectSessionInfoMiddleWare);
 pageRouter.get('/home', directoryHandler('../web/html/home.html'));
 pageRouter.get('/settings', directoryHandler('../web/html/settings.html'));
-pageRouter.get('/class', async (req: express.Request, res: express.Response) => {
+pageRouter.get('/class/:classId', async (req: express.Request, res: express.Response) => {
     try {
-        const classId = req.query['classId'] as string;
+        const classId = req.params.classId;
         const { isStudent } = req.body;
         const entityId = (isStudent) ? req.body.studentId : req.body.facultyId;
         const classService = ClassService.getInstance();
