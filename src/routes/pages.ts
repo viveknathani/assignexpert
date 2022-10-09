@@ -54,8 +54,8 @@ pageRouter.get('/class/:classId', async (req: express.Request, res: express.Resp
         res.status(500).json({message: messages.MESSAGE_500 });
     }
 });
-pageRouter.get('/assignment/view', directoryHandler('../web/html/viewAssignment.html'));
-pageRouter.get('/assignment/create', directoryHandler('../web/html/insertAssignment.html'))
-pageRouter.get('/assignment/edit', directoryHandler('../web/html/updateAssignment.html'));
+pageRouter.get('/assignment/:assignmentId/view/', directoryHandler('../web/html/viewAssignment.html'));
+pageRouter.get('/assignment/:classId/create', directoryHandler('../web/html/insertAssignment.html'))
+pageRouter.get('/assignment/:assignmentId/edit', directoryHandler('../web/html/updateAssignment.html'));
 
 export default pageRouter;

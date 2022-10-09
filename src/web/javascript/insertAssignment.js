@@ -2,9 +2,7 @@ const testCasesContainer = document.querySelector("#testCasesContainer");
 let numOfTestCases = 1;
 
 let assignmentData = {
-   assignment: {
-      assignmentName: "hello"
-   },
+   assignment: {},
    testCases: []
 }
 
@@ -123,8 +121,10 @@ function gatherData() {
       return;
    }
 
+   let classId = window.location.pathname.substring('/assignment/'.length);
+   classId = classId.substring(0, classId.indexOf('/create'));
+   assignmentData.assignment.classId = classId
    console.log(assignmentData);
-
    fetch("/api/assignment/", {
       method: 'POST',
       headers: {

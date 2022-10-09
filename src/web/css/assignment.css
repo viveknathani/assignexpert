@@ -85,6 +85,7 @@
    height: 6vh;
    background-color: var(--secondary);
    color: var(--black);
+   overflow: hidden;
 }
 
 .smallInput {
