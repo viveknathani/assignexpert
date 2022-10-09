@@ -175,7 +175,7 @@ assignmentRouter.delete('/', async (req: express.Request, res: express.Response)
 assignmentRouter.put('/', async (req: express.Request, res: express.Response) => {
     try {
         const { isStudent, facultyId, templates } = req.body;
-        await assignmentService.updateAssignment(req.body, req.body?.templates || [], isStudent, facultyId);
+        await assignmentService.updateAssignment(req.body.assignment, req.body?.templates || [], isStudent, facultyId);
         res.status(204).json({message: messages.MESSAGE_204});
     } catch (err) {
         console.log(err);
