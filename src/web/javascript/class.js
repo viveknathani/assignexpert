@@ -4,6 +4,9 @@ const assignedContainer = document.querySelector(".assignedContainer");
 const completedContainer = document.querySelector("#completedContainer");
 const arrow = document.querySelector("#arrow");
 const arrowC = document.querySelector("#arrowC");
+const classId = window.location.pathname.substring('/class/'.length);
+
+
 
 function showAssigned() {
    show = !show;
@@ -37,11 +40,11 @@ const data = JSON.parse(localStorage.getItem("user"));
 if (!data.isStudent) {
    const updateSection = document.getElementById("updateSection");
    updateSection.style.display = 'grid';
+   document.getElementById("createAssignment").style.display = "inline-block";
 }
 
 function updateName() {
    const newName = document.getElementById("updateInput").value;
-   const classId = window.location.pathname.substring('/class/'.length);
    fetch('/api/class/name', {
       method: 'PUT',
       headers: {
@@ -57,4 +60,12 @@ function updateName() {
       window.location.reload();
    })
    .catch((err) => console.log(err))
+}
+
+function gotoAssignmentPage() {
+   location.href = `/assignment/${classId}/create`;
+}
+
+function seeAssignment() {
+   
 }

@@ -10,7 +10,7 @@
    <link rel="stylesheet" type="text/css" href="../../web/css/home.css" />
    <script defer src="../../web/javascript/class.js"></script>
 </head>
-<body>
+<body style="position: relative; height: 100vh;">
    <div class="navBar">
       <div class="title">AssignExpert</div>
       <div class="navButtons"><i class="fa-solid fa-gear settingsIcon"></i></div>
@@ -37,6 +37,9 @@
    <div id="updateSection">
       <input type="text" placeholder="update class name" id="updateInput">
       <button type="submit" onclick="updateName()">update</button>
+   </div>
+   <div class="createAssignment" id="createAssignment" onclick="gotoAssignmentPage()">
+      <i class="fa-solid fa-file-circle-plus"></i>
    </div>
 </body>
 </html>
