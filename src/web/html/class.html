@@ -33,13 +33,17 @@
       <% for (let i = 0; i < members.length; ++i) { %>
          <p class="membersList"><%= members[i] %></p>
       <% } %>
-   
-   <div id="updateSection">
-      <input type="text" placeholder="update class name" id="updateInput">
-      <button type="submit" onclick="updateName()">update</button>
+   <div class="quicks" id="quicks" onclick="showQuicks()">
+      <i class="fa-solid fa-ellipsis"></i>
    </div>
    <div class="createAssignment" id="createAssignment" onclick="gotoAssignmentPage()">
       <i class="fa-solid fa-file-circle-plus"></i>
+   </div>
+   <div class="editClassName" id="editClassName" onclick="showForm()">
+      Edit Class Name
+   </div>
+   <div class="getCode" id="getCode" onclick="showCode()">
+      Class Code
    </div>
 </body>
 </html>

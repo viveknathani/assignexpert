@@ -5,6 +5,9 @@ const completedContainer = document.querySelector("#completedContainer");
 const arrow = document.querySelector("#arrow");
 const arrowC = document.querySelector("#arrowC");
 const classId = window.location.pathname.substring('/class/'.length);
+let showQuicksOrNot = true;
+let showFormOrNot = true;
+let showCodeOrNot = true;
 
 
 
@@ -36,30 +39,40 @@ function showCompleted() {
    }
 }
 
-const data = JSON.parse(localStorage.getItem("user"));
-if (!data.isStudent) {
-   const updateSection = document.getElementById("updateSection");
-   updateSection.style.display = 'grid';
-   document.getElementById("createAssignment").style.display = "inline-block";
-}
+// const data = JSON.parse(localStorage.getItem("user"));
+// if (!data.isStudent) {
+//    const updateSection = document.getElementById("updateSection");
+//    updateSection.style.display = 'grid';
+//    document.getElementById("createAssignment").style.display = "inline-block";
+// }
 
 function updateName() {
-   const newName = document.getElementById("updateInput").value;
-   fetch('/api/class/name', {
-      method: 'PUT',
-      headers: {
-         Accept: 'application/json',
-         'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-         classId,
-         newName
+   const newName = document.getElementById("className").value;
+   if(newName != ""){
+      console.log("fetching");
+      fetch('/api/class/name', {
+         method: 'PUT',
+         headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json'
+         },
+         body: JSON.stringify({
+            classId,
+            newName
+         })
       })
-   })
-   .then((res) => {
-      window.location.reload();
-   })
-   .catch((err) => console.log(err))
+      .then((res) => {
+         window.location.reload();
+      })
+      .catch((err) => console.log(err))
+   }
+   else {
+      console.log("decreasing");
+      document.getElementById("editClassName").innerHTML = "Edit Class Name";
+      document.getElementById("editClassName").classList.remove("convertToEditForm");
+      document.getElementById("editClassName").classList.add("convertToEditButton");
+      setTimeout(() => showFormOrNot = true, 200);
+   }
 }
 
 function gotoAssignmentPage() {
@@ -67,5 +80,84 @@ function gotoAssignmentPage() {
 }
 
 function seeAssignment() {
-   
+
+}
+
+function showQuicks() {
+   if(showQuicksOrNot) {
+      document.getElementById("quicks").classList.remove("turn90Degreesacw");
+      document.getElementById("createAssignment").classList.remove("revertCreateAssButton");
+      document.getElementById("editClassName").classList.remove("revertEditNameButton");
+      document.getElementById("getCode").classList.remove("revertClassCodeButton");
+
+      document.getElementById("quicks").classList.add("turn90Degreescw");
+      document.getElementById("createAssignment").style.display = "inline-block";
+      document.getElementById("createAssignment").classList.add("moveCreateAssButton");
+      document.getElementById("editClassName").style.display = "inline-block";
+      document.getElementById("editClassName").classList.add("moveEditNameButton");
+      document.getElementById("getCode").style.display = "inline-block";
+      document.getElementById("getCode").classList.add("moveClassCodeButton");
+      showQuicksOrNot = false;
+   }
+   else {
+      if(!showFormOrNot) updateName();
+      if(!showCodeOrNot) showCodeButton();
+
+      document.getElementById("quicks").classList.remove("turn90Degreescw");
+      document.getElementById("createAssignment").classList.remove("moveCreateAssButton");
+      document.getElementById("editClassName").classList.remove("moveEditNameButton");
+      document.getElementById("getCode").classList.remove("moveClassCodeButton");
+
+
+      document.getElementById("quicks").classList.add("turn90Degreesacw");
+      document.getElementById("createAssignment").classList.add("revertCreateAssButton");
+      document.getElementById("editClassName").classList.add("revertEditNameButton");
+      document.getElementById("getCode").classList.add("revertClassCodeButton");
+
+      setTimeout(displayNone, 200);
+      showQuicksOrNot = true;
+   }
+}
+
+function displayNone() {
+   console.log("in display none");
+   document.getElementById("createAssignment").style.display = "none";
+   document.getElementById("editClassName").style.display = "none";
+   document.getElementById("getCode").style.display = "none";
+}
+
+function showForm() {
+   if(showFormOrNot){
+      document.getElementById("editClassName").innerHTML = '<input type="text" id="className" name="className" class="input" autocomplete="off" placeholder="class name" required><button class="editButton" onclick="updateName()">Update | &nbsp;Close &nbsp;</button>';
+      document.getElementById("editClassName").classList.remove("moveEditNameButton");
+      document.getElementById("editClassName").classList.remove("convertToEditButton");
+      document.getElementById("editClassName").classList.add("convertToEditForm");
+      showFormOrNot = false;
+   }
+}
+
+function showCode() {
+   if(showCodeOrNot){
+      console.log("in showcode true");
+      fetch(`/api/class/${classId}/code`, {
+         method: 'GET',
+         headers: {
+            Accept: 'application/json',
+         },
+      })
+      .then(res => res.json())
+      .then(res => {
+         document.getElementById("getCode").innerHTML = res.code;
+         document.getElementById("getCode").classList.remove("moveClassCodeButton");
+         document.getElementById("getCode").classList.remove("convertToCodeButton");
+         document.getElementById("getCode").classList.add("convertToClassCode");
+      })
+      showCodeOrNot = false;
+   }
+}
+
+function showCodeButton(){
+   document.getElementById("getCode").innerHTML = "Class Code";
+   document.getElementById("getCode").classList.remove("convertToClassCode");
+   document.getElementById("getCode").classList.add("convertToCodeButton");
 }
