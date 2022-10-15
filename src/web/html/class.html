@@ -23,10 +23,11 @@
    <p class="heading">Assignments</p>
    <div class="assignedContainer">
       <% for (let i = 0; i < assignments.length; ++i) { %>
-         <div class="assignments">
+         <a class="assignments" href="/assignment/<%= assignments[i].id %>/view">
             <div class="assignmentName"><%= assignments[i].title %></div>
             <div class="difficultyLevel">Difficulty Level: <%= assignments[i].difficultyLevel %></div>
-         </div>
+         </a>
+         <a href="/assignment/<%= assignments[i].id %>/edit">Edit Assignment</a>
       <% } %>
    </div>
    <p class="heading">Members</p>
