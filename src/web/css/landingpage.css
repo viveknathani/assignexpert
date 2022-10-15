@@ -14,7 +14,11 @@
    --black: #000000;
    --primary: #008037;
    --secondary: #E9EFF4;
-}  
+}
+
+body{
+    overflow: hidden;
+}
 
 .container {
     display: grid;
@@ -57,16 +61,17 @@
     color: var(--primary);
     font-size: 4.1vh;
     font-weight: 600;
-    margin-top: 10vh;
+    margin-top: 12vh;
 }
 
 .btn{
+    display: inline-block;
     border-radius: 6px;
     color: #000000;
-    width: 11vw;
+    width: 13vw;
     font-weight: 600;
     padding: 0.7vh 0.7vw;
-    margin-top: 20vh;
+    margin-top: 13vh;
     font-size: 3vh;
     background: #ffffff;
     border: 0.5vh solid var(--primary);

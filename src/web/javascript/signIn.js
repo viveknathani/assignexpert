@@ -28,7 +28,7 @@ function signIn() {
       if(res!=null){
          if(res.firstName != null){
             localStorage.setItem("user", JSON.stringify(res));
-            window.location.href = "http://localhost:8080/home";
+            window.location.href = "/home";
          }
          else {
             document.getElementById("signInmessage").style.color = "red";
