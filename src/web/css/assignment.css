@@ -277,12 +277,13 @@
    font-size: 2.5vh;
    margin-left: 86vw;
    margin-top: -3vh;
-   margin-bottom: 8vh;
+   margin-bottom: 7vh;
    font-weight: bold;
 }
 
 #problemHeading {
    font-size: 3.2vh;
+   margin-top: 4.5vh;
 }
 
 .problem {
