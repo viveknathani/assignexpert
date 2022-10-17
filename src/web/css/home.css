@@ -40,6 +40,10 @@
    height: 6.45vh;
 }
 
+.title:hover {
+   cursor: pointer;
+}
+
 .navButtons {
    display: inline-block;
    margin-top: 1vh;

@@ -8,12 +8,13 @@
    <title>Home</title>
    <link rel="stylesheet" type="text/css" href="../../web/css/home.css" />
    <script defer src="../../web/javascript/home.js"></script>
+   <script defer src="../../web/javascript/navBar.js"></script>
 </head>
 <body>
    <div class="navBar">
-      <div class="title">AssignExpert</div>
-      <div class="navButtons"><i class="fa-solid fa-gear settingsIcon"></i></div>
-      <div class="navButtons"><i class="fa-solid fa-right-from-bracket settingsIcon" id="logoutIcon"></i></div>
+      <div class="title" onclick="gotoHomePage()">AssignExpert</div>
+      <div class="navButtons" onclick="gotoSettingPage()"><i class="fa-solid fa-gear settingsIcon"></i></div>
+      <div class="navButtons" onclick="logout()"><i class="fa-solid fa-right-from-bracket settingsIcon" id="logoutIcon"></i></div>
    </div>
    <div class="line"></div>
    <div class="classContainer" id="classContainer">
