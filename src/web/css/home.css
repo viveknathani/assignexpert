@@ -19,7 +19,7 @@
 .navBar {
    background-color: var(--secondary);
    height: 8vh;
-   width: 100vw;
+   width: 100%;
    display: grid;
    grid-template-columns: 9fr 0.5fr 0.6fr;
 }
@@ -27,7 +27,7 @@
 .line {
    background-color: var(--primary);
    height: 0.45vh;
-   width: 100vw;
+   width: 100%;
 }
 
 .title {
