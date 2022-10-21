@@ -10,6 +10,7 @@
    <link rel="stylesheet" type="text/css" href="../../web/css/home.css" />
    <script defer src="../../web/javascript/viewAssignment.js"></script>
    <script defer src="../../web/javascript/navBar.js"></script>
+   <script src="../../web/ace-editor/src-min/ace.js" type="text/javascript" charset="utf-8"></script>
 </head>
 <body>
    <div class="navBar">
@@ -43,5 +44,44 @@
       <h4 style="display: inline-block;">Memory Limit: </h4>
       <div class="problemData" id="memoryLimit" style="display: inline-block; width: fit-content;">1 GB</div>
    </div><br><br>
+
+   <div id="solution">
+      <h3 class="miniHeadings" id="problemHeading">Solution</h3>
+      <div id="prefs">
+         <label for="language">Language: </label>
+         <select name="language" id="language">
+             <option value="c">c</option>
+             <option value="cpp">cpp</option>
+             <option value="python">python</option>
+             <option value="java">java</option>
+         </select>
+ 
+         <label for="theme">Theme: </label>
+         <select name="theme" id="theme">
+             <option value="monokai">monokai</option>
+             <option value="chrome">chrome</option>
+             <option value="github">github</option>
+             <option value="textmate">textmate</option>
+             <option value="xcode">xcode</option>
+             <option value="dracula">dracula</option>
+             <option value="solarized_dark">solarized_dark</option>
+             <option value="twilight">twilight</option>
+         </select>
+ 
+         <label for="font-size">Font Size: </label>
+         <select name="font-size" id="font-size">
+             <option value="12px">12px</option>
+             <option value="14px">14px</option>
+             <option value="16px">16px</option>
+             <option value="18px">18px</option>
+             <option value="20px">20px</option>
+             <option value="22px">22px</option>
+             <option value="24px">24px</option>
+         </select>
+     </div>
+     <div id="editor"></div>
+     <button type="button" id="code-submit">submit</button>
+     <div id="result" style="display: none;"></div>
+   </div>
 </body>
 </html>
