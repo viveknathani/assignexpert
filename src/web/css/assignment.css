@@ -4,9 +4,12 @@
 * {
    margin: 0 0;
    padding: 0 0;
-	 border: 0;
+	border: 0;
    box-sizing: border-box;
-   font-family: 'Inter', sans-serif;
+}
+
+#assignmentTitle, #problemHeading, #problem {
+   font-family: 'Inter', sans-serif;;
 }
 
 :root {
@@ -304,4 +307,48 @@
    background-color: var(--secondary);
    color: var(--black);
    font-size: 2.2vh;
+}
+
+/* ////////////  The code editor  /////////////// */
+
+#prefs {
+   margin-top: 1%;
+   margin-left: 5.3vw;
+   font-family: 'Inter', sans-serif;
+}
+
+#editor {
+   margin-left: 5.3vw;
+   margin-top: 1%;
+   margin-right: 10%;
+   height: 400px;
+   width: 75vw;
+   border: 1px solid var(--black);
+}
+
+textarea {
+   margin-left: 1%;
+   margin-top: 1%;
+   resize: none;
+   background-color: var(--white);
+   border: 1px solid var(--black);
+   font-family: 'Consolas';
+   width: 90%;
+}
+
+#code-submit {
+   margin-top: 1%;
+   background-color: #008037;
+   border: none;
+   padding-left: 1%;
+   padding-right: 1%;
+   color: var(--white);
+   font-size: 16px;
+   margin-bottom: 5vh;
+   float: right;
+   margin-right: 19%;
+}
+
+#code-submit:hover {
+   cursor: pointer;
 }
