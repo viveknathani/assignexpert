@@ -39,3 +39,34 @@ function showAssignment() {
    document.getElementById("timeLimit").innerText = `${assignmentData.assignment.timeLimitSeconds}s`;
    document.getElementById("memoryLimit").innerText = `${assignmentData.assignment.memoryLimitMB} MB`;
 }
+
+const editor = ace.edit("editor");
+editor.setTheme("ace/theme/monokai");
+editor.session.setMode("ace/mode/c_cpp");
+editor.setShowPrintMargin(false);
+
+const languageMenu = document.getElementById("language");
+languageMenu.addEventListener('change', (event) => {
+   let language = event.target.value;
+   language = (language === 'c' || language === 'cpp') ? 'c_cpp' : language;
+   editor.session.setMode(`ace/mode/${language}`);
+});
+
+const themeMenu = document.getElementById("theme");
+themeMenu.addEventListener('change', (event) => {
+   editor.setTheme(`ace/theme/${event.target.value}`);
+});
+
+const fontSizeMenu = document.getElementById("font-size");
+fontSizeMenu.addEventListener('change', (event) => {
+   editor.setFontSize(event.target.value);
+});
+
+const submitCode = function (e) {
+   e.preventDefault();
+   console.log(editor.session.getValue());
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+   document.getElementById('code-submit').addEventListener('click', submitCode);
+});
