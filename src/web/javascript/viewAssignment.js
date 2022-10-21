@@ -21,7 +21,7 @@ function displayAssignment() {
 }
 
 function showAssignment() {
-   document.getElementById("assignmentTitle").innerText = assignmentData.assignment.title;
+   document.getElementById("assignmentTitle").innerHTML = assignmentData.assignment.title + document.getElementById("assignmentTitle").innerHTML;
    if(assignmentData.difficultyLevel == "EASY") {
       document.getElementById("difficulty").style.backgroundColor = "rgb(84, 196, 233)";
    }
@@ -36,6 +36,6 @@ function showAssignment() {
    document.getElementById("sampleInput").innerText = assignmentData.assignment.sampleInput;
    document.getElementById("sampleOutput").innerText = assignmentData.assignment.sampleOutput;
    document.getElementById("constraints").innerText = assignmentData.assignment.constraints;
-   document.getElementById("timeLimit").innerText = assignmentData.assignment.timeLimitSeconds;
-   document.getElementById("memoryLimit").innerText = assignmentData.assignment.memoryLimitMB;
+   document.getElementById("timeLimit").innerText = `${assignmentData.assignment.timeLimitSeconds}s`;
+   document.getElementById("memoryLimit").innerText = `${assignmentData.assignment.memoryLimitMB} MB`;
 }
