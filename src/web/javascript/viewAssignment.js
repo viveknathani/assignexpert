@@ -117,3 +117,9 @@ function pollServerAndUpdateDOM(submissionId) {
 document.addEventListener('DOMContentLoaded', function() {
    document.getElementById('code-submit').addEventListener('click', submitCode);
 });
+
+const data = JSON.parse(localStorage.getItem("user"));
+if (data.isStudent) {
+   const solutionArea = document.getElementById("solution");
+   solutionArea.style.display = 'block';
+}
