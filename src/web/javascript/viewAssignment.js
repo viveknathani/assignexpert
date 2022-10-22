@@ -64,7 +64,54 @@ fontSizeMenu.addEventListener('change', (event) => {
 
 const submitCode = function (e) {
    e.preventDefault();
-   console.log(editor.session.getValue());
+   let assignmentId = window.location.pathname.substring('/assignment/'.length);
+   assignmentId = assignmentId.substring(0, assignmentId.indexOf('/view'));
+   fetch('/api/submission', {
+      method: 'POST',
+      headers: {
+         Accept: 'application/json',
+         'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+         assignmentId: assignmentId,
+         code: editor.session.getValue(),
+         lang: languageMenu.options[languageMenu.selectedIndex].value
+      })
+   }).then((response) => response.json())
+   .then((data) => {
+      pollServerAndUpdateDOM(data.submissionId);
+   })
+   .catch(err => {
+      console.log(err);
+   })
+}
+
+function pollServerAndUpdateDOM(submissionId) {
+   const interval = setInterval(() => {
+      fetch(`/api/submission/${submissionId}`, {
+         method: 'GET',
+         headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json'
+         },
+      }).then((response) => response.json())
+      .then((data) => {
+         console.log(data);
+         if (data.resultStatus) {
+            const resultArea = document.getElementById("result");
+            while (resultArea.firstChild) {
+               resultArea.removeChild(resultArea.firstChild);
+            }
+            resultArea.innerHTML = `Status: ${data.resultStatus}. Click <a href="/submission/${submissionId}">here</a> for details.`
+            resultArea.style.display = 'block';
+            clearInterval(interval);
+            return;
+         }
+      })
+      .catch(err => {
+         console.log(err);
+      })
+   }, 3000)
 }
 
 document.addEventListener('DOMContentLoaded', function() {

@@ -352,3 +352,9 @@ textarea {
 #code-submit:hover {
    cursor: pointer;
 }
+
+#result {
+   margin-left: 5.3vw;   
+   margin-top: 1%;
+   font-family: 'Inter', sans-serif;
+}
