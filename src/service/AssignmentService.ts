@@ -211,7 +211,7 @@ export class AssignmentService {
         const jobId = `job-${submissionId}`;
         codeExecutionInput.customJobId = jobId;
         codeExecutionService.runCode(codeExecutionInput);
-        return jobId;
+        return submissionId;
     }
 
     public async markSubmissionAsComplete(studentId: string, submissionId: string){
