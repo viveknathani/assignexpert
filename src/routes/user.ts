@@ -62,6 +62,7 @@ async function injectSessionInfoMiddleWare(req: express.Request, res: express.Re
  * @apiBody {string} password  Mandatory (format: Min. 8 chars, atleast 1 number, 1 lowercase character, 1 uppercase character, 1 special character)
  * @apiBody {number} rollNumber Mandatory if isStudent is true
  * @apiBody {number} employeeNumber Mandatory if isStudent is false
+ * @apiSuccess {string} Created. 
  * @apiError (ClientError) {json} 400 InvalidEmailFormat or InvalidPasswordFormat or InvalidPasswordFormat
  * @apiError (ServerError) {json} 500 Need to check server logs
  * @apiVersion 0.1.0
@@ -100,7 +101,11 @@ userRouter.post('/signup', async (req: express.Request, res: express.Response) =
  * @apiError (ClientError) {json} 400 InvalidEmailPassword
  * @apiError (ServerError) {json} 500 Need to check server logs
  * @apiSuccess {string} firstName First name of the user.
- * @apiSuccess {string} lastName Lastt name of the user.
+ * @apiSuccess {string} lastName Last name of the user.
+ * @apiSuccess {string} uiTheme Type of theme for ui like dark, light etc.
+ * @apiSuccess {string} editorTheme Name of the preferred editor theme by the user.
+ * @apiSuccess {boolean} wantsEmailNotifications Preference for notifications for the user.
+ * @apiSuccess {boolean} isStudent To determine if the user is a student or faculty.
  * @apiVersion 0.1.0
  * @apiDescription HTTP-only cookie is set.
  */
@@ -131,6 +136,7 @@ userRouter.post('/login', async (req: express.Request, res: express.Response) =>
  * @api {post} /api/user/logout Logout
  * @apiGroup User
  * @apiName Logout
+ * @apiSuccess {string} OK.
  * @apiError (ServerError) {json} 500 Need to check server logs
  * @apiVersion 0.1.0
  * @apiDescription The HTTP-only cookie set during login will be used.
@@ -159,6 +165,7 @@ userRouter.use('/', injectSessionInfoMiddleWare);
  * @apiBody {string} preferences.uiTheme Optional
  * @apiBody {string} preferences.editorTheme  Optional
  * @apiBody {boolean} preferences.wantsEmailNotifications  Optional
+ * @apiSuccess {string} Updated. No content returned.
  * @apiError (ClientError) {json} 400 ErrUpdateUserField
  * @apiError (ServerError) {json} 500 Need to check server logs
  * @apiVersion 0.1.0
