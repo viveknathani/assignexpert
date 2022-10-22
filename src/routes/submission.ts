@@ -43,7 +43,7 @@ submissionRouter.get('/:submissionId', async (req: express.Request, res: express
 submissionRouter.post('/', async (req: express.Request, res: express.Response) => {
     try {
         const { assignmentId, code, lang } = req.body;
-        const jobId = await assignmentService.makeSubmission({
+        const submissionId = await assignmentService.makeSubmission({
             id: '',
             studentId: req.body.studentId,
             assignmentId: assignmentId,
@@ -57,7 +57,7 @@ submissionRouter.post('/', async (req: express.Request, res: express.Response) =
             points: 0,
             submittedAt: new Date(),
         });
-        res.status(201).json({jobId});
+        res.status(201).json({submissionId});
     } catch (err) {
         if (err instanceof errors.ErrAssignmentAlreadyCompleted || err instanceof errors.ErrLateSubmissionNotAllowed) {
             res.status(400).json({ message: err.message });
