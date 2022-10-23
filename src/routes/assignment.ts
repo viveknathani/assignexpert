@@ -200,8 +200,7 @@ assignmentRouter.put('/', async (req: express.Request, res: express.Response) =>
         const entityId = (isStudent) ? req.body.studentId : req.body.facultyId;
         const assignmentId = req.params.assignmentId;
         const fileName = await assignmentService.getResult(assignmentId, entityId, isStudent);
-        res.download(path.resolve(__dirname, fileName));
-        res.status(200).json('');
+        res.download(fileName);
     } catch (err) {
         console.log(err);
         res.status(500).json({message: messages.MESSAGE_500})
