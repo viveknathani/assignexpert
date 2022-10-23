@@ -39,3 +39,87 @@ function showAssignment() {
    document.getElementById("timeLimit").innerText = `${assignmentData.assignment.timeLimitSeconds}s`;
    document.getElementById("memoryLimit").innerText = `${assignmentData.assignment.memoryLimitMB} MB`;
 }
+
+const editor = ace.edit("editor");
+editor.setTheme("ace/theme/monokai");
+editor.session.setMode("ace/mode/c_cpp");
+editor.setShowPrintMargin(false);
+
+const languageMenu = document.getElementById("language");
+languageMenu.addEventListener('change', (event) => {
+   let language = event.target.value;
+   language = (language === 'c' || language === 'cpp') ? 'c_cpp' : language;
+   editor.session.setMode(`ace/mode/${language}`);
+});
+
+const themeMenu = document.getElementById("theme");
+themeMenu.addEventListener('change', (event) => {
+   editor.setTheme(`ace/theme/${event.target.value}`);
+});
+
+const fontSizeMenu = document.getElementById("font-size");
+fontSizeMenu.addEventListener('change', (event) => {
+   editor.setFontSize(event.target.value);
+});
+
+const submitCode = function (e) {
+   e.preventDefault();
+   let assignmentId = window.location.pathname.substring('/assignment/'.length);
+   assignmentId = assignmentId.substring(0, assignmentId.indexOf('/view'));
+   fetch('/api/submission', {
+      method: 'POST',
+      headers: {
+         Accept: 'application/json',
+         'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+         assignmentId: assignmentId,
+         code: editor.session.getValue(),
+         lang: languageMenu.options[languageMenu.selectedIndex].value
+      })
+   }).then((response) => response.json())
+   .then((data) => {
+      pollServerAndUpdateDOM(data.submissionId);
+   })
+   .catch(err => {
+      console.log(err);
+   })
+}
+
+function pollServerAndUpdateDOM(submissionId) {
+   const interval = setInterval(() => {
+      fetch(`/api/submission/${submissionId}`, {
+         method: 'GET',
+         headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json'
+         },
+      }).then((response) => response.json())
+      .then((data) => {
+         console.log(data);
+         if (data.resultStatus) {
+            const resultArea = document.getElementById("result");
+            while (resultArea.firstChild) {
+               resultArea.removeChild(resultArea.firstChild);
+            }
+            resultArea.innerHTML = `Status: ${data.resultStatus}. Click <a href="/submission/${submissionId}">here</a> for details.`
+            resultArea.style.display = 'block';
+            clearInterval(interval);
+            return;
+         }
+      })
+      .catch(err => {
+         console.log(err);
+      })
+   }, 3000)
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+   document.getElementById('code-submit').addEventListener('click', submitCode);
+});
+
+const data = JSON.parse(localStorage.getItem("user"));
+if (data.isStudent) {
+   const solutionArea = document.getElementById("solution");
+   solutionArea.style.display = 'block';
+}

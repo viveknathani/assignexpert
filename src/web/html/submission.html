@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <title>Submission</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <script src="https://kit.fontawesome.com/2965379893.js" crossorigin="anonymous"></script>
+    <script defer src="../../web/javascript/navBar.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../web/css/home.css"/> 
+    <style>
+        #submission {
+            margin-top: 2vh;
+            padding: 1%;
+            font-family: 'Inter', sans-serif;
+        }
+        textarea {
+            font-family: 'Consolas';
+            min-height: 300px;
+            width: 50%;
+        }
+    </style>
+</head>
+<body>
+    <div class="navBar">
+        <div class="title" onclick="gotoHomePage()">AssignExpert</div>
+        <div class="navButtons" onclick="gotoSettingPage()"><i class="fa-solid fa-gear settingsIcon"></i></div>
+        <div class="navButtons" onclick="logout()"><i class="fa-solid fa-right-from-bracket settingsIcon" id="logoutIcon"></i></div>
+     </div>
+    <div class="line"></div>
+    <div id="submission">
+        <p>Submitted at: <%= submittedAt %></p>
+        <p>Your submission belongs to <a href="/assignment/<%= assignmentId %>/view">this</a> assignment.</p>
+        <p>Status: <%= resultStatus %></p>
+        <% if (resultMessage !== "") { %>
+            <p>Message: <%= resultMessage %></p>
+        <% } %>
+        <p>Time taken: <%= timeTaken %>ms.</p>
+        <p>Memory Taken: <%= memoryUsedInKiloBytes %>KB.</p>
+        <p>Code (<%= lang %>)</p>
+        <textarea disabled><%= code %></textarea>
+        <p>Points: <%= points %></p>
+    </div>
+</body>
+</html>

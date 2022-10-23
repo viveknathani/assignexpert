@@ -172,7 +172,7 @@ export interface SubmissionSummary {
     resultStatus: ResultStatus,
     points: number,
     timeTaken: number,
-    memoryUsed: number,
+    memoryUsedInKiloBytes: number,
     submittedAt: Date
 }
 

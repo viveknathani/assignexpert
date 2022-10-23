@@ -6,7 +6,6 @@
    padding: 0 0;
 	 border: 0;
    box-sizing: border-box;
-   font-family: 'Inter', sans-serif;
 }
 
 :root {
@@ -88,6 +87,7 @@
    color: var(--black);
    text-align: center;
    padding-top: 7vh;
+   font-family: 'Inter', sans-serif;
 }
 
 .classes:hover {
@@ -160,6 +160,7 @@
    outline: none;
    overflow: hidden;
    white-space: nowrap;
+   font-family: 'Inter', sans-serif;
 }
 
 .button:hover {

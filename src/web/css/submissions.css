@@ -54,3 +54,15 @@ table, th, td {
    border: 0.25vw solid white;
    border-collapse: collapse;
 }
+
+table > a {
+   color: white;
+}
+
+form {
+   margin-left: 5vw;
+}
+
+button {
+   cursor: pointer;
+}

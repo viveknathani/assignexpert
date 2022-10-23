@@ -18,56 +18,31 @@
       <div class="navButtons" onclick="logout()"><i class="fa-solid fa-right-from-bracket settingsIcon" id="logoutIcon"></i></div>
    </div>
    <div class="line"></div>
-   <h1 class="assignmentName">Assignment 1</h1>
+   <h1 class="assignmentName">Submissions</h1>
    <table>
       <tr>
-         <th>Submission Number</th>
-         <th>Result Status</th>
+         <th>Link</th>
+         <th>Student</th>
+         <th>Status</th>
          <th>Score</th>
          <th>Time Taken</th>
          <th>Memory Used</th>
          <th>Submitted At</th>
       </tr>
+      <% for (let i = 0; i < submissions.length; ++i) { %>
       <tr>
-         <td>Submission 1</td>
-         <td>xyz</td>
-         <td>x/y</td>
-         <td>20Y</td>
-         <td>1000TB</td>
-         <td>Never</td>
+         <th><a href="/submission/<%= submissions[i].submissionId %>">view</a></th>
+         <th><%= submissions[i].studentRollNumber %></th>
+         <th><%= submissions[i].resultStatus %></th>
+         <th><%= submissions[i].points %></th>
+         <th><%= submissions[i].timeTaken %>ms</th>
+         <th><%= submissions[i].memoryUsedInKiloBytes %>KB</th>
+         <th><%= submissions[i].submittedAt %></th>
       </tr>
-      <tr>
-         <td>Submission 2</td>
-         <td>xyz</td>
-         <td>x/y</td>
-         <td>20Y</td>
-         <td>1000TB</td>
-         <td>Never</td>
-      </tr>
-      <tr>
-         <td>Submission 3</td>
-         <td>xyz</td>
-         <td>x/y</td>
-         <td>20Y</td>
-         <td>1000TB</td>
-         <td>Never</td>
-      </tr>
-      <tr>
-         <td>Submission 4</td>
-         <td>xyz</td>
-         <td>x/y</td>
-         <td>20Y</td>
-         <td>1000TB</td>
-         <td>Never</td>
-      </tr>
-      <tr>
-         <td>Submission 5</td>
-         <td>xyz</td>
-         <td>x/y</td>
-         <td>20Y</td>
-         <td>1000TB</td>
-         <td>Never</td>
-      </tr>
+      <% } %>
    </table>
+   <form action="/api/assignment/<%= assignmentId %>/download" method="get">
+      <button type="submit">Download Results</button>
+   </form>
 </body>
 </html>

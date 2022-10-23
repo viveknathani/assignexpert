@@ -3,6 +3,7 @@ import * as database from '../database';
 import * as errors from './errors';
 import { CodeExecutionService, EmailService } from './index';
 import {Workbook, Row, Cell} from 'exceljs';
+import * as path from 'path';
 
 export class AssignmentService {
     private static instance: AssignmentService;
@@ -211,7 +212,7 @@ export class AssignmentService {
         const jobId = `job-${submissionId}`;
         codeExecutionInput.customJobId = jobId;
         codeExecutionService.runCode(codeExecutionInput);
-        return jobId;
+        return submissionId;
     }
 
     public async markSubmissionAsComplete(studentId: string, submissionId: string){
@@ -322,29 +323,33 @@ export class AssignmentService {
                 const members = await database.getStudentsForClass(classEntry.id);
                 const finalSubmissionSummariesForAllStudents : entity.SubmissionSummary[] = [];
                 for( let i = 0; i < members.length; i++) {
-                    finalSubmissionSummariesForAllStudents[i].studentRollNumber = members[i].rollNumber;
                     const submission: entity.Submission = await database.getMarkedCompleteSubmissionForAssignmentForStudent(assignmentId,members[i].id);
-                    finalSubmissionSummariesForAllStudents[i].memoryUsed = submission.memoryUsedInKiloBytes || 0;
-                    finalSubmissionSummariesForAllStudents[i].timeTaken = submission.timeTaken || 0;
-                    finalSubmissionSummariesForAllStudents[i].resultStatus = submission.resultStatus || entity.ResultStatus.NA;
-                    finalSubmissionSummariesForAllStudents[i].points = submission.points || 0;
-                    finalSubmissionSummariesForAllStudents[i].submittedAt = submission.submittedAt || new Date();
+                    finalSubmissionSummariesForAllStudents.push({
+                        submissionId: submission.id,
+                        studentRollNumber : members[i].rollNumber,
+                        memoryUsedInKiloBytes : submission.memoryUsedInKiloBytes || 0,
+                        timeTaken : submission.timeTaken || 0,
+                        resultStatus : submission.resultStatus || entity.ResultStatus.NA,
+                        points : submission.points || 0,
+                        submittedAt : submission.submittedAt || new Date()
+                    })
                 }
-                const fileName = `../temp/${assignmentDetails.assignment.title}${Date.now()}`
+                let fileName = `../../temp/${assignmentDetails.assignment.title}${Date.now()}.xlsx`;
                 const workbook = new Workbook();
                 const worksheet = workbook.addWorksheet(assignmentDetails.assignment.title);
                 const headers = [
-                    { header: 'RollNumber', key: 'rollNumber', width: 15 },
-                    { header: 'ResultStatus', key: 'resultStatus', width: 15 },
-                    { header: 'Points', key: 'point', width: 15 },
-                    { header: 'TimeTaken', key: 'timeTaken', width: 15 },
-                    { header: 'MemoryUsed', key: 'memoryUSed', width: 15 },
+                    { header: 'Roll Number', key: 'studentRollNumber', width: 15 },
+                    { header: 'Result  Status', key: 'resultStatus', width: 15 },
+                    { header: 'Points', key: 'points', width: 15 },
+                    { header: 'Time Taken (ms) ', key: 'timeTaken', width: 15 },
+                    { header: 'Memory Used (KB)', key: 'memoryUsedInKiloBytes', width: 15 },
                     { header: 'SubmittedAt', key: 'submittedAt', width: 15 },
                 ]
                 worksheet.columns = headers;
                 for(let i = 0; i<finalSubmissionSummariesForAllStudents.length; i++){
                     worksheet.addRow(finalSubmissionSummariesForAllStudents[i]);
                 }
+                fileName = path.resolve(__dirname, fileName);
                 await workbook.xlsx.writeFile(fileName);
                 return fileName;
             }
