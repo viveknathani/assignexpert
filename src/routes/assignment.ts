@@ -14,7 +14,6 @@ const assignmentService: AssignmentService = AssignmentService.getInstance();
  * @apiBody {Assignment} assignment Mandatory, an object described below
  * @apiBody {string} assignment.id Mandatory, leave ""
  * @apiBody {string} assignment.classId Mandatory
- * @apiBody {string} assignment.classId Mandatory
  * @apiBody {string} assignment.title Mandatory
  * @apiBody {string} assignment.description Mandatory
  * @apiBody {string} assignment.sampleInput Mandatory
@@ -41,6 +40,7 @@ const assignmentService: AssignmentService = AssignmentService.getInstance();
  * @apiBody {number} testCase.points Mandatory
  * @apiBody {string} testCase.input Mandatory
  * @apiBody {string} testCase.output Mandatory
+ * @apiSuccess {string} Created.
  * @apiError (ClientError) {json} 400 InvalidStudentOperation
  * @apiError (ClientError) {json} 400 InvalidFacultyOperation
  * @apiError (ClientError) {json} 400 NonPositivePointsForTestCase
@@ -71,6 +71,7 @@ assignmentRouter.post('/', async (req: express.Request, res: express.Response) =
  * @apiGroup Assignment
  * @apiName Delete assignment
  * @apiBody {string} assignmentId Mandatory
+ * @apiSuccess {string} Updated. No content returned
  * @apiError (ClientError) {json} 400 InvalidStudentOperation
  * @apiError (ClientError) {json} 400 InvalidFacultyOperation
  * @apiError (ServerError) {json} 500 Need to check server logs
@@ -99,6 +100,35 @@ assignmentRouter.delete('/', async (req: express.Request, res: express.Response)
  * @apiGroup Assignment
  * @apiName Get an assignment
  * @apiParam {string} assignmentId, Mandatory
+ * @apiSuccess {Object} assignment Details of the assignment with the given id.
+ * @apiSuccess {string} assignment.id 
+ * @apiSuccess {string} assignment.classId 
+ * @apiSuccess {string} assignment.title 
+ * @apiSuccess {string} assignment.description
+ * @apiSuccess {string} assignment.sampleInput
+ * @apiSuccess {string} assignment.sampleOutput
+ * @apiSuccess {string} assignment.constraints 
+ * @apiSuccess {number} assignment.timeLimitSeconds 
+ * @apiSuccess {number} assignment.memoryLimitMB 
+ * @apiSuccess {number} assignment.points 
+ * @apiSuccess {boolean} assignment.hasTemplate 
+ * @apiSuccess {[]string} assignment.acceptedLanguages  Each element is one of {c, cpp, java, python} 
+ * @apiSuccess {boolean} assignment.holdPoints 
+ * @apiSuccess {string} assignment.deadline Deadline date in the format: yyyy-mm-dd
+ * @apiSuccess {string} assignment.difficultyLevel  It is one of: {EASY, MEDIUM, DIFFICULT}
+ * @apiSuccess {Object[]} templates Only if hasTemplate is true
+ * @apiSuccess {string} templates.id
+ * @apiSuccess {string} templates.assignmentId 
+ * @apiSuccess {string} templates.lang  One of: {c, cpp, java, python}
+ * @apiSuccess {string} templates.snippet
+ * @apiSuccess {string} templates.preSnippet
+ * @apiSuccess {string} templates.postSnippet 
+ * @apiSuccess {Object[]} testCases AssignmentTestCases if any.
+ * @apiSuccess {string} testCases.id 
+ * @apiSuccess {string} testCases.assignmentId 
+ * @apiSuccess {number} testCases.points 
+ * @apiSuccess {string} testCases.input
+ * @apiSuccess {string} testCases.output 
  * @apiError (ClientError) {json} 400 InvalidStudentOperation
  * @apiError (ClientError) {json} 400 InvalidFacultyOperation
  * @apiError (ServerError) {json} 500 Need to check server logs
@@ -128,6 +158,13 @@ assignmentRouter.delete('/', async (req: express.Request, res: express.Response)
  * @apiGroup Assignment
  * @apiName Get all submissions
  * @apiParam {string} assignmentId, Mandatory
+ * @apiSuccess {Object[]} submissionSummaries
+ * @apiSuccess {string} submissionSummaries.id
+ * @apiSuccess {number} submissionSummaries.studentRollNumber
+ * @apiSuccess {string} submissionSummaries.resultStatus One of :{AC, WA, TLE, MLE, CE, RE, PR, NA}
+ * @apiSuccess {number} submissionSummaries.points
+ * @apiSuccess {number} submissionSummaries.timeTaken
+ * @apiSuccess {number} submissionSummaries.memoryUsed
  * @apiError (ClientError) {json} 400 InvalidStudentOperation
  * @apiError (ClientError) {json} 400 InvalidFacultyOperation
  * @apiError (ServerError) {json} 500 Need to check server logs
@@ -167,6 +204,7 @@ assignmentRouter.delete('/', async (req: express.Request, res: express.Response)
  * @apiBody {string} template.snippet Optional
  * @apiBody {string} template.preSnippet Optional
  * @apiBody {string} template.postSnippet Optional
+ * @apiSuccess {string} Updated. No content returned.
  * @apiError (ClientError) {json} 400 InvalidStudentOperation
  * @apiError (ClientError) {json} 400 InvalidFacultyOperation
  * @apiError (ServerError) {json} 500 Need to check server logs
