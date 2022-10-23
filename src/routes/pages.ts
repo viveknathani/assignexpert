@@ -69,6 +69,21 @@ pageRouter.get('/submission/:submissionId', async (req: express.Request, res: ex
         console.log(err);
         res.status(500).json({message: messages.MESSAGE_500 });
     }
-}); 
+});
+pageRouter.get('/submissions/:assignmentId', async (req: express.Request, res: express.Response) => {
+    try {
+        const { isStudent } = req.body;
+        const entityId = (isStudent) ? req.body.studentId : req.body.facultyId;
+        const assignmentId = req.params.assignmentId;
+        const assignmentService = AssignmentService.getInstance();
+        const submissions = await assignmentService.getAllSubmissionsForAssignment(assignmentId, entityId, isStudent);
+        const filePath = path.resolve(__dirname, '../web/html/submissions.html')
+        const html = await ejs.renderFile(filePath, {submissions, assignmentId});
+        res.send(html);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({message: messages.MESSAGE_500 });
+    }
+});
 
 export default pageRouter;
