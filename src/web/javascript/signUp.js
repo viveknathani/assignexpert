@@ -102,6 +102,17 @@ function signUp() {
       document.getElementById("password").focus();
    }
 
+   document.body.style.cursor = "wait";
+   const inputs = document.getElementsByTagName("INPUT");
+   for(let i=0; i<inputs.length; i++) {
+      inputs[i].style.cursor = "wait";
+   }
+
+   const buttons = document.getElementsByTagName("BUTTON");
+   for(let i=0; i<buttons.length; i++) {
+      buttons[i].style.cursor = "wait";
+   }
+
    fetch("/api/user/signup", {
       method: 'POST',
       headers: {
@@ -113,6 +124,13 @@ function signUp() {
    .then(res => res.json())
    .then(res => {
       if(res!=null){
+         document.body.style.cursor = "default";
+         for(let i=0; i<inputs.length; i++) {
+            inputs[i].style.cursor = "default";
+         }
+         for(let i=0; i<buttons.length; i++) {
+            buttons[i].style.cursor = "default";
+         }
          if(res.message == "Created."){
             document.getElementById("message").style.color = "#008037";
             document.getElementById("message").style.padding = "0.5vh 0.5vw";
@@ -120,7 +138,8 @@ function signUp() {
             document.getElementById("message").innerHTML = "Sign Up successful!";
             setTimeout(() => {document.getElementById("message").innerHTML = "";
                               document.getElementById("message").style.border = "none";
-                      }, 12000);
+                              window.location.reload();
+                      }, 5000);
          }
          else {
             document.getElementById("message").style.color = "red";
