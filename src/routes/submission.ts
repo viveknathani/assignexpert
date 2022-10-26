@@ -11,6 +11,18 @@ const assignmentService: AssignmentService = AssignmentService.getInstance();
  * @apiGroup Submission
  * @apiName Get a submission
  * @apiParam {string} submissionId, Mandatory
+ * @apiSuccess {Object} submission
+ * @apiSuccess {string} submission.id
+ * @apiSuccess {string} submission.assignmentId
+ * @apiSuccess {string} submission.studentId
+ * @apiSuccess {string} submission.code
+ * @apiSuccess {string} submission.lang One of c, cpp, java or python
+ * @apiSuccess {string} submission.resultStatus One of 
+ * @apiSuccess {number} submission.timeTaken
+ * @apiSuccess {number} submission.memoryUsedInKiloBytes
+ * @apiSuccess {number} submission.points
+ * @apiSuccess {string} submission.submittedAt Date of submission in format: yyyy-mm-dd
+ * @apiSuccess {boolean} submission.markCompleted 
  * @apiError (ClientError) {json} 400 InvalidStudentOperation
  * @apiError (ClientError) {json} 400 InvalidFacultyOperation
  * @apiError (ServerError) {json} 500 Need to check server logs
@@ -34,6 +46,7 @@ submissionRouter.get('/:submissionId', async (req: express.Request, res: express
  * @apiBody {string} assignmentId Mandatory
  * @apiBody {string} code Mandatory
  * @apiBody {string} lang Mandatory
+ * @apiSuccess {string} jobId Similar to submissionId for easier access.
  * @apiError (ClientError) {json} 400 LateSubmissionNotAllowed
  * @apiError (ClientError) {json} 400 AssigmentAlreadyCompleted
  * @apiError (ServerError) {json} 500 Need to check server logs
@@ -73,6 +86,7 @@ submissionRouter.post('/', async (req: express.Request, res: express.Response) =
  * @apiGroup Submission
  * @apiName Mark submission complete
  * @apiBody {string} submissionId Mandatory
+ * @apiSuccess {string} Updated. No content returned.
  * @apiError (ClientError) {json} 400 AssignmentAlreadyCompleted
  * @apiError (ClientError) {json} 400 LateSubmissionNotAllowed
  * @apiError (ClientError) {json} 400 InvalidStudentOperation
