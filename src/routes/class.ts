@@ -13,7 +13,7 @@ const assignmentService: AssignmentService = AssignmentService.getInstance();
  * @apiBody {string} name Mandatory
  * @apiError (ClientError) {json} 400 InvalidStudentOperation
  * @apiError (ServerError) {json} 500 Need to check server logs
- * @apiSuccess {string} code class code
+ * @apiSuccess {string} code Class code for joining the class.
  * @apiVersion 0.1.0
  * @apiDescription User needs to be authenticated befor this step.
  */
@@ -41,8 +41,9 @@ classRouter.post('/', async (req: express.Request, res: express.Response) => {
  * @apiGroup Class
  * @apiName Join class
  * @apiBody {string} code Mandatory, class code
- * @apiSuccess {string} Created.
+ * @apiSuccess {string} message Created.
  * @apiError (ClientError) {json} 400 InvalidFacultyOperation
+ * @apiError (ClientError) {json} 400 ErrClassNotFound
  * @apiError (ServerError) {json} 500 Need to check server logs
  * @apiVersion 0.1.0
  * @apiDescription User needs to be authenticated befor this step.
@@ -52,7 +53,7 @@ classRouter.post('/', async (req: express.Request, res: express.Response) => {
         await classService.joinClass(req.body.userId,req.body.code,req.body.isStudent);
         res.status(201).json({ message: messages.MESSAGE_201 });
     } catch (err) {
-        if (err instanceof errors.ErrInvalidFacultyOperation) {
+        if (err instanceof errors.ErrInvalidFacultyOperation || err instanceof errors.ErrClassNotFound) {
                 res.status(400).json({ message: err.message });
                 return;
         }
@@ -68,7 +69,7 @@ classRouter.post('/', async (req: express.Request, res: express.Response) => {
  * @apiName Update class name
  * @apiBody {string} classId Mandatory, class id
  * @apiBody {string} newName  Mandatory, the new class name 
- * @apiSuccess {string} Updated. No content returned.
+ * @apiSuccess {string} message Updated. No content returned.
  * @apiError (ClientError) {json} 400 ErrInvalidStudentOperation or ErrClassNotFound or ErrInvalidFacultyOperation
  * @apiError (ServerError) {json} 500 Need to check server logs
  * @apiVersion 0.1.0
@@ -98,7 +99,7 @@ classRouter.put('/name', async (req: express.Request, res: express.Response) => 
  * @api {get} /api/class/:classId/students Get all students
  * @apiGroup Class
  * @apiName Get all students
- * @apiParam {string} classId, class id
+ * @apiParam {string} classId class id
  * @apiSuccess {Object[]} students List of students in the class.
  * @apiSuccess {string} students.id studentId.
  * @apiSuccess {string} students.userId Student's userId.
@@ -150,7 +151,7 @@ classRouter.get('/:classId/students',async (req: express.Request, res: express.R
  * @api {get} /api/class/:classId/code Get class code
  * @apiGroup Class
  * @apiName Get class code
- * @apiParam {string} classId, class id
+ * @apiParam {string} classId class id
  * @apiSuccess {string} code Code to join the created class.
  * @apiError (ServerError) {json} 500 Need to check server logs
  * @apiVersion 0.1.0
@@ -169,11 +170,11 @@ classRouter.get('/:classId/code',async (req: express.Request, res: express.Respo
  * @api {get} /api/class/:classId/assignments Get all assignments
  * @apiGroup Class
  * @apiName Get all assignments
- * @apiParam {string} classId, Mandatory
+ * @apiParam {string} classId Mandatory
  * @apiSuccess {Object[]} assignmentSummaries All assignments in the class.
- * @apiSuccess {string} assignmentSummaries.id AssignmentId
+ * @apiSuccess {string} assignmentSummaries.id AssignmentId.
  * @apiSuccess {string} assignmentSummaries.title Title of the assignment.
- * @apiSuccess {string} assignmentSummaries.difficultyLevel Easy, Medium or Hard.
+ * @apiSuccess {string} assignmentSummaries.difficultyLevel One of: {EASY, MEDIUM, HARD}.
  * @apiSuccess {boolean} assignmentSummaries.hasCompleted Optional if the user is a student.
  * @apiError (ClientError) {json} 400 InvalidStudentOperation
  * @apiError (ClientError) {json} 400 InvalidFacultyOperation

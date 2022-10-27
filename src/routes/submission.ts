@@ -10,19 +10,19 @@ const assignmentService: AssignmentService = AssignmentService.getInstance();
  * @api {get} /api/submission/:submissionId Get a submission
  * @apiGroup Submission
  * @apiName Get a submission
- * @apiParam {string} submissionId, Mandatory
- * @apiSuccess {Object} submission
- * @apiSuccess {string} submission.id
- * @apiSuccess {string} submission.assignmentId
- * @apiSuccess {string} submission.studentId
- * @apiSuccess {string} submission.code
- * @apiSuccess {string} submission.lang One of c, cpp, java or python
- * @apiSuccess {string} submission.resultStatus One of 
- * @apiSuccess {number} submission.timeTaken
- * @apiSuccess {number} submission.memoryUsedInKiloBytes
- * @apiSuccess {number} submission.points
- * @apiSuccess {string} submission.submittedAt Date of submission in format: yyyy-mm-dd
- * @apiSuccess {boolean} submission.markCompleted 
+ * @apiParam {string} submissionId Mandatory
+ * @apiSuccess {Object} submission Details of the submission.
+ * @apiSuccess {string} submission.id submissionId.
+ * @apiSuccess {string} submission.assignmentId assignmentId.
+ * @apiSuccess {string} submission.studentId studentId.
+ * @apiSuccess {string} submission.code Code submitted by the student.
+ * @apiSuccess {string} submission.lang One of: {c, cpp, java, python}.
+ * @apiSuccess {string} submission.resultStatus One of: {AC, WA, TLE, MLE, CE, RE, PR, NA}. 
+ * @apiSuccess {number} submission.timeTaken Time taken by the code to execute.
+ * @apiSuccess {number} submission.memoryUsedInKiloBytes Memory used by the code to execute.
+ * @apiSuccess {number} submission.points Points received for the code.
+ * @apiSuccess {string} submission.submittedAt Date of submission in format: yyyy-mm-dd.
+ * @apiSuccess {boolean} submission.markCompleted Cannot do further submissions if this is true.
  * @apiError (ClientError) {json} 400 InvalidStudentOperation
  * @apiError (ClientError) {json} 400 InvalidFacultyOperation
  * @apiError (ServerError) {json} 500 Need to check server logs
@@ -86,7 +86,7 @@ submissionRouter.post('/', async (req: express.Request, res: express.Response) =
  * @apiGroup Submission
  * @apiName Mark submission complete
  * @apiBody {string} submissionId Mandatory
- * @apiSuccess {string} Updated. No content returned.
+ * @apiSuccess {string} message Updated. No content returned.
  * @apiError (ClientError) {json} 400 AssignmentAlreadyCompleted
  * @apiError (ClientError) {json} 400 LateSubmissionNotAllowed
  * @apiError (ClientError) {json} 400 InvalidStudentOperation
