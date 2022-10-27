@@ -1,6 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap');
 * {
    margin: 0 0;
    padding: 0 0;
@@ -51,17 +53,20 @@ body{
 {
     display: inline-block;
     color: var(--black);
-    font-size: 4.1vh;
-    font-weight: 600;
-    margin-top: 24vh;
+    font-size: 4vh;
+    font-weight: 500;
+    margin-top: 25vh;
 }
 .sub
 {
     display: inline-block;
     color: var(--primary);
-    font-size: 4.1vh;
+    font-size: 3.8vh;
     font-weight: 600;
-    margin-top: 12vh;
+    margin-top: 8.5vh;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 39vw;
 }
 
 .btn{
@@ -71,7 +76,7 @@ body{
     width: 13vw;
     font-weight: 600;
     padding: 0.7vh 0.7vw;
-    margin-top: 13vh;
+    margin-top: 11vh;
     font-size: 3vh;
     background: #ffffff;
     border: 0.5vh solid var(--primary);
@@ -82,3 +87,26 @@ body{
 {
     transform: scale(1.1);
 }
+
+
+
+/* ------------ Animations ------------ */
+
+
+.motoAnimate {
+    animation-name: increaseMoto;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+    animation-fill-mode: backwards;
+ }
+ 
+ @keyframes increaseMoto {
+    from {
+       width: 0vw;
+    }
+  
+    to {
+       width: 39vw;
+    }
+ }

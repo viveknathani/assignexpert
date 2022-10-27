@@ -13,6 +13,17 @@ function signIn() {
       document.getElementById("signInPassword").focus();
    }
 
+   document.body.style.cursor = "wait";
+   const inputs = document.getElementsByTagName("INPUT");
+   for(let i=0; i<inputs.length; i++) {
+      inputs[i].style.cursor = "wait";
+   }
+
+   const buttons = document.getElementsByTagName("BUTTON");
+   for(let i=0; i<buttons.length; i++) {
+      buttons[i].style.cursor = "wait";
+   }
+
 
    fetch("/api/user/login", {
       method: 'POST',
@@ -24,8 +35,15 @@ function signIn() {
    })
    .then(res => res.json())
    .then(res => {
-      console.log(res);
       if(res!=null){
+         document.body.style.cursor = "default";
+         for(let i=0; i<inputs.length; i++) {
+            inputs[i].style.cursor = "default";
+         }
+         for(let i=0; i<buttons.length; i++) {
+            buttons[i].style.cursor = "default";
+         }
+         
          if(res.firstName != null){
             localStorage.setItem("user", JSON.stringify(res));
             window.location.href = "/home";
