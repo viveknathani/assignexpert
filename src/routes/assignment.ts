@@ -14,7 +14,6 @@ const assignmentService: AssignmentService = AssignmentService.getInstance();
  * @apiBody {Assignment} assignment Mandatory, an object described below
  * @apiBody {string} assignment.id Mandatory, leave ""
  * @apiBody {string} assignment.classId Mandatory
- * @apiBody {string} assignment.classId Mandatory
  * @apiBody {string} assignment.title Mandatory
  * @apiBody {string} assignment.description Mandatory
  * @apiBody {string} assignment.sampleInput Mandatory
@@ -41,13 +40,14 @@ const assignmentService: AssignmentService = AssignmentService.getInstance();
  * @apiBody {number} testCase.points Mandatory
  * @apiBody {string} testCase.input Mandatory
  * @apiBody {string} testCase.output Mandatory
+ * @apiSuccess {string} message Created.
  * @apiError (ClientError) {json} 400 InvalidStudentOperation
  * @apiError (ClientError) {json} 400 InvalidFacultyOperation
  * @apiError (ClientError) {json} 400 NonPositivePointsForTestCase
  * @apiError (ClientError) {json} 400 TotalPointsNotEqualAssignmentPoints
  * @apiError (ServerError) {json} 500 Need to check server logs
  * @apiVersion 0.1.0
- * @apiDescription User needs to be authenticated befor this step.
+ * @apiDescription User needs to be authenticated before this step.
  */
 assignmentRouter.post('/', async (req: express.Request, res: express.Response) => {
     try {
@@ -71,6 +71,7 @@ assignmentRouter.post('/', async (req: express.Request, res: express.Response) =
  * @apiGroup Assignment
  * @apiName Delete assignment
  * @apiBody {string} assignmentId Mandatory
+ * @apiSuccess {string} message Updated. No content returned.
  * @apiError (ClientError) {json} 400 InvalidStudentOperation
  * @apiError (ClientError) {json} 400 InvalidFacultyOperation
  * @apiError (ServerError) {json} 500 Need to check server logs
@@ -98,7 +99,36 @@ assignmentRouter.delete('/', async (req: express.Request, res: express.Response)
  * @api {get} /api/assignment/:assignmentId Get an assignment
  * @apiGroup Assignment
  * @apiName Get an assignment
- * @apiParam {string} assignmentId, Mandatory
+ * @apiParam {string} assignmentId Mandatory
+ * @apiSuccess {Object} assignment Details of the assignment with the given id.
+ * @apiSuccess {string} assignment.id assignmentId. 
+ * @apiSuccess {string} assignment.classId classId. 
+ * @apiSuccess {string} assignment.title Title of the assignment.
+ * @apiSuccess {string} assignment.description Description of the assignment.
+ * @apiSuccess {string} assignment.sampleInput Sample input.
+ * @apiSuccess {string} assignment.sampleOutput Sample output.
+ * @apiSuccess {string} assignment.constraints Constraints.
+ * @apiSuccess {number} assignment.timeLimitSeconds Time limit for code execution.
+ * @apiSuccess {number} assignment.memoryLimitMB Memory limit for code execution.
+ * @apiSuccess {number} assignment.points Total points for the assignment.
+ * @apiSuccess {boolean} assignment.hasTemplate If true check for Templates for this assignment.
+ * @apiSuccess {[]string} assignment.acceptedLanguages  Each element is one of {c, cpp, java, python} 
+ * @apiSuccess {boolean} assignment.holdPoints If true, all submissions for this assignment would dsiplay 0 points.
+ * @apiSuccess {string} assignment.deadline Deadline date in the format: yyyy-mm-dd.
+ * @apiSuccess {string} assignment.difficultyLevel  One of: {EASY, MEDIUM, DIFFICULT}.
+ * @apiSuccess {Object[]} templates Only if hasTemplate is true.
+ * @apiSuccess {string} templates.id TemplateId.
+ * @apiSuccess {string} templates.assignmentId Template's assignmentId.
+ * @apiSuccess {string} templates.lang  One of: {c, cpp, java, python}.
+ * @apiSuccess {string} templates.snippet Code.
+ * @apiSuccess {string} templates.preSnippet CodeSnippet to be placed before the code submitted by the student.
+ * @apiSuccess {string} templates.postSnippet CodeSnippet to be placed after the code submitted by the student.
+ * @apiSuccess {Object[]} testCases AssignmentTestCases if any.
+ * @apiSuccess {string} testCases.id TestCaseId.
+ * @apiSuccess {string} testCases.assignmentId TestCase's assignmentId.
+ * @apiSuccess {number} testCases.points Points added to the total points for the submission if this testcase is passed.
+ * @apiSuccess {string} testCases.input Input given.
+ * @apiSuccess {string} testCases.output Expected output.
  * @apiError (ClientError) {json} 400 InvalidStudentOperation
  * @apiError (ClientError) {json} 400 InvalidFacultyOperation
  * @apiError (ServerError) {json} 500 Need to check server logs
@@ -127,7 +157,14 @@ assignmentRouter.delete('/', async (req: express.Request, res: express.Response)
  * @api {get} /api/assignment/:assignmentId/submissions Get all submissions
  * @apiGroup Assignment
  * @apiName Get all submissions
- * @apiParam {string} assignmentId, Mandatory
+ * @apiParam {string} assignmentId Mandatory
+ * @apiSuccess {Object[]} submissionSummaries Array containing submission summaries for all submissions.
+ * @apiSuccess {string} submissionSummaries.id SubmissionId.
+ * @apiSuccess {number} submissionSummaries.studentRollNumber RollNumber of the student who made the submission.
+ * @apiSuccess {string} submissionSummaries.resultStatus One of :{AC, WA, TLE, MLE, CE, RE, PR, NA}.
+ * @apiSuccess {number} submissionSummaries.points Points earned for this submission.
+ * @apiSuccess {number} submissionSummaries.timeTaken Time taken for code execution.
+ * @apiSuccess {number} submissionSummaries.memoryUsed Memory used for code execution.
  * @apiError (ClientError) {json} 400 InvalidStudentOperation
  * @apiError (ClientError) {json} 400 InvalidFacultyOperation
  * @apiError (ServerError) {json} 500 Need to check server logs
@@ -150,23 +187,24 @@ assignmentRouter.delete('/', async (req: express.Request, res: express.Response)
  * @api {put} /api/assignment Update assignment
  * @apiGroup Assignment
  * @apiName Update assignment
- * @apiBody {string} id, Mandatory
- * @apiBody {string} text, Optional
- * @apiBody {string} description, Optional
- * @apiBody {string} sampleInput, Optional
- * @apiBody {string} sampleOutput, Optional
- * @apiBody {string} constraints, Optional
- * @apiBody {number} timeLimitSeconds, Optional
- * @apiBody {number} memoryLimitMB, Optional
- * @apiBody {number} points, Optional
- * @apiBody {string} deadline, Optional
- * @apiBody {string} difficultyLevel, Optional
- * @apiBody {[]Template} templates, Optional
- * @apiBody {string} template.id, Mandatory
- * @apiBody {string} template.lang Optional, has to be one of: {c, cpp, java, python}
+ * @apiBody {string} id Mandatory
+ * @apiBody {string} text Optional
+ * @apiBody {string} description Optional
+ * @apiBody {string} sampleInput Optional
+ * @apiBody {string} sampleOutput Optional
+ * @apiBody {string} constraints Optional
+ * @apiBody {number} timeLimitSeconds Optional
+ * @apiBody {number} memoryLimitMB Optional
+ * @apiBody {number} points Optional
+ * @apiBody {string} deadline Optional
+ * @apiBody {string} difficultyLevel Optional
+ * @apiBody {[]Template} templates Optional
+ * @apiBody {string} template.id Mandatory
+ * @apiBody {string} template.lang Optional Has to be one of: {c, cpp, java, python}
  * @apiBody {string} template.snippet Optional
  * @apiBody {string} template.preSnippet Optional
  * @apiBody {string} template.postSnippet Optional
+ * @apiSuccess {string} message Updated. No content returned.
  * @apiError (ClientError) {json} 400 InvalidStudentOperation
  * @apiError (ClientError) {json} 400 InvalidFacultyOperation
  * @apiError (ServerError) {json} 500 Need to check server logs
@@ -188,7 +226,7 @@ assignmentRouter.put('/', async (req: express.Request, res: express.Response) =>
  * @api {get} /api/assignment/:assignmentId/download Get excel file with points
  * @apiGroup Assignment
  * @apiName Get excel file with points
- * @apiParam {string} assignmentId, Mandatory
+ * @apiParam {string} assignmentId Mandatory
  * @apiError (ClientError) {json} 400 InvalidStudentOperation
  * @apiError (ClientError) {json} 400 InvalidFacultyOperation
  * @apiError (ServerError) {json} 500 Need to check server logs
