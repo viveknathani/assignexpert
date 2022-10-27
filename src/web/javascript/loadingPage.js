@@ -1,15 +1,31 @@
 const code = document.getElementById("code");
 
-const innerHTMLs = ["<span style='color: black;'>c</span>", "<span style='color: black;'>o</span>", "<span style='color: black;'>n</span>", "<span style='color: black;'>s</span>", "<span style='color: black;'>o</span>", "<span style='color: black;'>l</span>", "<span style='color: black;'>e</span>", "<span style='color: black;'>.</span>", "<span style='color: black;'>l</span>","<span style='color: black;'>o</span>", "<span style='color: black;'>g</span>", "<span style='color: black;'>(</span>", "'", "l", "o", "a", "d", "i", "n", "g", "'", "<span style='color: black;'>)</span>", "<span style='color: black;'>;</span>"];
+const text = "console.log('loading');";
+let colorGreen = false;
 
 let time = 200;
 
 code.classList.remove("borderBlink");
-for(let i=0; i<innerHTMLs.length-1; i++) {
-   setTimeout(() => code.innerHTML += innerHTMLs[i], time);
+for(let i=0; i<text.length-1; i++) {
+   if(colorGreen){
+      if(text[i] == ")"){
+         setTimeout(() => code.innerHTML += `<span style='color: black;'>${text[i]}</span>`, time);
+         colorGreen = false;
+      }
+      else {
+         setTimeout(() => code.innerHTML += text[i], time);
+      }
+   }
+   else {
+      console.log("in else");
+      setTimeout(() => code.innerHTML += `<span style='color: black;'>${text[i]}</span>`, time);
+      if(text[i] == '('){
+         colorGreen = true;
+      }
+   }
    time += 170;
 }
-setTimeout(() => code.innerHTML += innerHTMLs[innerHTMLs.length-1], time);
+setTimeout(() => code.innerHTML += `<span style='color: black;'>${text[text.length-1]}</span>`, time);
 code.classList.add("borderBlink");
 time = 200;
 
@@ -19,11 +35,25 @@ setInterval(writeCode, 5500);
 function writeCode() {
    code.classList.remove("borderBlink");
    code.innerHTML = "";
-   for(let i=0; i<innerHTMLs.length-1; i++) {
-      setTimeout(() => code.innerHTML += innerHTMLs[i], time);
+   for(let i=0; i<text.length-1; i++) {
+      if(colorGreen){
+         if(text[i] == ")"){
+            setTimeout(() => code.innerHTML += `<span style='color: black;'>${text[i]}</span>`, time);
+            colorGreen = false;
+         }
+         else {
+            setTimeout(() => code.innerHTML += text[i], time);
+         }
+      }
+      else {
+         setTimeout(() => code.innerHTML += `<span style='color: black;'>${text[i]}</span>`, time);
+         if(text[i] == '('){
+            colorGreen = true;
+         }
+      }
       time += 170;
    }
-   setTimeout(() => code.innerHTML += innerHTMLs[innerHTMLs.length-1], time);
+   setTimeout(() => code.innerHTML += `<span style='color: black;'>${text[text.length-1]}</span>`, time);
    code.classList.add("borderBlink");
    time = 200;
 }
