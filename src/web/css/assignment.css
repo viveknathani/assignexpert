@@ -8,8 +8,8 @@
    box-sizing: border-box;
 }
 
-#assignmentTitle, #problemHeading, #problem {
-   font-family: 'Inter', sans-serif;;
+#assignmentTitle, #problemHeading, #problem, #score,.titleAndSubmissions, .assignmentName, .submissions, .miniHeadings, #problemStatementHeading, .writeProblem, .smallTextAreaInputs, .smallInput, #assignmentName, .dropDown, .dropDownItem, .radioButtons, .testCaseContainer, .inputOutput, .addCaseContainer, .addCaseIcon, .minusIcon, .template, .submitButton, .assignmentTitle, .problem, .problemData{
+   font-family: 'Inter', sans-serif;
 }
 
 :root {
@@ -76,6 +76,9 @@
    width: 56vw;
    height: 35vh;
    background-color: var(--secondary);
+   border: none;
+   outline: none;
+   resize: both;
    color: var(--black);
 }
 
@@ -87,6 +90,9 @@
    width: 15vw;
    height: 6vh;
    background-color: var(--secondary);
+   border: none;
+   outline: none;
+   resize: both;
    color: var(--black);
    overflow: hidden;
 }
