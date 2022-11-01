@@ -18,31 +18,33 @@
       <div class="navButtons" onclick="logout()"><i class="fa-solid fa-right-from-bracket settingsIcon" id="logoutIcon"></i></div>
    </div>
    <div class="line"></div>
-   <h1 class="assignmentName">Submissions</h1>
-   <table>
+   <table class="submissionsTable">
+      <caption class="assignmentName">
+         Submissions 
+         <form class="downloadForm" action="/api/assignment/<%= assignmentId %>/download" method="get">
+            <button class="downloadButton" type="submit"><i class="fa-solid fa-download"></i></button>
+         </form>
+      </caption>
       <tr>
-         <th>Link</th>
-         <th>Student</th>
-         <th>Status</th>
-         <th>Score</th>
-         <th>Time Taken</th>
-         <th>Memory Used</th>
-         <th>Submitted At</th>
+         <th class="tableHeadings" style="padding: 2.4vh 1.9vw;">Student</th>
+         <th class="tableHeadings">Status</th>
+         <th class="tableHeadings">Score</th>
+         <th class="tableHeadings">Time Taken</th>
+         <th class="tableHeadings">Memory Used</th>
+         <th class="tableHeadings">Submitted At</th>
+         <th class="tableHeadings">Link</th>
       </tr>
       <% for (let i = 0; i < submissions.length; ++i) { %>
-      <tr>
-         <th><a href="/submission/<%= submissions[i].submissionId %>">view</a></th>
-         <th><%= submissions[i].studentRollNumber %></th>
-         <th><%= submissions[i].resultStatus %></th>
-         <th><%= submissions[i].points %></th>
-         <th><%= submissions[i].timeTaken %>ms</th>
-         <th><%= submissions[i].memoryUsedInKiloBytes %>KB</th>
-         <th><%= submissions[i].submittedAt %></th>
+      <tr class="rowHover">
+         <th class="tableContent"><%= submissions[i].studentRollNumber %></th>
+         <th class="tableContent"><%= submissions[i].resultStatus %></th>
+         <th class="tableContent"><%= submissions[i].points %></th>
+         <th class="tableContent"><%= submissions[i].timeTaken %>ms</th>
+         <th class="tableContent"><%= submissions[i].memoryUsedInKiloBytes %>KB</th>
+         <th class="tableContent"><%= submissions[i].submittedAt %></th>
+         <th class="tableContent"><a href="/submission/<%= submissions[i].submissionId %>">view</a></th>
       </tr>
       <% } %>
    </table>
-   <form action="/api/assignment/<%= assignmentId %>/download" method="get">
-      <button type="submit">Download Results</button>
-   </form>
 </body>
 </html>

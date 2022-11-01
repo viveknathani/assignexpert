@@ -4,7 +4,7 @@
 * {
    margin: 0 0;
    padding: 0 0;
-	 border: 0;
+	border: 0;
    box-sizing: border-box;
 }
 
@@ -13,7 +13,11 @@
    --black: #000000;
    --primary: #008037;
    --secondary: #E9EFF4;
-}                      
+}
+
+.navBar, .title, .navButtons, .classContainer, .classes, #addClass, #plus, .plusH, .plusV, .inputs, .popUpTitle, .button, #code {
+   font-family: 'Inter', sans-serif;
+}
 
 .navBar {
    background-color: var(--secondary);

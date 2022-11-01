@@ -1,10 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap');
 
 * {
    margin: 0 0;
    padding: 0 0;
-	 border: 0;
+	border: 0;
    box-sizing: border-box;
    font-family: 'Inter', sans-serif;
 }
@@ -17,46 +20,43 @@
 }
 
 .assignmentName {
-   display: inline-block;
-   font-size: 4.3vh;
-   font-weight: 600;
-   color: var(--primary);
+   caption-side: top;
+   text-align: left;
+   font-size: 3.7vh;
+   font-weight: 700;
+   color: var(--black);
    background-color: var(--white);
-   margin-left: 4vw;
-   margin-top: 7vh;
+   margin-bottom: 5vh;
+}
+
+.downloadForm {
+   display: inline-block;
+   width: fit-content;
+   margin-left: 0.8vw;
+   background-color: var(--white);
+}
+
+.downloadButton {
+   display: inline-block;
+   background-color: var(--white);
+   color: var(--primary);
+   font-size: 3.5vh;
+}
+
+.downloadButton:hover {
+   scale: 1.13;
 }
 
 table {
-   width: 85vw;
+   width: 75vw;
    margin: auto;
-   margin-top: 8vh;
-   background-color: var(--secondary);
-}
-
-th {
-   background-color: var(--primary);
-   color: var(--white);
-   font-size: 3vh;
-   padding: 2.5vh 2vw;
-   font-weight: 600;
-   text-align: left;
-}
-
-td {
-   background-color: var(--secondary);
-   color: var(--black);
-   font-size: 2.5vh;
-   padding: 2vh 1.5vw;
-   font-weight: 500;
+   margin-top: 12vh;
+   background-color: var(--white);
 }
 
 table, th, td {
-   border: 0.25vw solid white;
+   border: none;
    border-collapse: collapse;
-}
-
-table > a {
-   color: white;
 }
 
 form {
@@ -65,4 +65,44 @@ form {
 
 button {
    cursor: pointer;
+}
+
+.submissionsTable {
+   position: relative;
+}
+
+.tableHeadings {
+   background-color: var(--primary);
+   color: var(--white);
+   font-size: 2.6vh;
+   padding: 2.4vh 1.5vw;
+   font-weight: 600;
+   text-align: center;
+   border: none;
+   border-collapse: collapse;
+   position: sticky;
+   top: 0;
+}
+
+.tableContent {
+   background-color: var(--secondary);
+   color: #4a4a4a;
+   font-size: 2.25vh;
+   padding: 2.2vh 0.6vw;
+   font-weight: 400;
+   text-align: center;
+   border: none;
+   border-collapse: collapse;
+   white-space: nowrap;
+}
+
+.tableContent:nth-child(1){
+   color: var(--black);
+   font-weight: 500;
+   font-size: 2.45vh;
+}
+
+
+tr:hover .tableContent {
+   background-color: #d8e7f2;
 }

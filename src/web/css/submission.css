@@ -1,0 +1,78 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap');
+
+* {
+   margin: 0 0;
+   padding: 0 0;
+	border: 0;
+   box-sizing: border-box;
+   font-family: 'Inter', sans-serif;
+}
+
+:root {
+   --white: #FFFFFF;
+   --black: #000000;
+   --primary: #008037;
+   --secondary: #E9EFF4;
+}
+
+#submission {
+   margin-top: 2vh;
+   padding: 1%;
+   font-family: 'Inter', sans-serif;
+}
+textarea {
+   font-family: 'Consolas';
+   width: 70%;
+   min-height: 80vh;
+   color: var(--black);
+   background-color: var(--secondary);
+   margin-left: 4.5vw;
+   margin-top: 2.5vh;
+   margin-bottom: 6vh;
+   padding: 2.8vh 1.5vw;
+   resize: none;
+}
+
+.submissionTime {
+   display: inline-block;
+   color: var(--black);
+   font-size: 1.3vw;
+   font-weight: 700;
+   margin-top: 2.5vh;
+   margin-left: 4.5vw;
+}
+
+.dateIcon {
+   display: inline-block;
+   margin-bottom: 2.3vh;
+   color: var(--primary);
+   font-size: 4.5vw;
+}
+
+.score {
+   float: right;
+   color: var(--black);
+   font-size: 1.3vw;
+   font-weight: 700;
+   margin-top: 14vh;
+   margin-right: 6.5vw;
+}
+
+.information {
+   color: var(--black);
+   font-size: 1.1vw;
+   margin-top: 1.3vh;
+   margin-left: 4.5vw;
+}
+
+.language {
+   background-color: #008037; 
+   color: white;
+   padding: 0.05vh 0.2vw;
+   font-size: 0.75vw;
+   font-weight: 700;
+}
