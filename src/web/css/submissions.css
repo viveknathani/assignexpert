@@ -7,7 +7,7 @@
 * {
    margin: 0 0;
    padding: 0 0;
-	 border: 0;
+	border: 0;
    box-sizing: border-box;
    font-family: 'Inter', sans-serif;
 }
@@ -88,11 +88,12 @@ button {
    background-color: var(--secondary);
    color: #4a4a4a;
    font-size: 2.25vh;
-   padding: 2.2vh 0vw;
+   padding: 2.2vh 0.6vw;
    font-weight: 400;
    text-align: center;
    border: none;
    border-collapse: collapse;
+   white-space: nowrap;
 }
 
 .tableContent:nth-child(1){

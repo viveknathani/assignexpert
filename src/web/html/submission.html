@@ -6,19 +6,8 @@
     <meta name='viewport' content='width=device-width, initial-scale=1'>
     <script src="https://kit.fontawesome.com/2965379893.js" crossorigin="anonymous"></script>
     <script defer src="../../web/javascript/navBar.js"></script>
-    <link rel="stylesheet" type="text/css" href="../../web/css/home.css"/> 
-    <style>
-        #submission {
-            margin-top: 2vh;
-            padding: 1%;
-            font-family: 'Inter', sans-serif;
-        }
-        textarea {
-            font-family: 'Consolas';
-            min-height: 300px;
-            width: 50%;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="../../web/css/home.css"/>
+    <link rel="stylesheet" type="text/css" href="../../web/css/submission.css"/>  
 </head>
 <body>
     <div class="navBar">
@@ -28,7 +17,7 @@
      </div>
     <div class="line"></div>
     <div id="submission">
-        <p>Submitted at: <%= submittedAt %></p>
+        <!-- <p>Submitted at: <%= submittedAt %></p>
         <p>Your submission belongs to <a href="/assignment/<%= assignmentId %>/view">this</a> assignment.</p>
         <p>Status: <%= resultStatus %></p>
         <% if (resultMessage !== "") { %>
@@ -38,7 +27,19 @@
         <p>Memory Taken: <%= memoryUsedInKiloBytes %>KB.</p>
         <p>Code (<%= lang %>)</p>
         <textarea disabled><%= code %></textarea>
-        <p>Points: <%= points %></p>
+        <p>Points: <%= points %></p> -->
+
+        <div class="submissionTime"><i class="fa-solid fa-calendar-days dateIcon"></i><br><%= submittedAt %></div>
+        <div class="score"><%= points %> Points</div>
+        <div class="information" style="margin-top: 5vh;"><span style="font-weight: 600;">Assignment Link: </span><a href="/assignment/<%= assignmentId %>/view">/assignment/<%= assignmentId %>/view</a></div>
+        <div class="information"><span style="font-weight: 600;">Status: </span><%= resultStatus %></div>
+        <% if (resultMessage !== "") { %>
+            <div class="information"><span style="font-weight: 600;">Message: </span><%= resultMessage %></div>
+        <% } %>
+        <div class="information"><span style="font-weight: 600;">Time Taken: </span><%= timeTaken %>ms</div>
+        <div class="information"><span style="font-weight: 600;">Memory Used: </span><%= memoryUsedInKiloBytes %> KB</div>
+        <div class="information" style="margin-top: 4vh;"><span style="font-weight: 600;">Code</span> <sup class="language" style="background-color: #008037; color: white;"><%= lang %></sup> <span style="font-weight: 600;">:</span></div>
+        <textarea disabled><%= code %></textarea>
     </div>
 </body>
 </html>

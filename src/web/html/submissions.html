@@ -26,7 +26,7 @@
          </form>
       </caption>
       <tr>
-         <th class="tableHeadings">Student</th>
+         <th class="tableHeadings" style="padding: 2.4vh 1.9vw;">Student</th>
          <th class="tableHeadings">Status</th>
          <th class="tableHeadings">Score</th>
          <th class="tableHeadings">Time Taken</th>
@@ -36,13 +36,13 @@
       </tr>
       <% for (let i = 0; i < submissions.length; ++i) { %>
       <tr class="rowHover">
-         <th class="tableContent"><a href="/submission/<%= submissions[i].submissionId %>">view</a></th>
          <th class="tableContent"><%= submissions[i].studentRollNumber %></th>
          <th class="tableContent"><%= submissions[i].resultStatus %></th>
          <th class="tableContent"><%= submissions[i].points %></th>
          <th class="tableContent"><%= submissions[i].timeTaken %>ms</th>
          <th class="tableContent"><%= submissions[i].memoryUsedInKiloBytes %>KB</th>
          <th class="tableContent"><%= submissions[i].submittedAt %></th>
+         <th class="tableContent"><a href="/submission/<%= submissions[i].submissionId %>">view</a></th>
       </tr>
       <% } %>
    </table>
