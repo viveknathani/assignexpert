@@ -8,6 +8,7 @@ const classId = window.location.pathname.substring('/class/'.length);
 let showQuicksOrNot = true;
 let showFormOrNot = true;
 let showCodeOrNot = true;
+let displayMembers = true;
 
 
 
@@ -160,4 +161,19 @@ function showCodeButton(){
    document.getElementById("getCode").innerHTML = "Class Code";
    document.getElementById("getCode").classList.remove("convertToClassCode");
    document.getElementById("getCode").classList.add("convertToCodeButton");
+}
+
+function members(){
+   if(displayMembers){
+      document.getElementById("members").classList.remove("hideMembers");
+      document.getElementById("members").style.display = "inline-block";
+      document.getElementById("members").classList.add("displayMembers");
+      displayMembers = false;
+   }
+   else {
+      document.getElementById("members").classList.remove("displayMembers");
+      document.getElementById("members").classList.add("hideMembers");
+      setTimeout(()=>{document.getElementById("members").style.display = "none";}, 250);
+      displayMembers = true;
+   }
 }
