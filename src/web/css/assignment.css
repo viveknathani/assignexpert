@@ -282,6 +282,14 @@
    outline: none;
 }
 
+#viewSubmissions {
+   margin-left: 5.4vw;
+}
+
+#viewSubmissions:hover {
+   cursor: pointer;
+}
+
 #score {
    font-size: 2.5vh;
    margin-left: 86vw;
