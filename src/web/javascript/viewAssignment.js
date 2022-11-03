@@ -123,3 +123,9 @@ if (data.isStudent) {
    const solutionArea = document.getElementById("solution");
    solutionArea.style.display = 'block';
 }
+
+function viewSubmissions() {
+   let assignmentId = window.location.pathname.substring('/assignment/'.length);
+   assignmentId = assignmentId.substring(0, assignmentId.indexOf('/view'));
+   window.location.href = `/submissions/${assignmentId}`;
+}

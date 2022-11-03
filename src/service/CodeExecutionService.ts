@@ -157,7 +157,7 @@ export class CodeExecutionService {
                     const submissionOutput = await fs.promises.readFile(`${directoryPath}/submission${i+1}.txt`, {
                         encoding: 'utf-8'
                     });
-                    if (submissionOutput !== (data.testCases[i].output + '\n')) {
+                    if (!(submissionOutput === (data.testCases[i].output) || submissionOutput === (data.testCases[i].output + '\n') || submissionOutput + '\n' === (data.testCases[i].output))) {
                         output.resultStatus = entity.ResultStatus.WA;
                         output.resultMessage = "Wrong answer";
                     } else {
@@ -168,7 +168,7 @@ export class CodeExecutionService {
                         encoding: 'utf-8'
                     });
                     const stats = statsFileContent.split("-");
-                    output.memoryUsedKB = parseFloat(stats[0]);
+                    output.memoryUsedKB = parseFloat(stats[0]) / 4.0;
                     output.timeTakenMilliSeconds = parseFloat(stats[1]) * 1000.0;
                     outputs.push(output);
                 }
@@ -200,7 +200,7 @@ export class CodeExecutionService {
                     encoding: 'utf-8'
                 });
                 const stats = statsFileContent.split("-");
-                output.memoryUsedKB = parseFloat(stats[0]);
+                output.memoryUsedKB = parseFloat(stats[0]) / 4.0;
                 output.timeTakenMilliSeconds = parseFloat(stats[1]) * 1000.0;
                 outputs.push(output);
             }
