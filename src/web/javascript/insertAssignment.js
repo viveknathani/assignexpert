@@ -136,6 +136,7 @@ function gatherData() {
    .then(res => res.json())
    .then(res => {
       console.log(res);
+      window.location.href = `/class/${classId}`;
    })
 }
 
