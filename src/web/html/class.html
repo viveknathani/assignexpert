@@ -20,6 +20,16 @@
    <div class="line"></div>
    <div class="miscallaneous">
       <div class="className"><%= oneClass.name %></div>
+      <div class="membersContainer">
+         <div class="iconContainer">
+            <i class="fa-solid fa-user-group membersIcon" onclick="members()"></i>
+         </div>
+         <div class="members" id="members">
+            <% for (let i = 0; i < members.length; ++i) { %>
+               <div class="memberId"><%= members[i] %></div>
+            <% } %>
+         </div>
+      </div>
    </div>
    <p class="heading">Assignments</p>
    <div class="assignedContainer">
@@ -33,10 +43,6 @@
          </div>
       <% } %>
    </div>
-   <p class="heading">Members</p>
-      <% for (let i = 0; i < members.length; ++i) { %>
-         <p class="membersList"><%= members[i] %></p>
-      <% } %>
    <div class="quicks" id="quicks" onclick="showQuicks()">
       <i class="fa-solid fa-ellipsis"></i>
    </div>
