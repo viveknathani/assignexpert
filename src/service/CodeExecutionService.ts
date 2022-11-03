@@ -157,7 +157,11 @@ export class CodeExecutionService {
                     const submissionOutput = await fs.promises.readFile(`${directoryPath}/submission${i+1}.txt`, {
                         encoding: 'utf-8'
                     });
-                    if (submissionOutput !== (data.testCases[i].output + '\n')) {
+                    console.log("submission output");
+                    console.log(submissionOutput);
+                    console.log("=====");
+                    console.log(data.testCases[i].output);
+                    if (!(submissionOutput === (data.testCases[i].output) || submissionOutput === (data.testCases[i].output + '\n') || submissionOutput + '\n' === (data.testCases[i].output))) {
                         output.resultStatus = entity.ResultStatus.WA;
                         output.resultMessage = "Wrong answer";
                     } else {
