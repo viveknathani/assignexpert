@@ -168,7 +168,7 @@ export class CodeExecutionService {
                         encoding: 'utf-8'
                     });
                     const stats = statsFileContent.split("-");
-                    output.memoryUsedKB = parseFloat(stats[0]);
+                    output.memoryUsedKB = parseFloat(stats[0]) / 4.0;
                     output.timeTakenMilliSeconds = parseFloat(stats[1]) * 1000.0;
                     outputs.push(output);
                 }
@@ -200,7 +200,7 @@ export class CodeExecutionService {
                     encoding: 'utf-8'
                 });
                 const stats = statsFileContent.split("-");
-                output.memoryUsedKB = parseFloat(stats[0]);
+                output.memoryUsedKB = parseFloat(stats[0]) / 4.0;
                 output.timeTakenMilliSeconds = parseFloat(stats[1]) * 1000.0;
                 outputs.push(output);
             }
