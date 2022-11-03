@@ -9,7 +9,7 @@ let assignmentData = {
 function addNewCase() {
    if(testCasesContainer!=null){
       testCasesContainer.insertAdjacentHTML("beforeend", 
-      "<div class='testCaseContainer'><h4>Input: </h4><textarea class='inputOutput'></textarea><br><br><h4>Output: </h4><textarea class='inputOutput'></textarea><br><h4 style='display: inline-block;'>Points: </h4><input class='smallInput' style='width: 9vw; margin-left: 1vw;' type='text' autocomplete='off' placeholder='Enter Points'></div>");
+      "<div class='testCaseContainer'><h4>Input: </h4><textarea class='inputOutput testCaseInput'></textarea><br><br><h4>Output: </h4><textarea class='inputOutput testCaseOutput'></textarea><br><h4 style='display: inline-block;'>Points: </h4><input class='smallInput testCasePoints' style='width: 9vw; margin-left: 1vw;' type='text' autocomplete='off' placeholder='Enter Points'></div>");
       numOfTestCases = numOfTestCases + 1;
    }
 }
@@ -351,35 +351,30 @@ function getTemplateData() {
 function getTestCasesData() {
    console.log("in testcase");
    let currentTestCase = document.getElementById("firstContainer");
+   let input = document.querySelectorAll(".testCaseInput");
+   let output = document.querySelectorAll(".testCaseOutput");
+   let points = document.querySelectorAll(".testCasePoints");
+   let i=0;
    while(currentTestCase != null){
       let testCaseData = {};
       testCaseData.id = "";
       testCaseData.assignmentId = "";
 
-      childTestCase = currentTestCase.firstElementChild;
-      childTestCase = childTestCase.nextElementSibling;
-      testCaseData.input = childTestCase.value;
+      testCaseData.input = input[i].value;
 
       if(testCaseData.input == ""){
          childTestCase.focus();
          return false;
       }
 
-      childTestCase = childTestCase.nextElementSibling;
-      childTestCase = childTestCase.nextElementSibling;
-      childTestCase = childTestCase.nextElementSibling;
-      childTestCase = childTestCase.nextElementSibling;
-      testCaseData.output = childTestCase.value;
+      testCaseData.output = output[i].value;
 
       if(testCaseData.output == ""){
          childTestCase.focus();
          return false;
       }
 
-      childTestCase = childTestCase.nextElementSibling;
-      childTestCase = childTestCase.nextElementSibling;
-      childTestCase = childTestCase.nextElementSibling;
-      testCaseData.points = Number(childTestCase.value);
+      testCaseData.points = Number(points[i].value);
 
       if(testCaseData.points == "" || Number.isNaN(testCaseData.points)){
          childTestCase.focus();
@@ -388,6 +383,9 @@ function getTestCasesData() {
 
       assignmentData.testCases.push(testCaseData);
       currentTestCase = currentTestCase.nextElementSibling;
+      i = i+1;
+      console.log(testCaseData);
+      console.log("\n");
    }
    return true;
 }
