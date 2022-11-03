@@ -101,7 +101,7 @@ submissionRouter.put('/complete', async (req: express.Request, res: express.Resp
         await assignmentService.markSubmissionAsComplete(studentId, submissionId);
         res.status(204).json({ message: messages.MESSAGE_204 });
     } catch (err) {
-        if (err instanceof errors.ErrInvalidStudentOperation) {
+        if (err instanceof errors.ErrAssignmentAlreadyCompleted || err instanceof errors.ErrLateSubmissionNotAllowed) {
             res.status(400).json({ message: err.message });
             return;
         }

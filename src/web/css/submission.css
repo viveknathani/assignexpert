@@ -76,3 +76,15 @@ textarea {
    font-size: 0.75vw;
    font-weight: 700;
 }
+
+#complete-button {
+   margin-top: 1%;
+   background-color: #008037;
+   border: none;
+   padding-left: 1%;
+   padding-right: 1%;
+   color: var(--white);
+   font-size: 16px;
+   margin-bottom: 5vh;
+   margin-left: 4.5vw;
+}

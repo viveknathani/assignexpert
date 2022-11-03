@@ -17,21 +17,9 @@
      </div>
     <div class="line"></div>
     <div id="submission">
-        <!-- <p>Submitted at: <%= submittedAt %></p>
-        <p>Your submission belongs to <a href="/assignment/<%= assignmentId %>/view">this</a> assignment.</p>
-        <p>Status: <%= resultStatus %></p>
-        <% if (resultMessage !== "") { %>
-            <p>Message: <%= resultMessage %></p>
-        <% } %>
-        <p>Time taken: <%= timeTaken %>ms.</p>
-        <p>Memory Taken: <%= memoryUsedInKiloBytes %>KB.</p>
-        <p>Code (<%= lang %>)</p>
-        <textarea disabled><%= code %></textarea>
-        <p>Points: <%= points %></p> -->
-
         <div class="submissionTime"><i class="fa-solid fa-calendar-days dateIcon"></i><br><%= submittedAt %></div>
         <div class="score"><%= points %> Points</div>
-        <div class="information" style="margin-top: 5vh;"><span style="font-weight: 600;">Assignment Link: </span><a href="/assignment/<%= assignmentId %>/view">/assignment/<%= assignmentId %>/view</a></div>
+        <div class="information" style="margin-top: 5vh;"><span style="font-weight: 600;">Assignment: </span><a href="/assignment/<%= assignmentId %>/view">Link</a></div>
         <div class="information"><span style="font-weight: 600;">Status: </span><%= resultStatus %></div>
         <% if (resultMessage !== "") { %>
             <div class="information"><span style="font-weight: 600;">Message: </span><%= resultMessage %></div>
@@ -40,6 +28,44 @@
         <div class="information"><span style="font-weight: 600;">Memory Used: </span><%= memoryUsedInKiloBytes %> KB</div>
         <div class="information" style="margin-top: 4vh;"><span style="font-weight: 600;">Code</span> <sup class="language" style="background-color: #008037; color: white;"><%= lang %></sup> <span style="font-weight: 600;">:</span></div>
         <textarea disabled><%= code %></textarea>
+        <% if (!markCompleted) { %>
+            <button id="complete-button" onclick="markCompleted()">Mark Completed</button>
+            <p id="completed-result"></p>
+        <% } %>
     </div>
+    <script>
+        const userData = JSON.parse(localStorage.getItem("user"));
+        if (!userData.isStudent) {
+            const completedButton = document.getElementById("complete-button");
+            completedButton.style.display = 'none';
+        }
+        function markCompleted() {
+            const submissionId = window.location.pathname.substring('/submission/'.length);
+            fetch(`/api/submission/complete`, {
+                method: 'PUT',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    submissionId
+                }),
+            }).then((res) => {
+                if (res.status === 204) {
+                    document.getElementById("completed-result").innerText = "Completed!";
+                    return;
+                } else {
+                    return res.json();
+                }
+            })
+            .then((res) => {
+                if (res.message) {
+                    document.getElementById("completed-result").innerText = res.message;
+                }
+            }).catch((err) => {
+                console.log(err);
+            });
+        }
+    </script>
 </body>
 </html>
