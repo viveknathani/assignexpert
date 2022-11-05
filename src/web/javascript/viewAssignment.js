@@ -38,6 +38,7 @@ function showAssignment() {
    document.getElementById("constraints").innerText = assignmentData.assignment.constraints;
    document.getElementById("timeLimit").innerText = `${assignmentData.assignment.timeLimitSeconds}s`;
    document.getElementById("memoryLimit").innerText = `${assignmentData.assignment.memoryLimitMB} MB`;
+   document.getElementById("hold-release-points").innerText = (assignmentData.assignment.holdPoints) ? "Release points" : "Hold points";
 }
 
 const editor = ace.edit("editor");
@@ -122,10 +123,41 @@ const data = JSON.parse(localStorage.getItem("user"));
 if (data.isStudent) {
    const solutionArea = document.getElementById("solution");
    solutionArea.style.display = 'block';
+   const holdReleasePointsButton = document.getElementById("hold-release-points");
+   holdReleasePointsButton.style.display = 'none';
 }
 
 function viewSubmissions() {
    let assignmentId = window.location.pathname.substring('/assignment/'.length);
    assignmentId = assignmentId.substring(0, assignmentId.indexOf('/view'));
    window.location.href = `/submissions/${assignmentId}`;
+}
+
+function holdReleasePoints() {
+   let assignmentId = window.location.pathname.substring('/assignment/'.length);
+   assignmentId = assignmentId.substring(0, assignmentId.indexOf('/view'));
+
+   fetch(`/api/assignment`, {
+      method: 'PUT',
+      headers: {
+         Accept: 'application/json',
+         'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+         assignment: {
+            id: assignmentId,
+            holdPoints: !assignmentData.assignment.holdPoints
+         }
+      })
+   }).then((res) => {
+      if (res.status === 204) {
+         window.location.reload();
+         return;
+      }
+      return res.json();
+   }).then((data) => {
+      console.log(data);
+   }).catch((err) => {
+      console.log(err);
+   });
 }
