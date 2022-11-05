@@ -1,6 +1,10 @@
 
 document.addEventListener("DOMContentLoaded", displayClasses());
 
+const userName = JSON.parse(localStorage.getItem("user"));
+
+document.getElementById("userName").innerHTML = "Hi " + userName.firstName + "!";
+
 function displayClasses() {
    fetch("/api/class/all", {
       method: 'GET',
