@@ -88,11 +88,14 @@
             const editorTheme = editorThemeMenu.options[editorThemeMenu.selectedIndex].value;
             const wantsEmailNotifications = document.querySelector('input[name="email-notif"]:checked')?.value;
             const fieldsToUpdate = {};
+            const userData = JSON.parse(localStorage.getItem("user"));
             if (firstName !== '') {
                 fieldsToUpdate.firstName = firstName;
+                userData.firstName = firstName;
             }
             if (lastName !== '') {
                 fieldsToUpdate.lastName = lastName;
+                userData.lastName = lastName;
             }
             if (oldPassword !== '' && newPassword !== '') {
                 fieldsToUpdate.oldPassword = oldPassword;
@@ -101,9 +104,11 @@
             fieldsToUpdate.preferences = {}
             if (uiTheme !== "none") {
                 fieldsToUpdate.preferences.uiTheme = uiTheme;
+                userData.uiTheme = uiTheme;
             }
             if (editorTheme !== "none") {
                 fieldsToUpdate.preferences.editorTheme = editorTheme;
+                userData.editorTheme = editorTheme;
             }
             if (wantsEmailNotifications !== undefined) {
                 fieldsToUpdate.preferences.wantsEmailNotifications = (wantsEmailNotifications === "true");
@@ -118,6 +123,7 @@
             })
             .then((res) => {
                 console.log(res);
+                localStorage.setItem("user", JSON.stringify(userData));
                 setMessage("Update successful", "green");
             })
             .catch((err) => {
