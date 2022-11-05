@@ -57,7 +57,9 @@ export class UserService {
             if (u !== undefined && u.id !== '') {
                 throw new errors.ErrEmailExists;
             }
-
+            user.uiTheme = 'light';
+            user.editorTheme = 'monokai';
+            user.wantsEmailNotifications = true;
             user.password = await bcrypt.hash(user.password, 10) // number of rounds
             await database.insertUser(user);
         } catch (err) {
