@@ -282,11 +282,11 @@
    outline: none;
 }
 
-#viewSubmissions {
+#viewSubmissions, #hold-release-points {
    margin-left: 5.4vw;
 }
 
-#viewSubmissions:hover {
+#viewSubmissions:hover, #hold-release-points:hover {
    cursor: pointer;
 }
 

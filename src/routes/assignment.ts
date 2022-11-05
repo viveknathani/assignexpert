@@ -196,6 +196,7 @@ assignmentRouter.delete('/', async (req: express.Request, res: express.Response)
  * @apiBody {number} timeLimitSeconds Optional
  * @apiBody {number} memoryLimitMB Optional
  * @apiBody {number} points Optional
+ * @apiBody {boolean} holdPoints Optional
  * @apiBody {string} deadline Optional
  * @apiBody {string} difficultyLevel Optional
  * @apiBody {[]Template} templates Optional
