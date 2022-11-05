@@ -193,5 +193,6 @@ export interface Email {
 export interface StudentWithEmail {
     id: string,
     userId: string,
-    email: string
+    email: string,
+    wantsEmailNotifications: boolean
 }

@@ -39,31 +39,42 @@ function showAssignment() {
    document.getElementById("timeLimit").innerText = `${assignmentData.assignment.timeLimitSeconds}s`;
    document.getElementById("memoryLimit").innerText = `${assignmentData.assignment.memoryLimitMB} MB`;
    document.getElementById("hold-release-points").innerText = (assignmentData.assignment.holdPoints) ? "Release points" : "Hold points";
+   setupEditor();
 }
 
-const editor = ace.edit("editor");
-editor.setTheme("ace/theme/monokai");
-editor.session.setMode("ace/mode/c_cpp");
-editor.setShowPrintMargin(false);
+function setupEditor() {
+   const userData = JSON.parse(localStorage.getItem("user"));
+   const editor = ace.edit("editor");
+   editor.setTheme(`ace/theme/${userData.editorTheme}`);
+   editor.setShowPrintMargin(false);
+   const languageMenu = document.getElementById("language");
+   let acceptedLanguages = assignmentData.assignment.acceptedLanguages;
+   acceptedLanguages = acceptedLanguages.substring(1);
+   acceptedLanguages = acceptedLanguages.substring(0, acceptedLanguages.indexOf("}"));
+   acceptedLanguages = acceptedLanguages.split(",")
+   const firstLanguage = acceptedLanguages[0];
+   const editorLanguage = (firstLanguage === 'c' || firstLanguage === 'cpp') ? 'c_cpp' : firstLanguage;
+   editor.session.setMode(`ace/mode/${editorLanguage}`);
+   for (const language of acceptedLanguages) {
+      const optionElement = document.createElement('option');
+      optionElement.value = language;
+      optionElement.innerText = language;
+      languageMenu.appendChild(optionElement);
+   }
+   languageMenu.addEventListener('change', (event) => {
+      let language = event.target.value;
+      language = (language === 'c' || language === 'cpp') ? 'c_cpp' : language;
+      editor.session.setMode(`ace/mode/${language}`);
+   });
 
-const languageMenu = document.getElementById("language");
-languageMenu.addEventListener('change', (event) => {
-   let language = event.target.value;
-   language = (language === 'c' || language === 'cpp') ? 'c_cpp' : language;
-   editor.session.setMode(`ace/mode/${language}`);
-});
-
-const themeMenu = document.getElementById("theme");
-themeMenu.addEventListener('change', (event) => {
-   editor.setTheme(`ace/theme/${event.target.value}`);
-});
-
-const fontSizeMenu = document.getElementById("font-size");
-fontSizeMenu.addEventListener('change', (event) => {
-   editor.setFontSize(event.target.value);
-});
+   const fontSizeMenu = document.getElementById("font-size");
+   fontSizeMenu.addEventListener('change', (event) => {
+      editor.setFontSize(event.target.value);
+   });
+}
 
 const submitCode = function (e) {
+   const editor = ace.edit("editor");
    e.preventDefault();
    let assignmentId = window.location.pathname.substring('/assignment/'.length);
    assignmentId = assignmentId.substring(0, assignmentId.indexOf('/view'));

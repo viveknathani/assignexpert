@@ -57,7 +57,9 @@ export class UserService {
             if (u !== undefined && u.id !== '') {
                 throw new errors.ErrEmailExists;
             }
-
+            user.uiTheme = 'light';
+            user.editorTheme = 'monokai';
+            user.wantsEmailNotifications = true;
             user.password = await bcrypt.hash(user.password, 10) // number of rounds
             await database.insertUser(user);
         } catch (err) {
@@ -203,7 +205,7 @@ export class UserService {
                 preferences.editorTheme = user.editorTheme;
             }
 
-            if (!preferences.wantsEmailNotifications) {
+            if (preferences.wantsEmailNotifications === null || preferences.wantsEmailNotifications === undefined) {
                 preferences.wantsEmailNotifications = user.wantsEmailNotifications;
             }
 
