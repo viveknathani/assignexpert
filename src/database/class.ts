@@ -13,7 +13,7 @@ const statementDeleteMember = `delete from members where "classId" = $1 and "stu
 const statementSelectStudentsForClass = `select students.id as id, students."userId" as "userId", students."rollNumber" as "rollNumber" from students,members where "classId" = $1 and members."studentId" = students.id order by "rollNumber";`
 const statementSelectClassesForStudent = `select classes.id as id, classes."facultyId" as "facultyId", classes.name as name, classes.code as code from classes,members where "studentId" = $1 and members."classId" = classes.id;`
 const statementSelectClassFromCode = `select * from classes where code = $1;`
-const statementSelectStudentEmails = `select students.id as id, students."userId" as "userId", users.email from students inner join users on users.id=students."userId" inner join members on "classId" = $1 and members."studentId" = students.id;`;
+const statementSelectStudentEmails = `select students.id as id, students."userId" as "userId", users.email, users."wantsEmailNotifications" as "wantsEmailNotifications" from students inner join users on users.id=students."userId" inner join members on "classId" = $1 and members."studentId" = students.id;`;
 
 // take a class and insert it into the database.
 // uuid will be created and assigned before inserting.

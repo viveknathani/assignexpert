@@ -43,12 +43,14 @@ export class AssignmentService {
             const id = await database.insertAssignment(assignmentDetails);
             const emailService: EmailService = EmailService.getInstance();
             const students = await database.getStudentsWithEmail(assignmentDetails.assignment.classId);
-            const emails = students.map(student => student.email)
-            emailService.sendEmail({
-                to: emails,
-                subject: "New assignment",
-                content: `You have a new assignment - ${assignmentDetails.assignment.title}`
-            });
+            const emails = students.filter(student => student.wantsEmailNotifications).map(student => student.email)
+            if (emails.length !== 0) {
+                emailService.sendEmail({
+                    to: emails,
+                    subject: "New assignment",
+                    content: `You have a new assignment - ${assignmentDetails.assignment.title}`
+                });
+            }
             return id;
         } catch (err) {
             throw err;

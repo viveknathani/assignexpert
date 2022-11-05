@@ -205,7 +205,7 @@ export class UserService {
                 preferences.editorTheme = user.editorTheme;
             }
 
-            if (!preferences.wantsEmailNotifications) {
+            if (preferences.wantsEmailNotifications === null || preferences.wantsEmailNotifications === undefined) {
                 preferences.wantsEmailNotifications = user.wantsEmailNotifications;
             }
 
