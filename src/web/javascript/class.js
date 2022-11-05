@@ -85,34 +85,38 @@ function seeAssignment() {
 }
 
 function showQuicks() {
+   userData = JSON.parse(localStorage.getItem("user"));
    if(showQuicksOrNot) {
+      if(!userData.isStudent){
+         document.getElementById("createAssignment").classList.remove("revertCreateAssButton");
+         document.getElementById("editClassName").classList.remove("revertEditNameButton");
+         document.getElementById("createAssignment").style.display = "inline-block";
+         document.getElementById("createAssignment").classList.add("moveCreateAssButton");
+         document.getElementById("editClassName").style.display = "inline-block";
+         document.getElementById("editClassName").classList.add("moveEditNameButton");
+      }
       document.getElementById("quicks").classList.remove("turn90Degreesacw");
-      document.getElementById("createAssignment").classList.remove("revertCreateAssButton");
-      document.getElementById("editClassName").classList.remove("revertEditNameButton");
       document.getElementById("getCode").classList.remove("revertClassCodeButton");
 
       document.getElementById("quicks").classList.add("turn90Degreescw");
-      document.getElementById("createAssignment").style.display = "inline-block";
-      document.getElementById("createAssignment").classList.add("moveCreateAssButton");
-      document.getElementById("editClassName").style.display = "inline-block";
-      document.getElementById("editClassName").classList.add("moveEditNameButton");
       document.getElementById("getCode").style.display = "inline-block";
       document.getElementById("getCode").classList.add("moveClassCodeButton");
       showQuicksOrNot = false;
    }
    else {
-      if(!showFormOrNot) updateName();
       if(!showCodeOrNot) showCodeButton();
-
+      if(!userData.isStudent){
+         if(!showFormOrNot) updateName();
+         document.getElementById("createAssignment").classList.remove("moveCreateAssButton");
+         document.getElementById("editClassName").classList.remove("moveEditNameButton");
+         document.getElementById("createAssignment").classList.add("revertCreateAssButton");
+         document.getElementById("editClassName").classList.add("revertEditNameButton");
+      }
       document.getElementById("quicks").classList.remove("turn90Degreescw");
-      document.getElementById("createAssignment").classList.remove("moveCreateAssButton");
-      document.getElementById("editClassName").classList.remove("moveEditNameButton");
       document.getElementById("getCode").classList.remove("moveClassCodeButton");
 
 
       document.getElementById("quicks").classList.add("turn90Degreesacw");
-      document.getElementById("createAssignment").classList.add("revertCreateAssButton");
-      document.getElementById("editClassName").classList.add("revertEditNameButton");
       document.getElementById("getCode").classList.add("revertClassCodeButton");
 
       setTimeout(displayNone, 200);
