@@ -36,7 +36,7 @@
             <div class="thirdPage">
                <div id="thirdPageFields">
                   <input type="email" id="email" name="email" class="inputs" autocomplete="off" placeholder="email" style="margin-top: 0.5vh;"><br>
-                  <input type="password" id="password" name="password" class="inputs" autocomplete="off" placeholder="password (min. 8 char, at least 1 num, 1 lowercase, uppercase, special char)" style="margin-top: 3.3vh;"><br>
+                  <input type="password" id="password" name="password" class="inputs" autocomplete="off" placeholder="password" style="margin-top: 3.3vh;"><i class="fa-solid fa-eye eyeIcon" id="signUpEyeIcon" onclick="signUpTogglePassword()"></i><br>
                   <input type="text" id="rollNumber" name="rollNumber" class="inputs" autocomplete="off" placeholder="roll number" style="margin-top: 3.3vh;">
                   <input type="text" id="employeeNumber" name="employeeNumber" class="inputs" autocomplete="off" placeholder="employee number" style="margin-top: 3.3vh; display: none;">
                </div><br>
@@ -53,9 +53,9 @@
          <div class="signInContainer">
             <h1 class="title">Sign In</h1>
             <div class="thirdPage" style="display: inline-block;">
-               <div id="thirdPageFields"><br>
-                  <input type="email" id="signInEmail" name="email" class="inputs" autocomplete="off" placeholder="email" style="margin-top: 0.5vh;"><br><br>
-                  <input type="password" id="signInPassword" name="password" class="inputs" autocomplete="off" placeholder="password" style="margin-top: 3.3vh;"><br><br><br>
+               <div id="thirdPageFields" style="text-align: left;"><br>
+                  <input type="email" id="signInEmail" name="email" class="inputs" autocomplete="off" placeholder="email" style="margin-top: 0.5vh; width: 21vw;"><br><br>
+                  <input type="password" id="signInPassword" name="password" class="inputs" autocomplete="off" placeholder="password" style="margin-top: 3.3vh; width: 21vw;"><i class="fa-solid fa-eye eyeIcon" id="eyeIcon" onclick="togglePassword()"></i><br><br><br>
                </div><br>
                <button class="button" style="margin-top: 3.6vh;" onclick="signIn()">Log In&nbsp;&nbsp;<i class="fa-solid fa-right-to-bracket"></i></button><br>
             </div>
