@@ -6,13 +6,14 @@
     <script src="https://kit.fontawesome.com/2965379893.js" crossorigin="anonymous"></script>
     <title>Settings - AssignExpert</title>
     <link rel="stylesheet" href="../../web/css/settings.css" type="text/css">
+    <script defer src="../../web/javascript/navBar.js"></script>
 </head>
 <body>
     <div class="navBar">
-        <div class="title">AssignExpert</div>
-        <div class="navButtons"><i class="fa-solid fa-gear settingsIcon"></i></div>
-        <div class="navButtons"><i class="fa-solid fa-right-from-bracket settingsIcon" id="logoutIcon"></i></div>
-    </div>
+        <div class="title" onclick="gotoHomePage()">AssignExpert</div>
+        <div class="navButtons" onclick="gotoSettingPage()"><i class="fa-solid fa-gear settingsIcon"></i></div>
+        <div class="navButtons" onclick="logout()"><i class="fa-solid fa-right-from-bracket settingsIcon" id="logoutIcon"></i></div>
+     </div>
     <div class="line"></div>
 
     <div class="setting">

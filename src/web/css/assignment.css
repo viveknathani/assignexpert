@@ -11,7 +11,7 @@
    box-sizing: border-box;
 }
 
-#assignmentTitle, #problemHeading, #problem, #score,.titleAndSubmissions, .assignmentName, .submissions, .miniHeadings, #problemStatementHeading, .writeProblem, .smallTextAreaInputs, .smallInput, #assignmentName, .dropDown, .dropDownItem, .radioButtons, .testCaseContainer, .inputOutput, .addCaseContainer, .addCaseIcon, .minusIcon, .template, .submitButton, .assignmentTitle, .problem, .problemData, .toggleContainer{
+#assignmentTitle, #problemHeading, #problem, #score,.titleAndSubmissions, .assignmentName, .submissions, .miniHeadings, #problemStatementHeading, .writeProblem, .smallTextAreaInputs, .smallInput, #assignmentName, .dropDown, .dropDownItem, .radioButtons, .testCaseContainer, .inputOutput, .addCaseContainer, .minusIcon, .template, .submitButton, .assignmentTitle, .problem, .problemData, .toggleContainer{
    font-family: 'Inter', sans-serif;
 }
 
@@ -191,6 +191,8 @@
    height: 11vh;
    background-color: var(--secondary);
    padding: 0.8vh 0.8vw;
+   border: none;
+   outline: none;
 }
 
 .addCaseContainer {
@@ -315,7 +317,7 @@
    min-width: 16.4vw;
    height: 3.5vh;
    margin-left: 70vw;
-   margin-bottom: 2vh;
+   margin-top: 2vh;
    border-radius: 50px;
    background-color: var(--secondary);
 }
