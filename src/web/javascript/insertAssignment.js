@@ -125,6 +125,22 @@ function gatherData() {
    classId = classId.substring(0, classId.indexOf('/create'));
    assignmentData.assignment.classId = classId
    console.log(assignmentData);
+
+   document.body.style.cursor = "wait";
+   const buttons = document.getElementsByTagName("BUTTON");
+   for(let i=0; i<buttons.length; i++) {
+      buttons[i].style.cursor = "wait";
+   }
+   const div = document.getElementsByTagName("div");
+   for(let i=0; i<div.length; i++) {
+      div[i].style.cursor = "wait";
+   }
+
+   const inputs = document.getElementsByTagName("INPUT");
+   for(let i=0; i<inputs.length; i++) {
+      inputs[i].style.cursor = "wait";  
+   }
+
    fetch("/api/assignment/", {
       method: 'POST',
       headers: {
@@ -136,6 +152,20 @@ function gatherData() {
    .then(res => res.json())
    .then(res => {
       console.log(res);
+      document.body.style.cursor = "default";
+      const buttons = document.getElementsByTagName("BUTTON");
+      for(let i=0; i<buttons.length; i++) {
+         buttons[i].style.cursor = "default";
+      }
+      const div = document.getElementsByTagName("div");
+      for(let i=0; i<div.length; i++) {
+         div[i].style.cursor = "default";
+      }
+
+      const inputs = document.getElementsByTagName("INPUT");
+      for(let i=0; i<inputs.length; i++) {
+         inputs[i].style.cursor = "default";  
+      }
       window.location.href = `/class/${classId}`;
    })
 }
