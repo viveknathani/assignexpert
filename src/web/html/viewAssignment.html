@@ -22,11 +22,21 @@
    <div class="line"></div>
 
    <div class="assignmentTitle" id="assignmentTitle">
-      &nbsp;<sup style="color: white; background-color: rgb(204, 222, 10); padding: 0.15vh 0.2vw; border-radius: 4px; font-size: 2vh; font-weight: 700;" id="difficulty">EASY</sup>
+      &nbsp;<sup style="color: white; background-color: rgb(204, 222, 10); padding: 0.15vh 0.2vw; border-radius: 4px; font-size: 2vh; font-weight: 700;" id="difficulty">EASY</sup><sup style="color: #008037; font-size: 2.5vh;">&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;</sup><sup><button id="viewSubmissions" onclick="viewSubmissions()">View submissions</button></sup>
    </div>
-   <div id="score">10 points</div>
-   <button id="viewSubmissions" onclick="viewSubmissions()">View submissions</button>
-   <button id="hold-release-points" onclick="holdReleasePoints()"></button>
+
+   <div style="text-align: center;">
+      <div id="score">
+         10 points<br>
+      </div>
+      <div class="toggleContainer" id="toggleContainer" onclick="holdReleasePoints()">
+         <div class="holdPoints" id="holdPoints">Hold Points</div>
+         <div class="releasePoints" id="releasePoints">
+            <div id="releaseText">Release Points</div>
+            <div class="togglePoints" id="slider">Hold Points</div>
+         </div>
+      </div>
+   </div>
 
    <h3 class="miniHeadings" id="problemHeading">Problem</h3>
    <div class="problem" id="problem">

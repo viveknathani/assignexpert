@@ -1,6 +1,10 @@
 document.addEventListener("DOMContentLoaded", displayAssignment());
 
 let assignmentData;
+let holdPoints;
+
+const slider = document.getElementById("releasePoints").firstElementChild.nextElementSibling;
+console.log(slider);
 
 function displayAssignment() {
    let assignmentId = window.location.pathname.substring('/assignment/'.length);
@@ -21,6 +25,7 @@ function displayAssignment() {
 }
 
 function showAssignment() {
+
    document.getElementById("assignmentTitle").innerHTML = assignmentData.assignment.title + document.getElementById("assignmentTitle").innerHTML;
    if(assignmentData.difficultyLevel == "EASY") {
       document.getElementById("difficulty").style.backgroundColor = "rgb(84, 196, 233)";
@@ -38,7 +43,18 @@ function showAssignment() {
    document.getElementById("constraints").innerText = assignmentData.assignment.constraints;
    document.getElementById("timeLimit").innerText = `${assignmentData.assignment.timeLimitSeconds}s`;
    document.getElementById("memoryLimit").innerText = `${assignmentData.assignment.memoryLimitMB} MB`;
-   document.getElementById("hold-release-points").innerText = (assignmentData.assignment.holdPoints) ? "Release points" : "Hold points";
+   
+   console.log(assignmentData.assignment.holdPoints);
+   if(!assignmentData.assignment.holdPoints){
+      slider.innerText = "Release Points";
+      slider.style.right = "0%";
+      holdPoints = false;
+   }
+   else {
+      slider.innerText = "Hold Points";
+      slider.style.right = "100%";
+      holdPoints = true;
+   }
    setupEditor();
 }
 
@@ -130,12 +146,13 @@ document.addEventListener('DOMContentLoaded', function() {
    document.getElementById('code-submit').addEventListener('click', submitCode);
 });
 
+
 const data = JSON.parse(localStorage.getItem("user"));
 if (data.isStudent) {
+   console.log("Student");
    const solutionArea = document.getElementById("solution");
    solutionArea.style.display = 'block';
-   const holdReleasePointsButton = document.getElementById("hold-release-points");
-   holdReleasePointsButton.style.display = 'none';
+   toggleContainer.style.display = 'none';
 }
 
 function viewSubmissions() {
@@ -145,6 +162,22 @@ function viewSubmissions() {
 }
 
 function holdReleasePoints() {
+   if(holdPoints){
+      document.getElementById("releaseText").innerHTML = "";
+      document.getElementById("holdPoints").innerHTML = "Hold Points";
+      slider.innerText = "Release Points";
+      slider.classList.remove("rightToLeft");
+      slider.classList.add("leftToRight");
+      holdPoints = false;
+   }
+   else {
+      document.getElementById("holdPoints").innerHTML = "";
+      document.getElementById("releaseText").innerHTML = "Release Points";
+      slider.innerText = "Hold Points";
+      slider.classList.remove("leftToRight");
+      slider.classList.add("rightToLeft");
+      holdPoints = true;
+   }
    let assignmentId = window.location.pathname.substring('/assignment/'.length);
    assignmentId = assignmentId.substring(0, assignmentId.indexOf('/view'));
 
@@ -162,7 +195,6 @@ function holdReleasePoints() {
       })
    }).then((res) => {
       if (res.status === 204) {
-         window.location.reload();
          return;
       }
       return res.json();

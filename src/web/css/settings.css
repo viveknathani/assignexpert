@@ -29,6 +29,11 @@
     margin-top: 1.5vh;
     height: 6.45vh;
 }
+
+.title:hover{
+    cursor: pointer;
+}
+
 .line {
     background-color: var(--primary);
     height: 0.45vh;

@@ -6,13 +6,14 @@
     <script src="https://kit.fontawesome.com/2965379893.js" crossorigin="anonymous"></script>
     <title>Settings - AssignExpert</title>
     <link rel="stylesheet" href="../../web/css/settings.css" type="text/css">
+    <script defer src="../../web/javascript/navBar.js"></script>
 </head>
 <body>
     <div class="navBar">
-        <div class="title">AssignExpert</div>
-        <div class="navButtons"><i class="fa-solid fa-gear settingsIcon"></i></div>
-        <div class="navButtons"><i class="fa-solid fa-right-from-bracket settingsIcon" id="logoutIcon"></i></div>
-    </div>
+        <div class="title" onclick="gotoHomePage()">AssignExpert</div>
+        <div class="navButtons" onclick="gotoSettingPage()"><i class="fa-solid fa-gear settingsIcon"></i></div>
+        <div class="navButtons" onclick="logout()"><i class="fa-solid fa-right-from-bracket settingsIcon" id="logoutIcon"></i></div>
+     </div>
     <div class="line"></div>
 
     <div class="setting">
@@ -113,6 +114,22 @@
             if (wantsEmailNotifications !== undefined) {
                 fieldsToUpdate.preferences.wantsEmailNotifications = (wantsEmailNotifications === "true");
             }
+
+            document.body.style.cursor = "wait";
+            const buttons = document.getElementsByTagName("BUTTON");
+            for(let i=0; i<buttons.length; i++) {
+                buttons[i].style.cursor = "wait";
+            }
+            const div = document.getElementsByTagName("div");
+            for(let i=0; i<div.length; i++) {
+                div[i].style.cursor = "wait";
+            }
+
+            const inputs = document.getElementsByTagName("INPUT");
+            for(let i=0; i<inputs.length; i++) {
+                inputs[i].style.cursor = "wait";  
+            }
+
             fetch('/api/user/', {
                 method: 'PUT',
                 headers: {
@@ -122,11 +139,39 @@
                 body: JSON.stringify(fieldsToUpdate)
             })
             .then((res) => {
+                document.body.style.cursor = "default";
+                const buttons = document.getElementsByTagName("BUTTON");
+                for(let i=0; i<buttons.length; i++) {
+                    buttons[i].style.cursor = "default";
+                }
+                const div = document.getElementsByTagName("div");
+                for(let i=0; i<div.length; i++) {
+                    div[i].style.cursor = "default";
+                }
+
+                const inputs = document.getElementsByTagName("INPUT");
+                for(let i=0; i<inputs.length; i++) {
+                    inputs[i].style.cursor = "default";  
+                }
                 console.log(res);
                 localStorage.setItem("user", JSON.stringify(userData));
                 setMessage("Update successful", "green");
             })
             .catch((err) => {
+                document.body.style.cursor = "default";
+                const buttons = document.getElementsByTagName("BUTTON");
+                for(let i=0; i<buttons.length; i++) {
+                    buttons[i].style.cursor = "default";
+                }
+                const div = document.getElementsByTagName("div");
+                for(let i=0; i<div.length; i++) {
+                    div[i].style.cursor = "default";
+                }
+
+                const inputs = document.getElementsByTagName("INPUT");
+                for(let i=0; i<inputs.length; i++) {
+                    inputs[i].style.cursor = "default";  
+                }
                 console.log(err);
                 setMessage(`Update failed ${err?.message}`, "red");
             }).finally(() => {

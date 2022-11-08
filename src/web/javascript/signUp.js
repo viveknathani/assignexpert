@@ -14,6 +14,29 @@ const employeeNumber = document.querySelector("#employeeNumber");
 var apiData = {
 }
 
+
+let signUpShowPasssword = true;
+
+function signUpTogglePassword(){
+   const eyeIcon = document.getElementById("signUpEyeIcon");
+   const password = document.getElementById("password");
+   if(signUpShowPasssword){
+      console.log("showPasswordtrue");
+      password.type = "text";
+      eyeIcon.classList.remove("fa-eye");
+      eyeIcon.classList.add("fa-eye-slash");
+      signUpShowPasssword = false;
+   }
+   else {
+      console.log("showPasswordtrue");
+      password.type = "password";
+      eyeIcon.classList.remove("fa-eye-slash");
+      eyeIcon.classList.add("fa-eye");
+      signUpShowPasssword = true;
+   }
+}
+
+
 function next(order) {
    if (storeValue(order)){
       if(order==0){

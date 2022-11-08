@@ -136,6 +136,7 @@
    border-bottom-right-radius: 0px;
    border-top-right-radius: 0px;
    display: grid;
+   font-weight: 600;
    grid-template-columns: 1fr 1fr;
    align-items: center;
    text-decoration: none;

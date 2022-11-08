@@ -1,5 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap');
 
 * {
    margin: 0 0;
@@ -8,7 +11,7 @@
    box-sizing: border-box;
 }
 
-#assignmentTitle, #problemHeading, #problem, #score,.titleAndSubmissions, .assignmentName, .submissions, .miniHeadings, #problemStatementHeading, .writeProblem, .smallTextAreaInputs, .smallInput, #assignmentName, .dropDown, .dropDownItem, .radioButtons, .testCaseContainer, .inputOutput, .addCaseContainer, .addCaseIcon, .minusIcon, .template, .submitButton, .assignmentTitle, .problem, .problemData{
+#assignmentTitle, #problemHeading, #problem, #score,.titleAndSubmissions, .assignmentName, .submissions, .miniHeadings, #problemStatementHeading, .writeProblem, .smallTextAreaInputs, .smallInput, #assignmentName, .dropDown, .dropDownItem, .radioButtons, .testCaseContainer, .inputOutput, .addCaseContainer, .minusIcon, .template, .submitButton, .assignmentTitle, .problem, .problemData, .toggleContainer{
    font-family: 'Inter', sans-serif;
 }
 
@@ -188,6 +191,8 @@
    height: 11vh;
    background-color: var(--secondary);
    padding: 0.8vh 0.8vw;
+   border: none;
+   outline: none;
 }
 
 .addCaseContainer {
@@ -282,25 +287,89 @@
    outline: none;
 }
 
-#viewSubmissions, #hold-release-points {
-   margin-left: 5.4vw;
+#viewSubmissions{
+   display: inline-block;
+   text-align: center;
+   font-size: 2vh;
+   font-weight: 600;
+   padding: 0.4vh 0.6vw;
+   background-color: var(--secondary);
+   border: 0.2vw solid var(--primary);
+   border-radius: 6px;
 }
 
-#viewSubmissions:hover, #hold-release-points:hover {
+#viewSubmissions:hover {
    cursor: pointer;
+   scale: 1.05;
 }
 
 #score {
+   display: inline-block;
    font-size: 2.5vh;
-   margin-left: 86vw;
-   margin-top: -3vh;
-   margin-bottom: 7vh;
-   font-weight: bold;
+   margin-left: 70vw;
+   margin-top: -2vh;
+   font-weight: 500;
+   text-align: center;
+}
+
+.toggleContainer {
+   display: inline-block;
+   min-width: 16.4vw;
+   height: 3.5vh;
+   margin-left: 70vw;
+   margin-top: 2vh;
+   border-radius: 50px;
+   background-color: var(--secondary);
+}
+
+.toggleContainer:hover {
+   cursor: pointer;
+}
+
+.holdPoints{
+   float: left;
+   min-width: 8.2vw;
+   height: 3.5vh;
+   border-radius: 50px;
+   padding: 0.55vh 0.6vw;
+   font-size: 1.9vh;
+   font-weight: 700;
+   color: var(--primary);
+   background-color: var(--secondary);
+}
+
+.releasePoints {
+   float: right;
+   position: relative;
+   min-width: 8.2vw;
+   height: 3.5vh;
+   border-radius: 50px;
+   padding: 0.55vh 0.6vw;
+   font-size: 1.9vh;
+   font-weight: 700;
+   color: var(--primary);
+   background-color: var(--secondary);
+}
+
+.togglePoints {
+   display: inline-block;
+   position: absolute;
+   min-width: 8.2vw;
+   height: 3.35vh;
+   border-radius: 50px;
+   padding: 0.55vh 0.6vw;
+   font-size: 1.9vh;
+   font-weight: 700;
+   color: var(--white);
+   background-color: var(--primary);
+   white-space: nowrap;
+   top: 3.5%;
+   right: 100%;
 }
 
 #problemHeading {
    font-size: 3.2vh;
-   margin-top: 4.5vh;
+   margin-top: 5vh;
 }
 
 .problem {
@@ -322,6 +391,51 @@
    color: var(--black);
    font-size: 2.2vh;
 }
+
+
+
+
+/* /////////////  View Assignment Animations ////////////// */
+
+
+
+.leftToRight {
+   animation-name: leftToRight;
+   animation-duration: 0.45s;
+   animation-timing-function: ease-in-out;
+   animation-fill-mode: both;
+}
+
+@keyframes leftToRight {
+   from {
+      right: 100%;
+   }
+ 
+   to {
+      right: 0%;
+   }
+}
+
+.rightToLeft {
+   animation-name: rightToLeft;
+   animation-duration: 0.45s;
+   animation-timing-function: ease-in-out;
+   animation-fill-mode: both;
+}
+
+@keyframes rightToLeft {
+   from {
+      right: 0%;
+   }
+ 
+   to {
+      right: 100%;
+   }
+}
+
+
+
+
 
 /* ////////////  The code editor  /////////////// */
 

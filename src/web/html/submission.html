@@ -27,11 +27,11 @@
         <div class="information"><span style="font-weight: 600;">Time Taken: </span><%= timeTaken %>ms</div>
         <div class="information"><span style="font-weight: 600;">Memory Used: </span><%= memoryUsedInKiloBytes %> KB</div>
         <div class="information" style="margin-top: 4vh;"><span style="font-weight: 600;">Code</span> <sup class="language" style="background-color: #008037; color: white;"><%= lang %></sup> <span style="font-weight: 600;">:</span></div>
-        <textarea disabled><%= code %></textarea>
-        <% if (!markCompleted) { %>
+        <textarea disabled><%= code %></textarea><br>
+        <!-- <% if (!markCompleted) { %> -->
             <button id="complete-button" onclick="markCompleted()">Mark Completed</button>
-            <p id="completed-result"></p>
-        <% } %>
+            <p id="completed-result">vffbfbfbf</p>
+        <!-- <% } %> -->
     </div>
     <script>
         const userData = JSON.parse(localStorage.getItem("user"));
