@@ -40,17 +40,20 @@ function showCompleted() {
    }
 }
 
-// const data = JSON.parse(localStorage.getItem("user"));
-// if (!data.isStudent) {
-//    const updateSection = document.getElementById("updateSection");
-//    updateSection.style.display = 'grid';
-//    document.getElementById("createAssignment").style.display = "inline-block";
-// }
-
 function updateName() {
    const newName = document.getElementById("className").value;
    if(newName != ""){
       console.log("fetching");
+      document.body.style.cursor = "wait";
+      const inputs = document.getElementsByTagName("INPUT");
+      for(let i=0; i<inputs.length; i++) {
+         inputs[i].style.cursor = "wait";
+      }
+
+      const buttons = document.getElementsByTagName("BUTTON");
+      for(let i=0; i<buttons.length; i++) {
+         buttons[i].style.cursor = "wait";
+      }
       fetch('/api/class/name', {
          method: 'PUT',
          headers: {
@@ -63,9 +66,25 @@ function updateName() {
          })
       })
       .then((res) => {
+         document.body.style.cursor = "default";
+         for(let i=0; i<inputs.length; i++) {
+            inputs[i].style.cursor = "default";
+         }
+         for(let i=0; i<buttons.length; i++) {
+            buttons[i].style.cursor = "default";
+         }
          window.location.reload();
       })
-      .catch((err) => console.log(err))
+      .catch((err) => {
+         document.body.style.cursor = "default";
+         for(let i=0; i<inputs.length; i++) {
+            inputs[i].style.cursor = "default";
+         }
+         for(let i=0; i<buttons.length; i++) {
+            buttons[i].style.cursor = "default";
+         }
+         console.log(err)
+      })
    }
    else {
       console.log("decreasing");
@@ -78,10 +97,6 @@ function updateName() {
 
 function gotoAssignmentPage() {
    location.href = `/assignment/${classId}/create`;
-}
-
-function seeAssignment() {
-
 }
 
 function showQuicks() {
@@ -104,7 +119,10 @@ function showQuicks() {
       showQuicksOrNot = false;
    }
    else {
-      if(!showCodeOrNot) showCodeButton();
+      if(!showCodeOrNot){
+         showCodeButton();
+         showCodeOrNot = true;
+      }
       if(!userData.isStudent){
          if(!showFormOrNot) updateName();
          document.getElementById("createAssignment").classList.remove("moveCreateAssButton");
@@ -144,6 +162,16 @@ function showForm() {
 function showCode() {
    if(showCodeOrNot){
       console.log("in showcode true");
+      document.body.style.cursor = "wait";
+      const inputs = document.getElementsByTagName("INPUT");
+      for(let i=0; i<inputs.length; i++) {
+         inputs[i].style.cursor = "wait";
+      }
+
+      const buttons = document.getElementsByTagName("BUTTON");
+      for(let i=0; i<buttons.length; i++) {
+         buttons[i].style.cursor = "wait";
+      }
       fetch(`/api/class/${classId}/code`, {
          method: 'GET',
          headers: {
@@ -152,6 +180,13 @@ function showCode() {
       })
       .then(res => res.json())
       .then(res => {
+         document.body.style.cursor = "default";
+         for(let i=0; i<inputs.length; i++) {
+            inputs[i].style.cursor = "default";
+         }
+         for(let i=0; i<buttons.length; i++) {
+            buttons[i].style.cursor = "default";
+         }
          document.getElementById("getCode").innerHTML = res.code;
          document.getElementById("getCode").classList.remove("moveClassCodeButton");
          document.getElementById("getCode").classList.remove("convertToCodeButton");

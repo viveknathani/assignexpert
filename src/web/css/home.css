@@ -78,6 +78,8 @@
 .classContainer {
    display: grid;
    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+   margin-left: 4vw;
+   margin-right: 4vw;
    justify-items: center;
    align-items: center;
 }
@@ -90,7 +92,7 @@
    border: 0.32vh solid var(--primary);
    border-radius: 4%;
    font-size: 2.5vh;
-   font-weight: 700;
+   font-weight: 600;
    color: var(--black);
    text-align: center;
    padding-top: 7vh;
