@@ -91,9 +91,16 @@ function setupEditor() {
 
 const submitCode = function (e) {
    const editor = ace.edit("editor");
+   const languageMenu = document.getElementById("language");
    e.preventDefault();
    let assignmentId = window.location.pathname.substring('/assignment/'.length);
    assignmentId = assignmentId.substring(0, assignmentId.indexOf('/view'));
+
+   document.body.style.cursor = "wait";
+   const buttons = document.getElementsByTagName("BUTTON");
+   for(let i=0; i<buttons.length; i++) {
+      buttons[i].style.cursor = "wait";
+   }
    fetch('/api/submission', {
       method: 'POST',
       headers: {
@@ -112,6 +119,10 @@ const submitCode = function (e) {
    .catch(err => {
       console.log(err);
    })
+   document.body.style.cursor = "default";
+   for(let i=0; i<buttons.length; i++) {
+      buttons[i].style.cursor = "default";
+   }
 }
 
 function pollServerAndUpdateDOM(submissionId) {
