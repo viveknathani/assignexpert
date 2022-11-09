@@ -15,57 +15,49 @@
         <div class="navButtons" onclick="logout()"><i class="fa-solid fa-right-from-bracket settingsIcon" id="logoutIcon"></i></div>
      </div>
     <div class="line"></div>
-
-    <div class="setting">
-        <p class="setting-title">First name</p>
-        <input type="text" id="setting-first-name">
-    </div>
-
-    <div class="setting">
-        <p class="setting-title">Last name</p>
-        <input type="text" id="setting-last-name">
-    </div>
-
-    <div class="setting">
-        <p class="setting-title">Password</p>
-        <input type="password" id="setting-old-password" placeholder="current password">
-        <input type="password" id="setting-new-password" placeholder="new password">
-    </div>
-
-
-    <div class="setting">
-        <p class="setting-title">UI theme</p>
-        <select name="ui-theme" id="setting-ui-theme">
-            <option value="none">no selection</option>
-            <option value="light">light</option>
-        </select>
-    </div>
-
-    <div class="setting">
-        <p class="setting-title">Editor theme</p>
-        <select name="editor-theme" id="setting-editor-theme">
-            <option value="none">no selection</option>
-            <option value="monokai">monokai</option>
-            <option value="chrome">chrome</option>
-            <option value="github">github</option>
-            <option value="textmate">textmate</option>
-            <option value="xcode">xcode</option>
-            <option value="dracula">dracula</option>
-            <option value="solarized_dark">solarized_dark</option>
-            <option value="twilight">twilight</option>
-        </select>
-    </div>
-
-    <div class="setting">
-        <p class="setting-title">Email notifications</p>
-        <input type="radio" id="email-notif-yes" name="email-notif" value="true">
-        <label for="email-notif-yes">on</label><br>
-        <input type="radio" id="email-notif-no" name="email-notif" value="false">
-        <label for="email-notif-no">off</label><br>
-    </div>
+    <fieldset class="fieldSet">
+        <legend class="legendCaption">Settings</legend>
     
-    <button type="button" onclick="saveSettings()">save</button>
-    <p id="message"></p>
+        <p class="setting-title" style="margin-top: 2vh;">First name:</p>
+        <input type="text" id="setting-first-name" class="smallInput">
+
+        <p class="setting-title">Last name:</p>
+        <input type="text" id="setting-last-name" class="smallInput">
+    
+        <p class="setting-title">Password:</p>
+        <input type="password" id="setting-old-password" placeholder="current password" class="smallInput"><br>
+        <input type="password" id="setting-new-password" placeholder="new password" class="smallInput">
+        
+        <p class="setting-title">UI theme:</p>
+        <select name="ui-theme" id="setting-ui-theme" class="dropDown">
+            <option value="none" class="dropDownItem">no selection</option>
+            <option value="light" class="dropDownItem">light</option>
+        </select>
+        
+        <p class="setting-title">Editor theme:</p>
+        <select name="editor-theme" id="setting-editor-theme" class="dropDown">
+            <option value="none" class="dropDownItem">no selection</option>
+            <option value="monokai" class="dropDownItem">monokai</option>
+            <option value="chrome" class="dropDownItem">chrome</option>
+            <option value="github" class="dropDownItem">github</option>
+            <option value="textmate" class="dropDownItem">textmate</option>
+            <option value="xcode" class="dropDownItem">xcode</option>
+            <option value="dracula" class="dropDownItem">dracula</option>
+            <option value="solarized_dark" class="dropDownItem">solarized_dark</option>
+            <option value="twilight" class="dropDownItem">twilight</option>
+        </select>
+
+        <p class="setting-title">Email notifications:</p>
+        <div class="radioButtons">
+            <input type="radio" id="email-notif-yes" name="email-notif" autocomplete="off" value="true" style="margin-bottom: 1.5vh;"> On<br>
+            <input type="radio" id="email-notif-no" name="email-notif" autocomplete="off" value="false"> Off
+        </div>
+        
+        <br>
+        <button type="button" onclick="saveSettings()" class="saveButton">Save</button>
+        <p id="message"></p>
+
+    </fieldset>
     <script>
         function setMessage(text, color) {
             const message = document.getElementById("message");

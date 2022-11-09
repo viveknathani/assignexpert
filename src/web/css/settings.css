@@ -71,19 +71,102 @@
     width: 50%;
 }
 
-button {
-    border-radius: 6px;
+.saveButton {
+    display: inline-block;
+    background-color: var(--secondary);
     color: var(--black);
-    width: 11vw;
-    font-weight: 600;
-    padding: 0.7vh 0.7vw;
-    font-size: 3vh;
-    background: var(--white);
-    border: 0.5vh solid var(--primary);
-    text-decoration: none;
-    margin-left: 5%;
+    border: 0.2vw solid var(--primary);
+    border-radius: 5px;
+    outline: none;
+    padding: 0.6vh 2.5vw;
+    font-size: 2.3vh;
+    font-weight: 700;
+    margin-top: 5vh;
+    margin-bottom: 2vh;
+    margin-left: 3vw;
 }
 
-button:hover {
+.saveButton:hover {
+    scale: 1.06;
     cursor: pointer;
 }
+
+.fieldSet {
+    width: 60vw;
+    margin: 12vh 5vw;
+    padding: 4vh 2vw;
+    border: 0.18vw solid var(--black);
+}
+
+.legendCaption {
+    margin-left: 3vw;
+    padding: 0.8vh 3vw;
+    background-color: var(--primary);
+    color: var(--white);
+    font-size: 3.4vh;
+    font-weight: 700;
+}
+
+.setting-title {
+    color: var(--black);
+    font-size: 2.5vh;
+    font-weight: 700;
+    margin-left: 3vw;
+    margin-top: 6vh;
+}
+
+.smallInput {
+    margin-top: 2.5vh;
+    margin-left: 3vw;
+    padding: 0.9vh 1vw;
+    font-size: 2.2vh;
+    font-weight: 500;
+    width: 12vw;
+    background-color: var(--secondary);
+    color: var(--black);
+    overflow: hidden;
+    border: none;
+    outline: none;
+ }
+
+ .dropDown {
+    margin-top: 2.5vh;
+    margin-left: 3vw;
+    padding: 0vh 1vw;
+    font-size: 2.2vh;
+    width: 10vw;
+    height: 5vh;
+    background-color: var(--secondary);
+    color: var(--black);
+    overflow: hidden;
+    border: none;
+    border-radius: 0;
+    outline: none;
+ }
+ 
+ .dropDownItem {
+    margin-top: 2.5vh;
+    margin-left: 3vw;
+    padding: 0vh 1vw;
+    font-size: 2.2vh;
+    width: 10vw;
+    height: 5vh;
+    background-color: var(--secondary);
+    color: var(--black);
+    overflow: hidden;
+    border: none;
+    outline: none;
+    border-radius: 0;
+ }
+
+ .radioButtons {
+    display: inline-block;
+    margin-top: 2.5vh;
+    margin-left: 3vw;
+    font-size: 2.3vh;
+    background-color: var(--white);
+    color: var(--black);
+    border: none;
+    border-radius: 0;
+    outline: none;
+ }
